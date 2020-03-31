@@ -1,100 +1,92 @@
-import argparse
-import torch
+from onlinernn.options.base_options import BaseOptions
 
 
-class BaseOptions:
-    """This class defines options used during both training and test time."""
-
-    def __init__(self):
-        self.initialized = False
+class TrainOptions(BaseOptions):
+    """This class includes training options.
+    It also includes shared options defined in BaseOptions.
+    """
 
     def initialize(self, parser):
-        # torch.manual_seed(999)
-
-        """Define the common options that are used in both training and test."""
-        # basic parameters
-
-        # parser.add_argument("--istrain", action='store_false', default=True, help="train the model or test")
+        parser = BaseOptions.initialize(self, parser)
+        # model training log step
         parser.add_argument(
-            "--istrain",
-            action="store_true",
-            default=False,
-            help="train the model or test",
-        )
-
-        parser.add_argument("--num_test", type=int, default=1, help="# of test epoch")
-        parser.add_argument(
-            "--batch_size", type=int, default=64, help="input batch size"
-        )
-        parser.add_argument(
-            "--num_threads", type=int, default=2, help="# threads for loading data"
-        )
-        parser.add_argument("--ngpu", type=int, default=1, help="# of GPUs")
-        parser.add_argument("--test_case", default=None, help="run test case or not")
-        # task
-        parser.add_argument(
-            "--taskid", type=int, default=0, help="the experiment task to run"
-        )
-        # data parameters
-        parser.add_argument(
-            "--shift_data",
+            "--log",
             action="store_false",
             default=True,
-            help="expand each MNIST image to 28 images by shifting each row of data in a queue loop",
+            help="output the training log or not",
         )
-
         parser.add_argument(
-            "--preprocessSC09",
+            "--log_freq",
+            type=int,
+            default=10,
+            help="frequency of print the log while training",
+        )
+        # network saving and loading parameters
+        parser.add_argument(
+            "--continue_train",
             action="store_true",
-            default=False,
-            help="preprocess SC09",
-        )
-        parser.add_argument(
-            "--nc", type=int, default=1, help="# of channels for input data"
+            help="continue training: load the latest model",
         )
 
-        # model parameters
+        parser.add_argument(
+            "--epoch_count",
+            type=int,
+            default=0,
+            help="the starting epoch count, we save the model by every save_epoch_freq",
+        )
         # parser.add_argument(
-        #     "--n_epochs", type=int, default=300, help="# of maximum epoch"
+        #     "--save_latest_freq",
+        #     type=int,
+        #     default=5000,
+        #     help="frequency of saving the latest results",
         # )
 
-        # Dropout and Batchnorm has different behavioir during training and test.
         parser.add_argument(
-            "--eval", action="store_true", help="use eval mode during test time."
-        )
-
-        # additional parameters
-        parser.add_argument(
-            "--epoch",
-            type=str,
-            default="latest",
-            help="which epoch to load? set to latest to use latest cached model",
-        )
-        parser.add_argument(
-            "--load_iter",
+            "--save_epoch_freq",
             type=int,
-            default="0",
-            help="which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]",
+            default=50,
+            help="frequency of saving checkpoints at the end of epochs",
+        )
+        # parser.add_argument(
+        #     "--save_by_iter",
+        #     action="store_true",
+        #     default=False,
+        #     help="whether saves model by iteration",
+        # )
+        # training parameters
+        # niter and niter_decay only works when model requires lr decay
+        # otherwise they are only used to calculate total number of epoch
+        # both of indexes start from 0
+        parser.add_argument(
+            "--niter", type=int, default=19, help="# of iter at starting learning rate"
         )
         parser.add_argument(
-            "--verbose",
-            action="store_true",
-            help="if specified, print more debugging information",
+            "--niter_decay",
+            type=int,
+            default=0,
+            help="# of iter to linearly decay learning rate to zero",
+        )
+        parser.add_argument(
+            "--lr_policy", type=str, default="linear", help="the learning rate policy"
+        )
+        parser.add_argument(
+            "--lr", type=float, default=0.0002, help="initial learning rate for adam"
         )
 
-        self.initialized = True
+        # CycleGAN related parameters
+        parser.add_argument("--lambda_A", type=float, default=100, help="lambda_A")
+        parser.add_argument("--lambda_B", type=float, default=100, help="lambda_B")
+        parser.add_argument('--pool_size', type=int, default=50, help='the size of image buffer that stores previously generated images')
+        parser.add_argument('--lambda_identity', type=float, default=0.5, help='use identity mapping. Setting lambda_identity other than 0 has an effect of scaling the weight of the identity mapping loss. For example, if the weight of the identity loss should be 10 times smaller than the weight of the reconstruction loss, please set lambda_identity = 0.1')
+        # Add two parameters infront of GAN loss for CycleGAN
+        parser.add_argument("--betaG_A", type=float, default=1, help="betaG_A")
+        parser.add_argument("--betaG_B", type=float, default=1, help="betaG_B")
+        parser.add_argument("--betaD_A", type=float, default=1, help="betaD_A")
+        parser.add_argument("--betaD_B", type=float, default=1, help="betaD_B")
+        # DCGAN
+        parser.add_argument("--dataname", default="MNISTresize")
+        parser.add_argument(
+            "--model_size", type=int, default=64, help="model size for DCGAN"
+        )
+
         return parser
-
-    def gather_options(self):
-        if not self.initialized:  # check if it has been initialized
-            parser = argparse.ArgumentParser(
-                formatter_class=argparse.ArgumentDefaultsHelpFormatter
-            )
-            parser = self.initialize(parser)
-        # return parser.parse_args()
-        return parser.parse_known_args()
-
-    def parse(self):
-        opt = self.gather_options()[0]
-        self.opt = opt
-        return self.opt

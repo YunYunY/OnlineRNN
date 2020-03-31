@@ -4,7 +4,6 @@ import torchvision
 import torch
 
 
-
 class BaseDataset(ABC):
     """
         Abstract class defining the APIs for dataset classes
@@ -14,6 +13,8 @@ class BaseDataset(ABC):
         self.batch_size = opt.batch_size
         self.num_threads = opt.num_threads
         self._n_class = opt.n_class
+        self.download = opt.download_data
+        self.shuffle = opt.shuffle
 
     # ----------------------------------------------
     @classmethod
@@ -22,13 +23,13 @@ class BaseDataset(ABC):
 
     @property
     def name(self):
-    
         return self.class_name()
 
     @property
     def path(self):
         """the path of the dataset files to be saved"""
         return os.path.join("data", self.name)
+        
 
     @property
     def n_class(self):
@@ -47,12 +48,19 @@ class BaseDataset(ABC):
         dataset = dataset_class(
             root="data",
             train=istrain,
-            download=True,
+            download=self.download,
             transform=self.transform,
             target_transform=self.target_transform,
         )
-  
 
-        return dataset
+        dataloader = torch.utils.data.DataLoader(
+                dataset,
+                batch_size=self.batch_size,
+                shuffle=self.shuffle,
+                num_workers=self.num_threads,
+            )
+
+        return dataset, dataloader
 
     # ----------------------------------------------
+
