@@ -1,0 +1,128 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from onlinernn.models.networks import SimpleRNN
+from onlinernn.models.rnn_vanilla import VanillaRNN
+import numpy as np
+import os
+
+# -------------------------------------------------------
+# FPP reference https://openreview.net/pdf?id=SJgmR0NKPr
+# -------------------------------------------------------
+class FPPModel(VanillaRNN):
+    def __init__(self, opt):
+    # def __init__(self, input_size, hidden_size, output_size, lr, state_update, batch_size, T, reg_lambda, device):
+        super(FPP, self).__init__(opt)
+ 
+        self.reg_lambda = opt.reg_lambda
+
+        self.num_update = 1  # number of blocks to sample for each time step
+        self.mse_loss = torch.nn.MSELoss()
+        self._state = None
+
+
+
+    def initialize_state(self):
+        """
+        initialize a state with size x: [1, 1, hidden_size]
+        """
+        # need to update state[i-T] in bp
+        self._state = torch.zeros(size=[1, 1, self.hidden_size], requires_grad=True).float().to(self.device)
+
+    def forward(self, x, y):
+        """
+        inputs:
+        x: [T, 1, input_size]
+        y:  [T, output_size]
+        """
+        x = x.to(self.device)
+        y = y.to(self.device)
+        with torch.no_grad():
+            state_old = self._state.clone()
+
+            y_1, state_new = self.rnn_model(x, state_old)  # y1 = [T, 1, output_size]
+            # print(y_1.size())
+            y_1 = y_1[-1]
+            # print(y_1.size())
+            # print('--')
+            correct_prediction = torch.equal(torch.argmax(y_1, 1), y)
+            accuracy = correct_prediction.__float__()
+
+            loss = self.criterion(y_1, y)
+            self._state = state_new
+
+        return loss.item(), accuracy, state_old.cpu(), state_new.cpu()
+
+    def predict_mnist(self, x, y):
+        """
+        x: input of size (1, 1, input_size)
+        s: previous recurrent state of size (1, 1, hidden_size)
+        y: target of size (1,)
+
+        self.s_toupee: column vector of size (state, )
+        self.theta_toupee: row vector of size (params, )
+        """
+        # print('---')
+        state_old = self._state.clone().detach()
+        y_1, state_new = self.rnn_model(x, state_old)
+
+        # only compute loss for the last 14 time steps
+        y_1 = y_1.squeeze(dim=1)[14:]
+        y = y[14:]
+        loss = self.criterion(y_1, y)
+
+        correct_prediction = torch.eq(torch.argmax(y_1, 1), y)
+        accuracy = correct_prediction.sum().item()
+
+        return loss.item(), accuracy
+
+    def train(self, x_batch, s_batch, s_new_batch, y_batch):
+        """
+        :param
+        x_batch: [T, batch_size, input_size]
+        s_batch: [T, batch_size, hidden_size]
+        y_batch:  [T, batch_size]
+
+        :return
+        state_old_updated: [1, batch_size, hidden_size]
+        state_new_updated: [1, batch_size, hidden_size]
+        """
+        x_batch = x_batch.to(self.device)
+        y_batch = y_batch.to(self.device)
+
+        # get init state and s_T
+        state_old = s_batch[0:1].clone().to(self.device).detach().requires_grad_(True)
+        state_new = s_new_batch[-1:].clone().to(self.device).detach().requires_grad_(True)
+
+        output_y_batch, output_s_batch = self.rnn_model(x_batch, state_old)
+        # print(x_batch.size())
+        # print(s_batch.size())
+        # print(output_y_batch.size())
+        # print(output_s_batch[-1:].size())
+        # print(state_new.size())
+        loss = self.criterion(output_y_batch[-1], y_batch[-1])  # (N, C) and (N)
+
+        if self.state_update:
+            loss += self.reg_lambda * self.mse_loss(state_new, output_s_batch[-1:])
+        
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        if self.state_update:
+            # update states: see https://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_autograd.html
+            with torch.no_grad():
+                state_old_updated = (state_old - self.lr * state_old.grad).clone().detach().cpu()
+                state_new_updated = (state_new - self.lr * state_new.grad).clone().detach().cpu()
+
+                state_old.grad.zero_()
+                state_new.grad.zero_()
+
+            # Alternative: set no_grad for state_old and state_new and manually get the gradients
+            # grad_s = grad(loss, state_old, retain_graph=True)[0]
+            # grad_s_t = grad(loss, state_new, retain_graph=True)[0]
+
+            return loss.item(), state_old_updated, state_new_updated
+        else:
+            return loss.item(), None, None

@@ -48,7 +48,7 @@ def test_mnistshift():
     batch = next(iter(d.dataloader))
     # assert list(batch[0][:opt.batch_size].shape) == [opt.batch_size, 1, 28, 28]
     # assert list(batch[1][:opt.batch_size].shape) == [opt.batch_size, 10]
-    data = batch[0][:57]
+    data = batch[0][:opt.batch_size]
     
     result_dir = "result/dataset_test/MNISTShift"
     os.makedirs(result_dir, exist_ok=True)
@@ -56,19 +56,3 @@ def test_mnistshift():
     # visually check image after shifting
     show_shift(data, 7, result_dir, "MNISTShift.png")
 
-    # show_shift(torch.reshape(data, (56, 1, 28, 28)), 7, result_dir, "MNISTShift.png")
-    # imshow(torch.reshape(data, (64, 1, 28, 28)),
-    #     result_dir,
-    #     8, "MNISTOriginal.png")
-    # flipdata = canny(data, use_cuda = False)
-    # imshow(torch.reshape(flipdata, (64, 1, 28, 28)),
-    #     result_dir,
-    #     8, "MNISTEdge.png")
-    # data[:, 0, 14, :] = 1-data[:, 0, 14, :]
-    # flipdata = data
-    # # flipdata = canny(data, use_cuda = False)
-
-    # imshow(torch.reshape(flipdata, (64, 1, 28, 28)),
-    #     result_dir,
-    #     8, "MNISTFlip.png")
-    

@@ -16,7 +16,7 @@ setuptools.setup(
     install_requires=["torch==1.4.0", "torchvision==0.5.0"],
     extras_require={
         "dev": [
-            "nose==1.3.7", "matplotlib==3.2.1"
+            "nose==1.3.7", "matplotlib==3.2.1", "torchsummary-1.5.1"
         ]
     },
     classifiers=[

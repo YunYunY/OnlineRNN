@@ -11,17 +11,16 @@ class BaseOptions:
     def initialize(self, parser):
         # torch.manual_seed(999)
 
-        """Define the common options that are used in both training and test."""
+        # -------------------------------------------------------
         # basic parameters
+        # -------------------------------------------------------
 
-        # parser.add_argument("--istrain", action='store_false', default=True, help="train the model or test")
         parser.add_argument(
             "--istrain",
             action="store_true",
             default=False,
             help="train the model or test",
         )
-
         parser.add_argument("--num_test", type=int, default=1, help="# of test epoch")
         parser.add_argument(
             "--batch_size", type=int, default=64, help="input batch size"
@@ -31,11 +30,12 @@ class BaseOptions:
         )
         parser.add_argument("--ngpu", type=int, default=1, help="# of GPUs")
         parser.add_argument("--test_case", default=None, help="run test case or not")
-        # task
         parser.add_argument(
             "--taskid", type=int, default=0, help="the experiment task to run"
         )
+        # -------------------------------------------------------
         # data parameters
+        # -------------------------------------------------------
 
         parser.add_argument(
             "--download_data",
@@ -43,29 +43,30 @@ class BaseOptions:
             default=False,
             help="download data",
         )
-
         parser.add_argument(
             "--shuffle",
             action="store_true",
             default=True,
-            help="shuffle data",
+            help="shuffle MNIST data",
         )
 
-        parser.add_argument(
-            "--nc", type=int, default=1, help="# of channels for input data"
-        )
-
+        # -------------------------------------------------------
         # model parameters
-        # parser.add_argument(
-        #     "--n_epochs", type=int, default=300, help="# of maximum epoch"
-        # )
+        # -------------------------------------------------------
 
         # Dropout and Batchnorm has different behavioir during training and test.
         parser.add_argument(
             "--eval", action="store_true", help="use eval mode during test time."
         )
+        parser.add_argument(
+                    "--hidden_size", type=int, default=512, help="number of neurons in hidden state"
+                )
+        parser.add_argument('--T', type=int, default=28, help='Truncate parameter') #10
 
+        # -------------------------------------------------------
         # additional parameters
+        # -------------------------------------------------------
+
         parser.add_argument(
             "--epoch",
             type=str,
@@ -93,7 +94,6 @@ class BaseOptions:
                 formatter_class=argparse.ArgumentDefaultsHelpFormatter
             )
             parser = self.initialize(parser)
-        # return parser.parse_args()
         return parser.parse_known_args()
 
     def parse(self):
