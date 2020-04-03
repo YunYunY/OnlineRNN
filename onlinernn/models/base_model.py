@@ -14,12 +14,13 @@ class BaseModel(ABC):
         self.istrain = opt.istrain
         self.state_update = opt.state_update
         self.lr = opt.lr
+        self.num_layers = opt.num_layers
+        self.init_mode = opt.init_mode
         self.hidden_size = opt.hidden_size
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
-        self.device = opt.device
         self.T = opt.T
-        self.batch_size = opt.batch_size  # B
+        self.device = opt.device
 
     # ----------------------------------------------
     @classmethod

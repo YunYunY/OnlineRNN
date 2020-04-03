@@ -28,9 +28,10 @@ class MNIST(BaseDataset):
         super(MNIST, self).__init__(opt)
         self.transform = transforms.Compose([transforms.ToTensor()])
         # one-hot encoding for target while read in data
-        self.target_transform = transforms.Compose(
-            [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
-        )
+        # self.target_transform = transforms.Compose(
+        #     [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
+        # )
+        self.target_transform = transforms.Compose([])
         istrain = (opt.istrain or opt.continue_train)
         self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
 
@@ -45,10 +46,6 @@ class MNISTShift(MNIST):
     def __init__(self, opt):
         super(MNISTShift, self).__init__(opt)
         self.transform = transforms.Compose([transforms.ToTensor()])
-        # one-hot encoding for target while read in data
-        self.target_transform = transforms.Compose(
-            [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
-        )
     # ----------------------------------------------
     def torch_loader(self, istrain):
         """

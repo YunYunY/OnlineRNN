@@ -54,14 +54,17 @@ class BaseOptions:
         # model parameters
         # -------------------------------------------------------
 
-        # Dropout and Batchnorm has different behavioir during training and test.
+        # Dropout and Batchnorm have different behavioir during training and test.
         parser.add_argument(
-            "--eval", action="store_true", help="use eval mode during test time."
-        )
+                    "--num_layers", type=int, default=1, help="number of layers in RNN"
+                )
         parser.add_argument(
                     "--hidden_size", type=int, default=512, help="number of neurons in hidden state"
                 )
-        parser.add_argument('--T', type=int, default=28, help='Truncate parameter') #10
+        parser.add_argument(
+            "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
+        ) #["Zeros",  "Random"]
+        parser.add_argument('--T', type=int, default=7, help='Truncate parameter') #10
 
         # -------------------------------------------------------
         # additional parameters

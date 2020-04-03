@@ -5,6 +5,7 @@ import numpy as np
 from os import path
 from onlinernn.models.setting import Setting, RNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
+from onlinernn.models.rnn_stopbp import SoptBPRNN
 from onlinernn.datasets.mnist import MNIST, MNISTShift
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.models.networks import SimpleRNN
@@ -20,25 +21,51 @@ opt.device = torch.device(
 # -----------------------------------------------------
 # VanillaRNN
 # -----------------------------------------------------
-opt.n_layers, opt.batch_size, opt.hidden_size = 1, 64, 512
-def test_init_hidden():
-    d = MNIST(opt)
-    s = RNN(opt)
-    m = VanillaRNN(opt)
-    p = ExpConfig(dataset=d, setting=s, model=m)
-    s.setup(dataset=d, model=m)
-    m.init_hidden()
-    assert list(m.state.shape) == [1, 64, 512]
+opt.feature_shape = 28
+opt.n_class = 10
+# def test_set_input():
+#     """
+#         Inut and label size feed into RNN
+#     """
+#     d = MNIST(opt)
+#     m = VanillaRNN(opt)
+#     m.data = next(iter(d.dataloader))
+#     m.set_input()
+#     assert list(m.inputs.shape) == [64, 28, 28]
+#     assert list(m.labels.shape) == [64]
 
-opt.niter = 1
-opt.niter_decay = 0
+# accuracy should be around 95%
+# opt.niter = 9
+# opt.niter_decay = 0
+# def test_VanillaRNN():
+#     d = MNIST(opt)
+#     s = RNN(opt)
+#     m = VanillaRNN(opt)
+#     p = ExpConfig(dataset=d, setting=s, model=m)
+#     s.setup(dataset=d, model=m)
+#     p.run()
+
 # -----------------------------------------------------
-def test_VanillaRNN():
+# StopBPRNN
+# -----------------------------------------------------
+def test_StopBPRNN_train():
     d = MNIST(opt)
+    m = SoptBPRNN(opt)
+    m.data = next(iter(d.dataloader))
+    m.init_net()
+    m.init_loss()
+    m.init_optimizer()
+    m.set_input()
+    m.set_output()
+    m.train()
+    
+
+opt.niter = 9
+opt.niter_decay = 0
+def test_StopBPRNN():
+    d = MNISTShift(opt)
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = SoptBPRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m)
     s.setup(dataset=d, model=m)
-    m.init_net()
-    print(m.rnn_model)
     p.run()

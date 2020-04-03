@@ -1,58 +1,39 @@
 import torch
 import torch.nn as nn
+import numpy as np
+from torch.autograd import Variable
 
 # -------------------------------------------------------
 # RNN
 # -------------------------------------------------------
 
 class SimpleRNN(nn.Module):
-
     def __init__(self, input_size, hidden_size, output_size):
-            super(SimpleRNN, self).__init__()
-            self.n_layers = 1
-            self.hidden_size = hidden_size
-            self.rnn_layer = nn.RNN(input_size, hidden_size, batch_first=True)
-            self.output_layer = nn.Linear(hidden_size, output_size)
-
-    def forward(self, x, state):
-        """
-        Args:
-            x: (T, batch_size, output_size)
-            state: (layer = 1, batch_size, hidden_size)
-
-        Outputs:
-            output: (T, batch_size, output_size)
-            state: (1, batch_size, hidden_size)
-        """
-        output, state = self.rnn_layer(x, state)  # output = (T, batch_size, hidden_size)
-
-        output = self.output_layer(output)
-    
-        return output, state
-
-
-  def init_hidden(self):
-        # This method generates the first hidden state of zeros which we'll use in the forward pass
-        # We'll send the tensor holding the hidden state to the device we specified earlier as well
-        # self.state = torch.zeros(self.n_layers, self.batch_size, self.hidden_size)
-        self.state = torch.zeros(self.n_layers, self.hidden_size)
-
+        super(SimpleRNN, self).__init__()
         
-   ModeZeros = 'Zeros'
-    ModeRandom = 'Random'
-def initial_state(mode, num_layers, hidden_size):
-    if mode == "Zeros":
-        return np.zeros((num_layers, self.hidden_size), dtype=np.float32)
-    elif mode == self.ModeRandom:
-        random_state = np.random.normal(0, 1.0, (self.num_layers, self.hidden_size))
-        return np.clip(random_state, -1, 1).astype(dtype=np.float32)
-    else:
-        raise RuntimeError('No mode %s' % mode)
+        self.n_neurons = hidden_size
+        self.n_inputs = input_size
+        self.n_outputs = output_size
+        self.basic_rnn = nn.RNN(self.n_inputs, self.n_neurons)
+        
+        self.FC = nn.Linear(self.n_neurons, self.n_outputs)
+        
+    def forward(self, X, hidden):
 
-def initial_states(self, mode, samples=64):
-    states = [self.initial_state(mode) for _ in range(samples)]
-    states = np.stack(states)
-    states = np.swapaxes(states, 1, 0)
-    states = Variable(torch.from_numpy(states), requires_grad=False)
-    return states       
+        # transforms X to dimensions: n_steps X batch_size X n_inputs
+        X = X.permute(1, 0, 2) 
+         
+        # self.basic input:
+        #     x: (seq_len, batch, input_size)
+        #     state: (num_layers, batch, hidden_size)
+        # self.basic output 
+        #     output: (seq_len, batch, hidden_size)
+        #     state: (num_layers, batch, hidden_size)
+        out, hidden = self.basic_rnn(X, hidden)    
+        out = out[-1]
   
+        out = self.FC(out)
+        
+        # out batch_size X n_output
+        return out.view(-1, self.n_outputs), hidden 
+

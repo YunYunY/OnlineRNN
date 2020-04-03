@@ -82,29 +82,26 @@ class RNN(Setting):
         super(RNN, self).__init__(opt)
 
     def run(self):
-
-        # Build network structure & Initialize hidden layer
+        
+        # Build network structure
         self.model.init_net()
         # Setup loss
         self.model.init_loss()
         # Setup optimizer
         self.model.init_optimizer()
         # Load networks; create schedulers
-        self.model.setup()
-        print("Starting Training Loop...")
+        # self.model.setup()
+        print("Start Training Loop...")
         self.model.datasize = len(self.dataset.dataloader)
         total_iters = 0  # the total number of training iterations
 
         # for epoch in range(self.n_epochs):
         for epoch in range(
             self.opt.epoch_count, self.opt.n_epochs + 1):
-            # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
 
-            # Setup output related
-            self.model.set_output()
-
-            # For each batch
             epoch_start_time = time.time()  # timer for entire epoch
+
+            self.model.set_output()
 
             for i, data in enumerate(self.dataset.dataloader):
 
@@ -115,8 +112,8 @@ class RNN(Setting):
                 # Forward, backward, update network weights
                 self.model.train() 
                 # Output training stats
-                if self.log and i % self.log_freq == 0:
-                    self.model.training_log(i, epoch)
+                # if self.log and i % self.log_freq == 0:
+                #     self.model.training_log(i, epoch)
 
             # if (
             #     epoch + 1
@@ -130,12 +127,13 @@ class RNN(Setting):
             # if epoch == self.opt.n_epochs:
                 # self.model.save_networks("latest")
             print(
-                "End of epoch %d / %d \t Time Taken: %d sec"
-                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time)
+                "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
+                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses / i, self.model.train_acc/i)
             )
+
             # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
             # Save losses at each epoch
-            self.model.save_losses(epoch)
+            # self.model.save_losses(epoch)
         # Plot loss at the end of the run
         # self.model.visualize()
 
@@ -149,15 +147,7 @@ class RNN(Setting):
         self.model.init_optimizer()
         # Load the model and losses
         self.model.setup()
-
-        """
-        Dropout works as a regularization for preventing overfitting during training.
-        It randomly zeros the elements of inputs in Dropout layer on forward call.
-        It should be disabled during testing since you may want to use full model (no element is masked)
-        For [CycleGAN]: It should not affect CycleGAN as CycleGAN uses instancenorm without dropout.
-        """
-        if self.opt.eval:
-            self.model.eval()
+         
         for i, data in enumerate(self.dataset.dataloader):
             if i >= self.opt.num_test:  # only apply our model to opt.num_test images.
                 break

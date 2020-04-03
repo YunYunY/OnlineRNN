@@ -18,14 +18,8 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--log_freq",
             type=int,
-            default=10,
+            default=100,
             help="frequency of print the log while training",
-        )
-        # network saving and loading parameters
-        parser.add_argument(
-            "--continue_train",
-            action="store_true",
-            help="continue training: load the latest model",
         )
 
         parser.add_argument(
@@ -59,7 +53,7 @@ class TrainOptions(BaseOptions):
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.0002, help="initial learning rate for adam"
+            "--lr", type=float, default=0.001, help="initial learning rate for adam"
         )
         parser.add_argument('--state_update', action="store_true", default=False, help='FPP: w/ or w/o state update')
         return parser

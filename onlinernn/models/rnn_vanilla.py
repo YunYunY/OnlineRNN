@@ -13,8 +13,8 @@ class VanillaRNN(BaseModel):
         self.loss_method = "vanilla"
         self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
         self.model_names = ["rnn_model"]
-        self.time_step = 28
-        self.n_layers = 1
+        self.seq_len = 28
+ 
         # self.reg_lambda = opt.reg_lambda
 
         # self.num_update = 1  # number of blocks to sample for each time step
@@ -24,18 +24,22 @@ class VanillaRNN(BaseModel):
         # self._state = None
 
   
-    def init_hidden(self):
-        # This method generates the first hidden state of zeros which we'll use in the forward pass
-        # We'll send the tensor holding the hidden state to the device we specified earlier as well
-        # self.state = torch.zeros(self.n_layers, self.batch_size, self.hidden_size)
-        self.state = torch.zeros(self.n_layers, self.hidden_size)
-
     def init_net(self):
         """
-        initialize model structure
+        Initialize model
+        Dropout works as a regularization for preventing overfitting during training.
+        It randomly zeros the elements of inputs in Dropout layer on forward call.
+        It should be disabled during testing since you may want to use full model (no element is masked)
+        
         """
         self.rnn_model = SimpleRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
-        self.init_hidden()
+        # explicitly state the intent
+        if self.istrain:
+            self.rnn_model.train()
+        else:
+            self.rnn_model.eval()
+
+
 
     def init_loss(self):
         """
@@ -47,8 +51,8 @@ class VanillaRNN(BaseModel):
         """
         Setup optimizers
         """
-        self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-
+        # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
+        self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
     # ----------------------------------------------
 
     def print_networks(self, verbose):
@@ -93,27 +97,54 @@ class VanillaRNN(BaseModel):
         self.set_input()
 
     def set_input(self):
-        # treat each row as a time_step, feature size is input_size
-        self.inputs = self.data[0].view(self.batch_size, self.time_step, self.input_size).to(self.device)
-        # permute inputs
-        # self.inputs = self.inputs.permute(1, 0, 2)
-        self.labels = self.data[1].to(self.device)
+        # treat each row as a seq_len, feature size is input_size
+        self.inputs, self.labels = self.data
+        self.inputs = self.inputs.view(-1, 28,28).to(self.device)
+        self.labels = self.labels.to(self.device)
+        # update batch 
+        self.batch_size = self.labels.shape[0]
 
     def set_output(self):
-        """
-        Setup Lists to keep track of progress
-        """
-        self.losses = []
+        self.losses = 0
+        self.train_acc = 0
+
+    # -------------------------------------------------------
+    # Initialize first hidden state      
+
+    def initial_states(self):
+        self.states = torch.zeros(self.num_layers, self.batch_size, self.hidden_size).to(self.device)
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
-        output, state = self.rnn_model.forward(self.inputs, self.state)
-        self.loss = self.criterion(output, self.labels)
+        self.optimizer.zero_grad()
+        self.initial_states()
+        outputs, state = self.rnn_model(self.inputs, self.states)
+        outputs, state = outputs.to(self.device), state.to(self.device)
+        self.loss = self.criterion(outputs, self.labels)
         self.loss.backward()
         self.optimizer.step()
-        self.losses.append(self.loss.item())
+        self.losses += self.loss.detach().item()
+        self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
+
+
+    def training_log(self, i, epoch):
+        """
+        Create log
+        """
+        print(
+            f"[{epoch}/{self.opt.n_epochs}], {i}, {self.datasize}, Loss: {self.loss.detach().item()}"
+        )
 
    # ----------------------------------------------
+
+    def get_accuracy(self, logit, target, batch_size):
+        """ 
+        Obtain accuracy for training round 
+        """
+        corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
+        accuracy = 100.0 * corrects/batch_size
+        return accuracy.item()
+
     def save_losses(self, epoch):
         if self.opt.verbose:
             print( "Loss of epoch %d / %d "
