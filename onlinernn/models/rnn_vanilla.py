@@ -13,7 +13,6 @@ class VanillaRNN(BaseModel):
         self.loss_method = "vanilla"
         self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
         self.model_names = ["rnn_model"]
-        self.seq_len = 28
  
         # self.reg_lambda = opt.reg_lambda
 
@@ -38,7 +37,9 @@ class VanillaRNN(BaseModel):
             self.rnn_model.train()
         else:
             self.rnn_model.eval()
-
+        # if (self.device.type == "cuda") and (self.opt.ngpu > 1):
+        #     print('Run parallel')
+        #     self.rnn_model = nn.DataParallel(self.rnn_model, list(range(self.opt.ngpu)))
 
 
     def init_loss(self):
@@ -97,12 +98,13 @@ class VanillaRNN(BaseModel):
         self.set_input()
 
     def set_input(self):
-        # treat each row as a seq_len, feature size is input_size
         self.inputs, self.labels = self.data
-        self.inputs = self.inputs.view(-1, 28,28).to(self.device)
+        self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
         self.labels = self.labels.to(self.device)
         # update batch 
         self.batch_size = self.labels.shape[0]
+
+
 
     def set_output(self):
         self.losses = 0
@@ -111,13 +113,14 @@ class VanillaRNN(BaseModel):
     # -------------------------------------------------------
     # Initialize first hidden state      
 
-    def initial_states(self):
-        self.states = torch.zeros(self.num_layers, self.batch_size, self.hidden_size).to(self.device)
+    def init_states(self):
+        # self.states = torch.zeros(self.num_layers, self.batch_size, self.hidden_size).to(self.device)
+        self.states = torch.zeros(self.batch_size, self.num_layers, self.hidden_size).to(self.device)
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self.optimizer.zero_grad()
-        self.initial_states()
+        self.init_states()
         outputs, state = self.rnn_model(self.inputs, self.states)
         outputs, state = outputs.to(self.device), state.to(self.device)
         self.loss = self.criterion(outputs, self.labels)

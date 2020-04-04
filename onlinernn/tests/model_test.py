@@ -35,8 +35,8 @@ opt.n_class = 10
 #     assert list(m.labels.shape) == [64]
 
 # accuracy should be around 95%
-# opt.niter = 9
-# opt.niter_decay = 0
+opt.niter = 9
+opt.niter_decay = 0
 # def test_VanillaRNN():
 #     d = MNIST(opt)
 #     s = RNN(opt)
@@ -48,16 +48,16 @@ opt.n_class = 10
 # -----------------------------------------------------
 # StopBPRNN
 # -----------------------------------------------------
-def test_StopBPRNN_train():
-    d = MNIST(opt)
-    m = SoptBPRNN(opt)
-    m.data = next(iter(d.dataloader))
-    m.init_net()
-    m.init_loss()
-    m.init_optimizer()
-    m.set_input()
-    m.set_output()
-    m.train()
+# def test_StopBPRNN_train():
+#     d = MNIST(opt)
+#     m = SoptBPRNN(opt)
+#     m.data = next(iter(d.dataloader))
+#     m.init_net()
+#     m.init_loss()
+#     m.init_optimizer()
+#     m.set_input()
+#     m.set_output()
+#     m.train()
     
 
 opt.niter = 9

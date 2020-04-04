@@ -17,9 +17,13 @@ class Setting:
         self.istrain = opt.istrain
         # self.continue_train = opt.continue_train
         # Decide which device we want to run on
+        # opt.device = torch.device(
+        #     "cuda:0" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
+        # )
         opt.device = torch.device(
-            "cuda:0" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
+            "cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
         )
+        print("Number of available GPUs: %d" %torch.cuda.device_count())
         opt.n_epochs = (
             self.opt.niter + self.opt.niter_decay
         )  # If the total is 20, n_epochs is 19. Index start from 0

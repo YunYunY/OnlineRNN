@@ -1,6 +1,6 @@
 import torch.nn as nn
-import torch
-import numpy as np
+import torch 
+import time
 class TBPTT():
     def __init__(self, one_step_module, loss_module, k1, k2, optimizer):
         self.one_step_module = one_step_module
@@ -39,13 +39,14 @@ class TBPTT():
                         break
                     curr_grad = states[-i-1][0].grad
                     states[-i-2][1].backward(curr_grad, retain_graph=self.retain_graph)
+                print(curr_grad)
                 print("bw: {}".format(time.time()-start))
                 optimizer.step()
 
 
 
-seq_len = 28
-layer_size = 1
+seq_len = 20
+layer_size = 50
 
 idx = 0
 
@@ -70,6 +71,7 @@ class MyMod(nn.Module):
         idx += 1
         return out, new_state
 
+torch.manual_seed(7)
 
 one_step_module = MyMod()
 loss_module = nn.MSELoss()
@@ -77,13 +79,7 @@ input_sequence = [(torch.rand(200, layer_size), torch.rand(200, layer_size))] * 
 
 optimizer = torch.optim.SGD(one_step_module.parameters(), lr=1e-3)
 
-runner = TBPTT(one_step_module, loss_module, 5, 7, optimizer)
+runner = TBPTT(one_step_module, loss_module, 20, 10, optimizer)
 
-init_state = torch.zeros(200, layer_size)
-states = [(None, init_state)]
-
-state = states[-1][1].detach()
-state = np.array(state)
-print(states.shape)
-# runner.train(input_sequence, init_state)
-# print("done")
+runner.train(input_sequence, torch.zeros(200, layer_size))
+print("done")

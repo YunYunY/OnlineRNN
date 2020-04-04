@@ -7,4 +7,6 @@
 # the [filename] is the file that you want to run unit tests, for example, model_test.py
 ################################
 
-nosetests -v --nologcapture -s $1
+CUDA_VISIBLE_DEVICES=0,1 nosetests -v --nologcapture -s $1
+# run with all available GPUs
+# nosetests -v --nologcapture -s $1

@@ -25,6 +25,7 @@ class MNIST(BaseDataset):
         self.shuffle = opt.shuffle
         opt.n_class = 10
         opt.feature_shape = 28
+        opt.seq_len = 28
         super(MNIST, self).__init__(opt)
         self.transform = transforms.Compose([transforms.ToTensor()])
         # one-hot encoding for target while read in data
