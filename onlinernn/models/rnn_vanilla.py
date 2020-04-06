@@ -10,7 +10,7 @@ class VanillaRNN(BaseModel):
     def __init__(self, opt):
     # def __init__(self, input_size, hidden_size, output_size, lr, state_update, batch_size, T, reg_lambda, device):
         super(VanillaRNN, self).__init__(opt)
-        self.loss_method = "vanilla"
+        # self.loss_method = "vanilla"
         self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
         self.model_names = ["rnn_model"]
  
@@ -18,7 +18,6 @@ class VanillaRNN(BaseModel):
 
         # self.num_update = 1  # number of blocks to sample for each time step
         # self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
-        # self.mse_loss = torch.nn.MSELoss()
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
         # self._state = None
 
@@ -37,9 +36,9 @@ class VanillaRNN(BaseModel):
             self.rnn_model.train()
         else:
             self.rnn_model.eval()
-        # if (self.device.type == "cuda") and (self.opt.ngpu > 1):
-        #     print('Run parallel')
-        #     self.rnn_model = nn.DataParallel(self.rnn_model, list(range(self.opt.ngpu)))
+        if (self.device.type == "cuda") and (self.opt.ngpu > 1):
+            print('Run parallel')
+            self.rnn_model = nn.DataParallel(self.rnn_model, list(range(self.opt.ngpu)))
 
 
     def init_loss(self):
@@ -85,14 +84,47 @@ class VanillaRNN(BaseModel):
             ]
         # if not self.istrain:
         if not self.istrain or self.opt.continue_train:
-            load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
-            # load_prefix = "latest"
-            # load_prefix = "30"
+            # load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
+            load_prefix = "latest"
             print(f'Load the {load_prefix} epoch network')
             self.load_networks(load_prefix)
+            self.test_acc = 0
 
         self.print_networks(self.opt.verbose)
     
+    # ----------------------------------------------
+    def load_networks(self, load_prefix):
+        """Load all the networks from the disk.
+        Parameters:
+            epoch (int) -- current epoch; used in the file name '%s_net_%s.pth' % (epoch, name)
+        """
+        for name in self.model_names:
+            if isinstance(name, str):
+                load_filename = f"{load_prefix}_{name}_T{self.T}.pth"
+                load_path = os.path.join(self.result_dir, load_filename)
+                net = getattr(self, name)
+                if isinstance(net, torch.nn.DataParallel):
+                    net = net.module
+                print("loading the model from %s" % load_path)
+                # if you are using PyTorch newer than 0.4 (e.g., built from
+                # GitHub source), you can remove str() on self.device
+                state_dict = torch.load(load_path, map_location=self.device)
+                if hasattr(state_dict, "_metadata"):
+                    del state_dict._metadata
+                net.load_state_dict(state_dict)
+
+   
+            load_filename = f"{load_prefix}_optimizer_T{self.T}.pth"
+            load_path = os.path.join(self.result_dir, load_filename)
+            optimizer = getattr(self, "optimizer")
+    
+            print("loading the optimizer from %s" % load_path)
+            # if you are using PyTorch newer than 0.4 (e.g., built from
+            # GitHub source), you can remove str() on self.device
+            state_dict = torch.load(load_path, map_location=self.device)
+            if hasattr(state_dict, "_metadata"):
+                del state_dict._metadata
+            optimizer.load_state_dict(state_dict)
     # ----------------------------------------------
     def set_test_input(self):
         self.set_input()
@@ -155,3 +187,61 @@ class VanillaRNN(BaseModel):
         np.savez(
             self.loss_dir + "/" + str(epoch) + "_losses.npz",
             losses=self.losses        )
+    # ----------------------------------------------
+    def save_networks(self, epoch):
+        """Save all the networks to the disk.
+        Parameters:
+            epoch (int) -- current epoch; used in the file name '%s_net_%s.pth' % (epoch, name)
+
+        """
+
+        # Save networks
+        for name in self.model_names:
+            if isinstance(name, str):
+                save_filename = "%s_%s_T%s.pth" % (epoch, name, self.T)
+                save_path = os.path.join(self.result_dir, save_filename)
+                net = getattr(self, name)
+                if (self.opt.device.type == "cuda") and (self.opt.ngpu > 0):
+                    torch.save(net.cpu().state_dict(), save_path)
+                    net.cuda()
+                else:
+                    torch.save(net.cpu().state_dict(), save_path)
+
+        # Save optimizers
+
+        save_filename = "%s_optimizer_T%s.pth" % (epoch, self.T)
+        save_path = os.path.join(self.result_dir, save_filename)
+        optimizer = getattr(self, "optimizer")
+        torch.save(optimizer.state_dict(), save_path)
+
+
+    # ----------------------------------------------
+    def test(self):
+        with torch.no_grad():
+            self.init_states()
+            outputs, _ = self.rnn_model(self.inputs, self.states)
+            outputs = outputs.to(self.device).detach()
+            self.test_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
+      
+            # self.save_result()
+
+    # ----------------------------------------------
+    def get_test_acc(self, n):
+        print(f"Calculate accuracy after {n} loads")
+        self.test_acc = self.test_acc / (n)
+        print(f"Test accuracy is {self.test_acc}")
+        self.save_result()
+    # ----------------------------------------------
+
+    def save_result(self):
+        # Plot loss
+        load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
+        np.savez(self.result_dir + "/test_epoch_" + str(load_prefix) + "_T"+ str(self.T)+ ".npz", accuracy=self.test_acc)
+        # imshow(
+        #     torch.reshape(
+        #         self.test_fake, (self.plt_n * self.plt_n, 1, self.x_dim, self.x_dim)
+        #     ),
+        #     self.result_dir,
+        #     self.plt_n,
+        #     "Laststep_G.png",
+        # )

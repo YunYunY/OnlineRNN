@@ -12,7 +12,6 @@ class BaseModel(ABC):
         super(BaseModel, self).__init__()
         self.opt = opt
         self.istrain = opt.istrain
-        self.state_update = opt.state_update
         self.lr = opt.lr
         self.seq_len = opt.seq_len
         self.num_layers = opt.num_layers
@@ -20,7 +19,10 @@ class BaseModel(ABC):
         self.hidden_size = opt.hidden_size
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
-        self.T = opt.T
+        try:
+            self.T = opt.T_
+        except:
+            self.T = 7 # for test
         self.device = opt.device
 
     # ----------------------------------------------

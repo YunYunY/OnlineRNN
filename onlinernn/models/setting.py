@@ -38,7 +38,8 @@ class Setting:
             Check if the results folder exists
             If not, create the directory
         """
-        self.result_dir = os.path.join("result", self.model.name, self.dataset.name)
+        
+        self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T))
         os.makedirs(self.result_dir, exist_ok=True)
         self.loss_dir = os.path.join(self.result_dir, "loss")
         os.makedirs(self.loss_dir, exist_ok=True)
@@ -111,9 +112,10 @@ class RNN(Setting):
 
                 total_iters += self.opt.batch_size
                 # Setup input
-                self.model.data = data  # load training data
+                self.model.data = data 
                 self.model.set_input()
                 # Forward, backward, update network weights
+                self.model.iload = i
                 self.model.train() 
                 # Output training stats
                 # if self.log and i % self.log_freq == 0:
@@ -128,11 +130,11 @@ class RNN(Setting):
             #     )
             #     self.model.save_networks(epoch)
 
-            # if epoch == self.opt.n_epochs:
-                # self.model.save_networks("latest")
+            if epoch == self.opt.n_epochs:
+                self.model.save_networks("latest")
             print(
                 "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
-                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses / i, self.model.train_acc/i)
+                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses/(i+1), self.model.train_acc/(i+1))
             )
 
             # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
@@ -151,13 +153,15 @@ class RNN(Setting):
         self.model.init_optimizer()
         # Load the model and losses
         self.model.setup()
-         
+        
+        
         for i, data in enumerate(self.dataset.dataloader):
-            if i >= self.opt.num_test:  # only apply our model to opt.num_test images.
-                break
+            # if i >= self.opt.num_test:  # only apply our model to opt.num_test images.
+            #     break
             # Setup input
-            self.model.data = data  # load training data
-            if hasattr(self.dataset, "flipdataloader"):
-                self.model.flipdata = next(iter(self.dataset.flipdataloader))
+            self.model.data = data 
+            # if hasattr(self.dataset, "flipdataloader"):
+            #     self.model.flipdata = next(iter(self.dataset.flipdataloader))
             self.model.set_test_input()  # unpack data from data loader
             self.model.test()  # run inference
+        self.model.get_test_acc(i+1) # calculate and save global acc

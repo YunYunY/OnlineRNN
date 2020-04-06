@@ -8,6 +8,12 @@ class TrainOptions(BaseOptions):
 
     def initialize(self, parser):
         parser = BaseOptions.initialize(self, parser)
+        parser.add_argument(
+            "--continue_train",
+            action="store_true",
+            default=False,
+            help="continue training from a saved step",
+        ) # not implement continue run yet
         # model training log step
         parser.add_argument(
             "--log",
@@ -40,8 +46,7 @@ class TrainOptions(BaseOptions):
         # niter and niter_decay only works when model requires lr decay
         # otherwise they are only used to calculate total number of epoch
         # both of indexes start from 0
-        parser.add_argument(
-            "--niter", type=int, default=1, help="# of iter at starting learning rate"
+        parser.add_argument("--niter", type=int, default=9, help="# of iter at starting learning rate"
         )
         parser.add_argument(
             "--niter_decay",
@@ -53,7 +58,8 @@ class TrainOptions(BaseOptions):
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.001, help="initial learning rate for adam"
+            "--lr", type=float, default=0.0003, help="initial learning rate for adam"
         )
-        parser.add_argument('--state_update', action="store_true", default=False, help='FPP: w/ or w/o state update')
+        parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
+
         return parser

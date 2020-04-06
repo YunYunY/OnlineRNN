@@ -35,6 +35,7 @@ class MNIST(BaseDataset):
         self.target_transform = transforms.Compose([])
         istrain = (opt.istrain or opt.continue_train)
         self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
+        print(f"Total datasize is {len(self.dataset)}")
 
     def __len__(self):
         return len(self.dataset)
@@ -65,7 +66,13 @@ class MNISTShift(MNIST):
             target_transform=self.target_transform,
         )
 
-        dataset = MNISTShifDataset(dataset_orig)
+        # use the shift data as training data, original MNIST as testing
+        if istrain:
+            dataset = MNISTShifDataset(dataset_orig)
+        else:
+            dataset = dataset_orig
+        # print(f"Total datasize is {len(dataset)}")
+
 
         dataloader = torch.utils.data.DataLoader(
                 dataset,

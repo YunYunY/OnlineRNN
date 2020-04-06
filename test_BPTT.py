@@ -32,7 +32,7 @@ class TBPTT():
                 optimizer.zero_grad()
                 # backprop last module (keep graph only if they ever overlap)
                 start = time.time()
-                loss.backward(retain_graph=self.retain_graph)
+                loss.mean().backward(retain_graph=self.retain_graph)
                 for i in range(self.k2-1):
                     # if we get all the way back to the "init_state", stop
                     if states[-i-2][0] is None:
@@ -80,6 +80,7 @@ input_sequence = [(torch.rand(200, layer_size), torch.rand(200, layer_size))] * 
 optimizer = torch.optim.SGD(one_step_module.parameters(), lr=1e-3)
 
 runner = TBPTT(one_step_module, loss_module, 20, 10, optimizer)
+
 
 runner.train(input_sequence, torch.zeros(200, layer_size))
 print("done")
