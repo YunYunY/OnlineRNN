@@ -61,8 +61,12 @@ class StopBPRNN(VanillaRNN):
             # print(self.loss)
             # print(reg1)
             # print(reg2)
+            self.losses += self.loss.item()
+            self.reg1 += reg1.item()
+            self.reg2 += reg2.item()
+
             self.loss += self.reg_lambda * (reg1 + reg2)
-            self.old_weights_ih = self.new_weights_ih
+            self.old_weights_ih = self.new_weights_ih    
             self.old_weights_hh = self.new_weights_hh
 
         self.loss.backward(retain_graph=False)
@@ -74,60 +78,19 @@ class StopBPRNN(VanillaRNN):
                 curr_grad = states[-i-1][0].grad
                 states[-i-2][1].backward(curr_grad, retain_graph=False)
         self.optimizer.step()
-        self.losses += self.loss.detach().item()
+        # self.losses += self.loss.detach().item()
         self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
         self.new_weights_ih = copy.deepcopy(self.rnn_model.basic_rnn.weight_ih_l0.data)
         self.new_weights_hh = copy.deepcopy(self.rnn_model.basic_rnn.weight_hh_l0.data)
 
-    # def set_input(self):
-    #     # treat each row as a seq_len, feature size is input_size
-    #     self.inputs, self.labels = self.data
-    #     self.inputs = self.inputs.view(self.seq_len, -1, self.input_size).to(self.device)
-    #     self.labels = self.labels.to(self.device)
-    #     # update batch 
-    #     self.batch_size = self.labels.shape[0]
+    def save_losses(self, epoch):
+        # if self.opt.verbose:
+        #     print( "Loss of epoch %d / %d "
+        #         % (epoch, self.loss))
+        np.savez(
+            self.loss_dir + "/" + str(epoch) + "_losses.npz",
+            losses=self.losses, reg1=self.reg1, reg2=self.reg2     )
 
-    # def initial_states(self):
-
-    #     self.states = torch.zeros(size=[self.num_layers, self.batch_size, self.hidden_size], requires_grad = True).to(self.device)
-
-    # def train(self):
-    #     """Calculate losses, gradients, and update network weights; called in every training iteration"""
-        # self.optimizer.zero_grad()
-        # self.initial_states()
-        # # states_queue = [(None, self.states)]
-        # states_queue = [None, self.states]
-
-        # loop timestep
-
-        # for j, inp in enumerate(self.inputs):
-        #     # get the latest state
-        #     # state = states_queue[-1][1].detach()
-        #     self.state = states_queue[-1].clone().to(self.device).requires_grad_(True)
-
-        #     # if self.seq_len - j == self.T:
-        #     #     state = state.detach()
-        #     # state.requires_grad=True
-        #     output, new_state = self.rnn_model(inp.view(self.batch_size, 1, self.input_size), self.state)
-        #     output, new_state = output.to(self.device), new_state.to(self.device)
-        #     states_queue.append(new_state)
-
-            # states_queue.append(state, new_state)
-
-            # states_queue.append((state, new_state))
-            # while len(states_queue) > self.T:
-                # Delete stuff that is too old
-                # del states_queue[0]
-        # calculate loss in the last timestep 
-
-        # self.loss.backward(retain_graph=True)
-        # for k in range(self.T-1):
-        #     # if we get all the way back to the "init_state", stop
-        #     if states_queue[-k-2][0] is None:
-        #         break
-        #     curr_grad = states_queue[-k-1][0].grad
-        #     states_queue[-k-2][1].backward(curr_grad, retain_graph=True)
-  
     # ----------------------------------------------
     def test(self):
         with torch.no_grad():

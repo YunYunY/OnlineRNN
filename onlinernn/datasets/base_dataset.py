@@ -43,7 +43,6 @@ class BaseDataset(ABC):
             Input:
                 istrain: flag condition for download training or test data
         """
-
         dataset_class = getattr(torchvision.datasets, self.name)
         dataset = dataset_class(
             root="data",

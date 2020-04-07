@@ -139,7 +139,7 @@ class RNN(Setting):
 
             # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
             # Save losses at each epoch
-            # self.model.save_losses(epoch)
+            self.model.save_losses(epoch)
         # Plot loss at the end of the run
         # self.model.visualize()
 

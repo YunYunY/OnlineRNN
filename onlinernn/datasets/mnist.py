@@ -15,6 +15,7 @@ class MNIST(BaseDataset):
     """
         The MNIST database of handwritten digits has a training set of 60,000 examples,
         and a test set of 10,000 examples. The digits have been size-normalized and centered in a fixed-size image.
+        The data range is [0, 255]
         It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data.
         Reference: http://yann.lecun.com/exdb/mnist/
     """
@@ -27,7 +28,10 @@ class MNIST(BaseDataset):
         opt.feature_shape = 28
         opt.seq_len = 28
         super(MNIST, self).__init__(opt)
+        # ToTensor convert data from 0-255 to 0-1, then normalize with mean and std
         self.transform = transforms.Compose([transforms.ToTensor()])
+            #   self.transform = transforms.Compose([transforms.ToTensor(),
+                                            # transforms.Normalize((0.1307,), (0.3081,))])
         # one-hot encoding for target while read in data
         # self.target_transform = transforms.Compose(
         #     [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
@@ -47,7 +51,6 @@ class MNIST(BaseDataset):
 class MNISTShift(MNIST):
     def __init__(self, opt):
         super(MNISTShift, self).__init__(opt)
-        self.transform = transforms.Compose([transforms.ToTensor()])
     # ----------------------------------------------
     def torch_loader(self, istrain):
         """

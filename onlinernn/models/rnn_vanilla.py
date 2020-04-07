@@ -140,6 +140,8 @@ class VanillaRNN(BaseModel):
 
     def set_output(self):
         self.losses = 0
+        self.reg1 = 0
+        self.reg2 = 0
         self.train_acc = 0
 
     # -------------------------------------------------------
@@ -181,12 +183,12 @@ class VanillaRNN(BaseModel):
         return accuracy.item()
 
     def save_losses(self, epoch):
-        if self.opt.verbose:
-            print( "Loss of epoch %d / %d "
-                % (epoch, self.loss))
+        # if self.opt.verbose:
+        #     print( "Loss of epoch %d / %d "
+        #         % (epoch, self.loss))
         np.savez(
             self.loss_dir + "/" + str(epoch) + "_losses.npz",
-            losses=self.losses        )
+            losses=self.losses.cpu()        )
     # ----------------------------------------------
     def save_networks(self, epoch):
         """Save all the networks to the disk.

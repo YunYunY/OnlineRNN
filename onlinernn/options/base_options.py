@@ -63,7 +63,7 @@ class BaseOptions:
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        parser.add_argument('--T', type=list, default=[7, 14, 21, 28], help='Truncate parameter') #10
+        parser.add_argument('--T', type=list, default=[7, 14, 21, 28], help='Truncate parameter') #[7, 14, 21, 28]
 
         # -------------------------------------------------------
         # additional parameters

@@ -11,8 +11,9 @@ from onlinernn.datasets.data_utils import loop_queue
 opt = TrainOptions().parse()
 opt.test_case = "test"
 opt.batch_size = 64
-
+opt.istrain = True
 # ------------------------------------------------------------
+
 
 def test_mnist():
     """
@@ -27,9 +28,13 @@ def test_mnist():
     assert os.path.exists("data/MNIST/raw/")
     assert os.path.isfile("data/MNIST/processed/training.pt")
     assert os.path.isfile("data/MNIST/processed/test.pt")
+    # calculate mean and std of the whole dataset https://discuss.pytorch.org/t/normalization-in-the-mnist-example/457/5
+    # print(d.dataset.data.float().mean()/255)
+    # print(d.dataset.data.float().std()/255)
+
     batch = next(iter(d.dataloader))
     assert list(batch[0][:64].shape) == [64, 1, 28, 28]
-    assert list(batch[1][:64].shape) == [64, 10]
+    assert list(batch[1][:64].shape) == [64]
     # test loop_queue 
     data_shift = loop_queue(d.dataset)
 
@@ -44,10 +49,8 @@ def test_mnistshift():
     opt.batch_size = 56
     opt.shuffle = False
     d = MNISTShift(opt)
-    assert len(d.dataset) == 280000
+    # assert len(d.dataset) == 10000
     batch = next(iter(d.dataloader))
-    # assert list(batch[0][:opt.batch_size].shape) == [opt.batch_size, 1, 28, 28]
-    # assert list(batch[1][:opt.batch_size].shape) == [opt.batch_size, 10]
     data = batch[0][:opt.batch_size]
     
     result_dir = "result/dataset_test/MNISTShift"
