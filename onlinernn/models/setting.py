@@ -109,7 +109,6 @@ class RNN(Setting):
             self.model.set_output()
 
             for i, data in enumerate(self.dataset.dataloader):
-
                 total_iters += self.opt.batch_size
                 # Setup input
                 self.model.data = data 

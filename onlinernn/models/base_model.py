@@ -22,7 +22,7 @@ class BaseModel(ABC):
         try:
             self.T = opt.T_
         except:
-            self.T = 7 # for test
+            self.T = 21 # for test
         self.device = opt.device
 
     # ----------------------------------------------

@@ -188,7 +188,7 @@ class VanillaRNN(BaseModel):
         #         % (epoch, self.loss))
         np.savez(
             self.loss_dir + "/" + str(epoch) + "_losses.npz",
-            losses=self.losses.cpu()        )
+            losses=self.losses     )
     # ----------------------------------------------
     def save_networks(self, epoch):
         """Save all the networks to the disk.

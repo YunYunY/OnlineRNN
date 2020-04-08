@@ -8,7 +8,7 @@ from onlinernn.models.networks import StepRNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 
 # -------------------------------------------------------
-# FPP reference https://openreview.net/pdf?id=SJgmR0NKPr
+# Stop BPTT 
 # -------------------------------------------------------
 class StopBPRNN(VanillaRNN):
     def __init__(self, opt):

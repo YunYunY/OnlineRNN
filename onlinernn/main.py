@@ -2,7 +2,9 @@ from exp.expConfig import ExpConfig
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTShift
 from onlinernn.models.setting import Setting
+from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
+from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.setting import RNN
 
 """

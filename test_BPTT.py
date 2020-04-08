@@ -15,8 +15,9 @@ class TBPTT():
 
     def train(self, input_sequence, init_state):
         states = [(None, init_state)]
+        
         for j, (inp, target) in enumerate(input_sequence):
-
+            
             state = states[-1][1].detach()
             state.requires_grad=True
             output, new_state = self.one_step_module(inp, state)
@@ -26,22 +27,27 @@ class TBPTT():
                 # Delete stuff that is too old
                 del states[0]
 
-            if (j+1)%self.k1 == 0:
+            if (j+1) == len(input_sequence):
+                while len(states) > (len(input_sequence)%self.k2-2):
+                    del states[0]
+
+            if (j+1)%self.k1 == 0 or (j+1) == len(input_sequence):
+                print(len(states))
                 loss = self.loss_module(output, target)
 
                 optimizer.zero_grad()
                 # backprop last module (keep graph only if they ever overlap)
                 start = time.time()
-                loss.mean().backward(retain_graph=self.retain_graph)
+                loss.backward(retain_graph=self.retain_graph)
                 for i in range(self.k2-1):
                     # if we get all the way back to the "init_state", stop
                     if states[-i-2][0] is None:
                         break
                     curr_grad = states[-i-1][0].grad
                     states[-i-2][1].backward(curr_grad, retain_graph=self.retain_graph)
-                print(curr_grad)
                 print("bw: {}".format(time.time()-start))
                 optimizer.step()
+
 
 
 
@@ -79,7 +85,7 @@ input_sequence = [(torch.rand(200, layer_size), torch.rand(200, layer_size))] * 
 
 optimizer = torch.optim.SGD(one_step_module.parameters(), lr=1e-3)
 
-runner = TBPTT(one_step_module, loss_module, 20, 10, optimizer)
+runner = TBPTT(one_step_module, loss_module, 15, 5, optimizer)
 
 
 runner.train(input_sequence, torch.zeros(200, layer_size))

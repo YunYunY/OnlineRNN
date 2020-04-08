@@ -60,6 +60,6 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--lr", type=float, default=0.0003, help="initial learning rate for adam"
         )
-        parser.add_argument('--reg_lambda', type=float, default=1e7, help='Lambda for StopBP')
+        parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 
         return parser

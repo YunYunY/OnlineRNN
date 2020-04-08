@@ -29,10 +29,10 @@ class MNIST(BaseDataset):
         opt.seq_len = 28
         super(MNIST, self).__init__(opt)
         # ToTensor convert data from 0-255 to 0-1, then normalize with mean and std
-        self.transform = transforms.Compose([transforms.ToTensor()])
-            #   self.transform = transforms.Compose([transforms.ToTensor(),
-                                            # transforms.Normalize((0.1307,), (0.3081,))])
-        # one-hot encoding for target while read in data
+        # self.transform = transforms.Compose([transforms.ToTensor()])
+        self.transform = transforms.Compose([transforms.ToTensor(),
+                                            transforms.Normalize((0.1307,), (0.3081,))])
+        # one-hot encoding for target while read in data 
         # self.target_transform = transforms.Compose(
         #     [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
         # )
@@ -57,7 +57,7 @@ class MNISTShift(MNIST):
             Fetch data by torch.utils.data.Dataset
             Create dataloader
             Args:
-                istrain: flag condition for download training or test data
+                istrain: flag condition for getting training or test data
         """
 
         # dataset_class = getattr(torchvision.datasets, self.name)

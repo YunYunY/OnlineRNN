@@ -6,6 +6,7 @@ from os import path
 from onlinernn.models.setting import Setting, RNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
+from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.datasets.mnist import MNIST, MNISTShift
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.models.networks import SimpleRNN
@@ -61,12 +62,22 @@ opt.n_class = 10
 #     m.train()
     
 
-opt.niter = 9
+# opt.niter = 9
+# opt.niter_decay = 0
+# def test_StopBPRNN():
+#     d = MNIST(opt)
+#     s = RNN(opt)
+#     m = StopBPRNN(opt)
+#     p = ExpConfig(dataset=d, setting=s, model=m)
+#     s.setup(dataset=d, model=m)
+#     p.run()
+
+opt.niter = 0
 opt.niter_decay = 0
-def test_StopBPRNN():
+def test_TBPTT():
     d = MNIST(opt)
     s = RNN(opt)
-    m = StopBPRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m)
     s.setup(dataset=d, model=m)
     p.run()
