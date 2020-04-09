@@ -5,6 +5,7 @@ from onlinernn.models.setting import Setting
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
 from onlinernn.models.rnn_tbptt import TBPTT
+from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.models.setting import RNN
 
 """
@@ -27,9 +28,10 @@ if opt.taskid == 0:
 
         d = MNIST(opt)
         s = RNN(opt)
-        m = StopBPRNN(opt)
+        m = IRNN(opt)
         p = ExpConfig(dataset=d, setting=s, model=m)
         p.run()
+
 
 
 

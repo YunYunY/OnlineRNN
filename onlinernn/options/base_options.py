@@ -48,6 +48,12 @@ class BaseOptions:
             default=True,
             help="shuffle MNIST data",
         )
+        parser.add_argument(
+            "--mnist_standardize",
+            type=str,
+            default="zeromean",
+            help="The way to standardize MNIST data",
+        ) #[originalmean, zeromean]
 
         # -------------------------------------------------------
         # model parameters
@@ -58,7 +64,7 @@ class BaseOptions:
                     "--num_layers", type=int, default=1, help="number of layers in RNN"
                 )
         parser.add_argument(
-                    "--hidden_size", type=int, default=512, help="number of neurons in hidden state"
+                    "--hidden_size", type=int, default=256, help="number of neurons in hidden state"
                 )
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"

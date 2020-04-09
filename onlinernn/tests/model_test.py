@@ -7,6 +7,7 @@ from onlinernn.models.setting import Setting, RNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
 from onlinernn.models.rnn_tbptt import TBPTT
+from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.datasets.mnist import MNIST, MNISTShift
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.models.networks import SimpleRNN
@@ -18,7 +19,7 @@ opt.istrain = True
 opt.device = torch.device(
     "cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
 )
-
+opt.T_ = 28
 
 # -----------------------------------------------------
 # VanillaRNN
@@ -72,12 +73,28 @@ opt.n_class = 10
 #     s.setup(dataset=d, model=m)
 #     p.run()
 
-opt.niter = 0
-opt.niter_decay = 0
-def test_TBPTT():
+# opt.niter = 0
+# opt.niter_decay = 0
+# def test_TBPTT():
+#     d = MNIST(opt)
+#     s = RNN(opt)
+#     m = TBPTT(opt)
+#     p = ExpConfig(dataset=d, setting=s, model=m)
+#     s.setup(dataset=d, model=m)
+#     p.run()
+
+
+def test_IRNN():
     d = MNIST(opt)
     s = RNN(opt)
-    m = TBPTT(opt)
+    m = IRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m)
+    batch = next(iter(d.dataloader))
     s.setup(dataset=d, model=m)
-    p.run()
+    m.data = batch
+    m.init_net()
+    m.set_input()
+    m.init_states()
+    y = m.rnn_model(m.inputs, m.states)
+    print(y.shape)
+    print(m.labels.shape)

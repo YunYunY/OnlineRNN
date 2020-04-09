@@ -19,10 +19,7 @@ class BaseModel(ABC):
         self.hidden_size = opt.hidden_size
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
-        try:
-            self.T = opt.T_
-        except:
-            self.T = 21 # for test
+        self.T = opt.T_
         self.device = opt.device
 
     # ----------------------------------------------

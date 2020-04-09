@@ -39,7 +39,7 @@ class Setting:
             If not, create the directory
         """
         
-        self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T))
+        self.result_dir = os.path.join("result2", self.model.name, self.dataset.name, "T"+str(self.model.T))
         os.makedirs(self.result_dir, exist_ok=True)
         self.loss_dir = os.path.join(self.result_dir, "loss")
         os.makedirs(self.loss_dir, exist_ok=True)

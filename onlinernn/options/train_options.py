@@ -46,19 +46,19 @@ class TrainOptions(BaseOptions):
         # niter and niter_decay only works when model requires lr decay
         # otherwise they are only used to calculate total number of epoch
         # both of indexes start from 0
-        parser.add_argument("--niter", type=int, default=9, help="# of iter at starting learning rate"
+        parser.add_argument("--niter", type=int, default=30, help="# of iter at starting learning rate"
         )
         parser.add_argument(
             "--niter_decay",
             type=int,
             default=0,
             help="# of iter to linearly decay learning rate to zero",
-        )
+        ) 
         parser.add_argument(
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.0003, help="initial learning rate for adam"
+            "--lr", type=float, default=0.0001, help="initial learning rate for adam"
         )
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 

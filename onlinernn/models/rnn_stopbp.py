@@ -4,7 +4,7 @@ import torch.optim as optim
 import copy
 import numpy as np
 import os
-from onlinernn.models.networks import StepRNN
+from onlinernn.models.networks import StepRNN, ERNNCell
 from onlinernn.models.rnn_vanilla import VanillaRNN
 
 # -------------------------------------------------------
@@ -29,7 +29,10 @@ class StopBPRNN(VanillaRNN):
         It should be disabled during testing since you may want to use full model (no element is masked)
         
         """
-        self.rnn_model = StepRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+        # self.rnn_model = StepRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+        self.rnn_model = ERNNCell(self.hidden_size, self.input_size, self.output_size, 
+                                100, 'relu',32, 49, alpha_val=0.001, K=1 ).to(self.device)
+
         # explicitly state the intent
         if self.istrain:
             self.rnn_model.train()

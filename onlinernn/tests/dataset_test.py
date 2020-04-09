@@ -49,10 +49,12 @@ def test_mnistshift():
     opt.batch_size = 56
     opt.shuffle = False
     d = MNISTShift(opt)
+
     # assert len(d.dataset) == 10000
     batch = next(iter(d.dataloader))
     data = batch[0][:opt.batch_size]
-    
+    # print(data.min())
+    # print(data.max())
     result_dir = "result/dataset_test/MNISTShift"
     os.makedirs(result_dir, exist_ok=True)
 
