@@ -15,7 +15,7 @@ class Setting:
     def __init__(self, opt):
         self.opt = opt
         self.istrain = opt.istrain
-        # self.continue_train = opt.continue_train
+        self.continue_train = opt.continue_train
         # Decide which device we want to run on
         # opt.device = torch.device(
         #     "cuda:0" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
@@ -39,7 +39,7 @@ class Setting:
             If not, create the directory
         """
         
-        self.result_dir = os.path.join("result2", self.model.name, self.dataset.name, "T"+str(self.model.T))
+        self.result_dir = os.path.join("resultpermute", self.model.name, self.dataset.name, "T"+str(self.model.T))
         os.makedirs(self.result_dir, exist_ok=True)
         self.loss_dir = os.path.join(self.result_dir, "loss")
         os.makedirs(self.loss_dir, exist_ok=True)
@@ -87,7 +87,8 @@ class RNN(Setting):
         super(RNN, self).__init__(opt)
 
     def run(self):
-        
+        global_start_time = time.time()  # timer for entire epoch
+
         # Build network structure
         self.model.init_net()
         # Setup loss
@@ -95,7 +96,9 @@ class RNN(Setting):
         # Setup optimizer
         self.model.init_optimizer()
         # Load networks; create schedulers
-        # self.model.setup()
+        self.model.setup()
+        if self.opt.permute_row:
+            print("Input data will be permuted by row")
         print("Start Training Loop...")
         self.model.datasize = len(self.dataset.dataloader)
         total_iters = 0  # the total number of training iterations
@@ -120,14 +123,11 @@ class RNN(Setting):
                 # if self.log and i % self.log_freq == 0:
                 #     self.model.training_log(i, epoch)
 
-            # if (
-            #     epoch + 1
-            # ) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
-            #     print(
-            #         "saving the model at the end of epoch %d, iters %d"
-            #         % (epoch, total_iters)
-            #     )
-            #     self.model.save_networks(epoch)
+            if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
+                print(
+                    "saving the model at the end of epoch %d, iters %d"
+                    % (epoch, total_iters))
+                self.model.save_networks(epoch)
 
             if epoch == self.opt.n_epochs:
                 self.model.save_networks("latest")
@@ -141,12 +141,15 @@ class RNN(Setting):
             self.model.save_losses(epoch)
         # Plot loss at the end of the run
         # self.model.visualize()
+        print(f'Total training time is {time.time() - global_start_time}')
 
 
     def test(self):
         """
         Test a model
         """
+        torch.manual_seed(42)
+
         # Build network structure
         self.model.init_net()
         self.model.init_optimizer()

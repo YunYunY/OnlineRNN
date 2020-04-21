@@ -78,14 +78,13 @@ class VanillaRNN(BaseModel):
         """
         # TODO LR SCHEDULER MAY NEED TO BE STORED FOR RESUME
 #https://discuss.pytorch.org/t/why-doesnt-resuming-work-properly-in-pytorch/19430/4
-        if self.istrain:
-            self.schedulers = [
-                get_scheduler(optimizer, self.opt) for optimizer in self.optimizers
-            ]
+        # if self.istrain:
+            # self.schedulers = [
+            #     get_scheduler(optimizer, self.opt) for optimizer in self.optimizers
+            # ]
         # if not self.istrain:
-        if not self.istrain or self.opt.continue_train:
-            # load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
-            load_prefix = "latest"
+        if (not self.istrain) or self.opt.continue_train:
+            load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
             print(f'Load the {load_prefix} epoch network')
             self.load_networks(load_prefix)
             self.test_acc = 0

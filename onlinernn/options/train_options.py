@@ -13,7 +13,7 @@ class TrainOptions(BaseOptions):
             action="store_true",
             default=False,
             help="continue training from a saved step",
-        ) # not implement continue run yet
+        ) 
         # model training log step
         parser.add_argument(
             "--log",
@@ -38,15 +38,28 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--save_epoch_freq",
             type=int,
-            default=50,
+            default=10,
             help="frequency of saving checkpoints at the end of epochs",
         )
      
+        parser.add_argument(
+            "--epoch",
+            type=str,
+            default="latest",
+            help="which epoch to load? set to latest to use latest cached model",
+        )
+        parser.add_argument(
+            "--load_iter",
+            type=int,
+            default="29",
+            help="which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]",
+        )
+
         # training parameters
         # niter and niter_decay only works when model requires lr decay
         # otherwise they are only used to calculate total number of epoch
         # both of indexes start from 0
-        parser.add_argument("--niter", type=int, default=30, help="# of iter at starting learning rate"
+        parser.add_argument("--niter", type=int, default=99, help="# of iter at starting learning rate"
         )
         parser.add_argument(
             "--niter_decay",
@@ -58,7 +71,7 @@ class TrainOptions(BaseOptions):
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.0001, help="initial learning rate for adam"
+            "--lr", type=float, default=0.001, help="initial learning rate for adam"
         )
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 

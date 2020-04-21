@@ -1,5 +1,6 @@
 from abc import ABC
-
+import numpy as np
+import torch
 
 # ----------------------------------------------
 """
@@ -10,6 +11,7 @@ class BaseModel(ABC):
 
     def __init__(self, opt):
         super(BaseModel, self).__init__()
+        np.random.seed(42)
         self.opt = opt
         self.istrain = opt.istrain
         self.lr = opt.lr
@@ -21,7 +23,8 @@ class BaseModel(ABC):
         self.output_size = opt.n_class
         self.T = opt.T_
         self.device = opt.device
-
+        self.permute_row = opt.permute_row
+        self.permute_idx = torch.Tensor(np.random.permutation(self.seq_len).astype(np.float64)).long()
     # ----------------------------------------------
     @classmethod
     def class_name(cls):

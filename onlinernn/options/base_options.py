@@ -8,7 +8,7 @@ class BaseOptions:
         self.initialized = False
 
     def initialize(self, parser):
-        # torch.manual_seed(999)
+        torch.manual_seed(42)
 
         # -------------------------------------------------------
         # basic parameters
@@ -52,9 +52,15 @@ class BaseOptions:
             "--mnist_standardize",
             type=str,
             default="zeromean",
-            help="The way to standardize MNIST data",
+            help="the way to standardize MNIST data",
         ) #[originalmean, zeromean]
 
+        parser.add_argument(
+            "--permute_row",
+            action="store_true",
+            default=True,
+            help="permute MNIST row data",
+        )
         # -------------------------------------------------------
         # model parameters
         # -------------------------------------------------------
@@ -64,7 +70,7 @@ class BaseOptions:
                     "--num_layers", type=int, default=1, help="number of layers in RNN"
                 )
         parser.add_argument(
-                    "--hidden_size", type=int, default=256, help="number of neurons in hidden state"
+                    "--hidden_size", type=int, default=256 , help="number of neurons in hidden state"
                 )
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
@@ -75,18 +81,6 @@ class BaseOptions:
         # additional parameters 
         # -------------------------------------------------------
 
-        parser.add_argument(
-            "--epoch",
-            type=str,
-            default="latest",
-            help="which epoch to load? set to latest to use latest cached model",
-        )
-        parser.add_argument(
-            "--load_iter",
-            type=int,
-            default="0",
-            help="which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]",
-        )
         parser.add_argument(
             "--verbose",
             action="store_true",

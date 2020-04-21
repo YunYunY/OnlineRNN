@@ -169,24 +169,28 @@ class TBPTTRNN(SimpleRNN):
 # ERNN reference: https://openreview.net/pdf?id=HylpqA4FwS
 # -------------------------------------------------------
 class ERNNCell(SimpleRNN):
-    def __init__(self, hidden_size, n_features, output_size, n_timesteps, sigma, v_dim, state_variant, alpha_val, K=1):
+    def __init__(self, hidden_size, n_features, output_size, n_timesteps, device, sigma, v_dim, state_variant, alpha_val, K=1):
         super(ERNNCell, self).__init__(n_features, hidden_size, output_size)
-        hiddenSize = hidden_size
+        hiddenSize = hidden_size # set it to equal for now
+        self.device = device
         self.l1_in = nn.Linear(n_features, hidden_size)
         self.l1_hid = nn.Linear(hidden_size, hidden_size)
         self.l2 = nn.Linear(hidden_size, hiddenSize)
         self.l3 = nn.Linear(hiddenSize, hidden_size)
-        # self.l_out = nn.Linear(hidden_size, inputSize)
+        self.l_out1 = nn.Linear(hidden_size, n_features)
+        self.l_out2 = nn.Linear(n_features * n_timesteps, output_size)
+
         self.l_out = nn.Linear(hidden_size, output_size)
         self.eta1 = 1e-2
              
     def forward (self, x0, h0):
+
         Bsize,Fsize,Tsize = x0.shape
         Bsize, hiddensize = h0.shape
         out_tensor = []
         out_tensor.append(h0)
-
-        # y = xp.zeros((Bsize,Fsize,0)).astype(np.float32)
+        # print(x0.shape)
+        y = torch.zeros(Bsize, Fsize, 0).to(self.device)
         for ii in range(Tsize):
             last_h = out_tensor[-1]
 
@@ -196,10 +200,17 @@ class ERNNCell(SimpleRNN):
             uh0 = self.l1_hid(last_h+last_h) # hidden -> hidden
             F1h_hat = F.relu(uh0 + wx) 
             Fnh_hat = F.relu(self.l3(F.relu(self.l2(F1h_hat)))) 
+            # Fnh_hat = F1h_hat
             h1 = last_h + self.eta1 * (Fnh_hat - (last_h+last_h))
-            h1 = F.relu(h1)
- 
+            
+            # h1 = F.relu(h1)
+            # y1 = torch.sigmoid(self.l_out1(h1))
+            # y1 = y1[:,:,None]
+            # y = torch.cat((y,y1), axis=2)
+
             out_tensor.append(h1)
+        
+        # y1 = self.l_out2(y.view(Bsize, -1))
         y1 = self.l_out(h1)
         return y1, h1
 """

@@ -23,6 +23,8 @@ class BaseDataset(ABC):
 
     @property
     def name(self):
+        if self.class_name() == "MNISTPermute":
+            return "MNIST"
         return self.class_name()
 
     @property

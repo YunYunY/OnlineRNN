@@ -14,8 +14,7 @@ class IRNN(VanillaRNN):
     def __init__(self, opt):
     # def __init__(self, input_size, hidden_size, output_size, lr, state_update, batch_size, T, reg_lambda, device):
         super(IRNN, self).__init__(opt)
-        self.seq_len = self.seq_len * self.input_size # 784
-        self.input_size = 1 # input 1 pixel each time
+
         self.mse_loss = torch.nn.MSELoss()
 
     def init_net(self):
@@ -27,7 +26,7 @@ class IRNN(VanillaRNN):
         
         """
         self.rnn_model = ERNNCell(self.hidden_size, self.input_size, self.output_size, 
-                                self.seq_len, 'relu',32, 46, alpha_val=0.001, K=1).to(self.device)
+                                self.seq_len, self.device, 'relu',32, 46, alpha_val=0.001, K=1).to(self.device)
 
         # explicitly state the intent
         if self.istrain:
@@ -44,7 +43,12 @@ class IRNN(VanillaRNN):
 
     def set_input(self):
         self.inputs, self.labels = self.data
+        # sequence MNIST
+        # self.seq_len = self.seq_len * self.input_size # 784
+        # self.input_size = 1 # input 1 pixel each time
         self.inputs = self.inputs.view(-1, self.input_size, self.seq_len).to(self.device)
         self.labels = self.labels.to(self.device)
+        if self.permute_row:
+            self.inputs = self.inputs[:, :, self.permute_idx].to(self.device)
         # update batch 
         self.batch_size = self.labels.shape[0]

@@ -23,7 +23,7 @@ class ExpConfig:
         """
         # set up the experiment setting
         self.setting.setup(dataset=self.dataset, model=self.model)
-        if self.setting.istrain:
+        if self.setting.istrain or self.setting.continue_train:
             # run experiment setting
             self.setting.run()
         else:

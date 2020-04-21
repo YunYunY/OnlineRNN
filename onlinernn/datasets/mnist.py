@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
-# import torchvision.transforms as transforms
+import numpy as np
 from torchvision import datasets, transforms
 from PIL import Image
 from onlinernn.datasets.base_dataset import BaseDataset
@@ -49,7 +49,39 @@ class MNIST(BaseDataset):
         return len(self.dataset)
 
 # -------------------------------------------------------
-# MNIST shift data
+# Permute MNIST  
+# Permuting rows but keep columns untouched, output size is not changing
+# -------------------------------------------------------
+
+class MNISTPermute(BaseDataset):
+    def __init__(self, opt):
+        self.opt = opt
+        self.shuffle = opt.shuffle
+        opt.n_class = 10
+        opt.feature_shape = 28
+        opt.seq_len = 28
+        super(MNISTPermute, self).__init__(opt)
+
+        idx_permute = torch.Tensor(np.random.permutation(28).astype(np.float64)).long()
+
+        if opt.mnist_standardize == "originalmean":
+            self.transform = transforms.Compose([transforms.ToTensor(),
+                                            transforms.Normalize((0.1307,), (0.3081,))])
+        elif opt.mnist_standardize == "zeromean":
+            self.transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,), (0.5,)),
+              transforms.Lambda(lambda x: x[:, idx_permute, :] )])
+
+        self.target_transform = transforms.Compose([])
+        istrain = (opt.istrain or opt.continue_train)
+        self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
+        print(f"Total datasize is {len(self.dataset)}")
+
+
+    # ----------------------------------------------
+
+# -------------------------------------------------------
+# MNIST shift data 
+# Create 60000*28 data by shifting the last row of the data to first until the whole image is consummed
 # -------------------------------------------------------
 
 class MNISTShift(MNIST):
