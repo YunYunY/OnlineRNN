@@ -48,7 +48,7 @@ class IRNN(VanillaRNN):
         # self.input_size = 1 # input 1 pixel each time
         self.inputs = self.inputs.view(-1, self.input_size, self.seq_len).to(self.device)
         self.labels = self.labels.to(self.device)
-        if self.permute_row:
-            self.inputs = self.inputs[:, :, self.permute_idx].to(self.device)
+        # if self.permute_row:
+            # self.inputs = self.inputs[:, :, self.permute_idx].to(self.device)
         # update batch 
         self.batch_size = self.labels.shape[0]

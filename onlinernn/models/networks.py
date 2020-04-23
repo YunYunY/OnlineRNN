@@ -169,6 +169,9 @@ class TBPTTRNN(SimpleRNN):
 # ERNN reference: https://openreview.net/pdf?id=HylpqA4FwS
 # -------------------------------------------------------
 class ERNNCell(SimpleRNN):
+    '''
+    ERNN with K=1
+    '''
     def __init__(self, hidden_size, n_features, output_size, n_timesteps, device, sigma, v_dim, state_variant, alpha_val, K=1):
         super(ERNNCell, self).__init__(n_features, hidden_size, output_size)
         hiddenSize = hidden_size # set it to equal for now
@@ -213,87 +216,3 @@ class ERNNCell(SimpleRNN):
         # y1 = self.l_out2(y.view(Bsize, -1))
         y1 = self.l_out(h1)
         return y1, h1
-"""
-class ERNNCell(SimpleRNN):
-    def __init__(self, hidden_size, n_features, output_size, n_timesteps, sigma, v_dim, state_variant, alpha_val, K=1):
-        print("ERNN -> ", state_variant)
-        super(ERNNCell, self).__init__(n_features, hidden_size, output_size)
-        self._hidden_size = hidden_size
-        self.sigma = sigma
-        self.v_dim  = v_dim
-        self.t = 0
-        self.state_variant = state_variant
-        self.n_timesteps = n_timesteps
-        self.eye_h = torch.eye(self._hidden_size)
-        self.K = K#1
-        self.gamma = 1
-
-        # model_size = self._hidden_size * (self.v_dim + 1 + self._hidden_size + n_features) 
-        # model_size *= 4.0
-        # model_size /= 1024.0
-        # print("model size = ", model_size, "KB")
-        self.W = nn.Parameter(torch.Tensor(n_features, self._hidden_size))
-        self.H = nn.Parameter(torch.Tensor(self._hidden_size, self._hidden_size))
-        self.b = nn.Parameter(torch.Tensor(1, self._hidden_size))
-        
-        alpha_init = 0.01
-        
-        if alpha_val is not None: alpha_init = alpha_val
-
-        self.alpha_init = alpha_init
-        print('alpha_init = ', alpha_init)
-        print('beta_init = ', beta_init)
-
-        self.alpha = nn.Parameter(alpha_init * torch.ones((self.K, self.n_timesteps)))
-        self.beta  = nn.Parameter(beta_init  * torch.ones((self.K, self.n_timesteps)))
-
-    
-
-    def NL(self, x):
-        if self.sigma == 'relu': return F.relu(x)
-        elif self.sigma == 'tanh': return F.tanh(x)
-        elif self.sigma == 'sigmoid': return F.sigmoid(x)
-        raise Exception('Non-linearity not found..')
-
-    def forward(self, x, h, T):
-        # transforms X to dimensions: n_steps X batch_size X n_inputs
-        # x = x.permute(1, 0, 2)
-        # h = h.permute(1, 0, 2)
-        states = [(None, h)] # save previous and current hidden pairs
-
-        # out_tensor = []
-        batch_size, seq_len, fea_len = x.shape
-        # out_tensor.append(h0)
-        t = self.t
-        U = self.H
-        for i in range(0, seq_len):
-            # last_h = out_tensor[-1]
-            state = states[-1][1].detach()
-            state.requires_grad=True
-
-            h = state
-            new_wx = torch.matmul(x[i], self.W)
-            new_uh = torch.matmul(state, U)
-
-            alpha = new_wx + self.b + new_uh
-            # new_uh = tf.matmul(last_h, U)
-            oldh = h
-            for k in range(self.K):
-                at = self.alpha[k][self.t] # #self.alpha_init 
-                bt = self.beta[k][t] #(1-at)
-                h = at*(self.NL(torch.matmul(h, U)+alpha) - oldh) + bt * h 
-            # new_h = h
-            new_state = h
-            # out_tensor.append(new_h)
-            states.append((state, new_state))
-            
-            while len(states) > T:
-                    # Delete stuff that is too old
-                    del states[0]
-        output = h
-        output = self.FC(output) # out batch_size X n_output
-        return output.view(-1, self.output_size), states 
-        # return torch.stack(out_tensor[1:]),torch.stack(out_tensor[1:])
-        # output = output[-1]
-        
- """   

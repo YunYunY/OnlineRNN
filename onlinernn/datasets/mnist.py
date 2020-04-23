@@ -61,12 +61,17 @@ class MNISTPermute(BaseDataset):
         opt.feature_shape = 28
         opt.seq_len = 28
         super(MNISTPermute, self).__init__(opt)
+        # permute test
+        # idx_permute = torch.Tensor(np.asarray([x for x in range(11, 28)] + [x for x in range(11)]).astype(np.float64)).long()
+        # random permute
+        np.random.seed(42)
 
         idx_permute = torch.Tensor(np.random.permutation(28).astype(np.float64)).long()
 
         if opt.mnist_standardize == "originalmean":
             self.transform = transforms.Compose([transforms.ToTensor(),
-                                            transforms.Normalize((0.1307,), (0.3081,))])
+                                            transforms.Normalize((0.1307,), (0.3081,)), 
+                                            transforms.Lambda(lambda x: x[:, idx_permute, :])])
         elif opt.mnist_standardize == "zeromean":
             self.transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,), (0.5,)),
               transforms.Lambda(lambda x: x[:, idx_permute, :] )])

@@ -55,12 +55,7 @@ class BaseOptions:
             help="the way to standardize MNIST data",
         ) #[originalmean, zeromean]
 
-        parser.add_argument(
-            "--permute_row",
-            action="store_true",
-            default=True,
-            help="permute MNIST row data",
-        )
+    
         # -------------------------------------------------------
         # model parameters
         # -------------------------------------------------------
