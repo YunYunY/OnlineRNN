@@ -5,7 +5,7 @@ import numpy as np
 from onlinernn.datasets.base_dataset import BaseDataset
 
 # -------------------------------------------------------
-# Custom HAR-2 data has 7352 in training, 2947 in test. The first row is label. 
+# Custom HAR-2 data has 7352 record in training, 2947 record in test. The first row is label. 
 # Ref: https://openreview.net/pdf?id=HylpqA4FwS
 # -------------------------------------------------------
 

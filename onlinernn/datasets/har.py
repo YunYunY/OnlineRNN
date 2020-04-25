@@ -18,6 +18,7 @@ class HAR_2(BaseDataset):
         super(HAR_2, self).__init__(opt)
         istrain = (opt.istrain or opt.continue_train)
         self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
+        print(f"Total datasize is {len(self.dataset)}")
 
     def __len__(self):
         return len(self.dataset)

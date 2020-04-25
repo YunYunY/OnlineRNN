@@ -16,7 +16,7 @@ class TrainOptions(BaseOptions):
         ) 
 
         parser.add_argument(
-            "--batch_size", type=int, default=64, help="input batch size"
+            "--batch_size", type=int, default=128, help="input batch size"
         ) # 64
         # model training log step
         parser.add_argument(
@@ -60,10 +60,9 @@ class TrainOptions(BaseOptions):
         )
 
         # training parameters
-        # niter and niter_decay only works when model requires lr decay
-        # otherwise they are only used to calculate total number of epoch
+        # niter and niter_decay only works when model requires lr decay, otherwise they are only used to calculate total number of epoch
         # both of indexes start from 0
-        parser.add_argument("--niter", type=int, default=99, help="# of iter at starting learning rate"
+        parser.add_argument("--niter", type=int, default=110, help="# of iter at starting learning rate"
         )
         parser.add_argument(
             "--niter_decay",
@@ -75,8 +74,8 @@ class TrainOptions(BaseOptions):
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.001, help="initial learning rate for adam"
-        ) 
+            "--lr", type=float, default=0.01, help="initial learning rate for adam"
+        ) # 0.001
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 
         return parser

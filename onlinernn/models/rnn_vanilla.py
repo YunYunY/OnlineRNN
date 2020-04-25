@@ -14,7 +14,8 @@ class VanillaRNN(BaseModel):
         # self.loss_method = "vanilla"
         # self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
         self.model_names = ["rnn_model"]
-        self.model_method = "StepRNN" # the way to construct model
+        self.model_method = "Vanilla" # the way to construct model
+        self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
 
   
     def init_net(self):
@@ -44,7 +45,13 @@ class VanillaRNN(BaseModel):
         """
         Define Loss functions
         """
-        self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
+        if self.loss_method == "MSE":
+            self.criterion = torch.nn.MSELoss()
+        elif self.loss_method == "CrossEntropy":
+            self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
+        elif self.loss_method == "BCELogit":
+            self.criterion = torch.nn.BCEWithLogitsLoss()
+        
 
     def init_optimizer(self):
         """
@@ -52,7 +59,7 @@ class VanillaRNN(BaseModel):
         """
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
         if self.opt.optimizer == 'Adam':
-            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
+            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
 
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
@@ -85,7 +92,6 @@ class VanillaRNN(BaseModel):
             # self.schedulers = [
             #     get_scheduler(optimizer, self.opt) for optimizer in self.optimizers
             # ]
-        # if not self.istrain:
         if (not self.istrain) or self.opt.continue_train:
             load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
             print(f'Load the {load_prefix} epoch network')
@@ -154,23 +160,15 @@ class VanillaRNN(BaseModel):
         self.states = torch.zeros((self.batch_size, self.num_layers, self.hidden_size)).to(self.device)
 
     def track_grad_flow(self, named_parameters):
-        ave_grads = []
-        layers = []
-        print(named_parameters)
+        # Reference: https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/7
+        # ave_grads = []
+        # layers = []
         for n, p in named_parameters:
             if "weight_hh_l0" in n:
                 if p.requires_grad:
-                    layers.append(n)
-                    ave_grads.append(p.grad.abs().mean())
-                    print(ave_grads)
-        # plt.plot(ave_grads, alpha=0.3, color="b")
-        # plt.hlines(0, 0, len(ave_grads)+1, linewidth=1, color="k" )
-        # plt.xticks(range(0,len(ave_grads), 1), layers, rotation="vertical")
-        # plt.xlim(xmin=0, xmax=len(ave_grads))
-        # plt.xlabel("Layers")
-        # plt.ylabel("average gradient")
-        # plt.title("Gradient flow")
-        # plt.grid(True)
+                    # layers.append(n)
+                    # ave_grads.append(p.grad.abs().mean())
+                    self.weight_hh = p.grad.abs().mean()
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
@@ -190,8 +188,14 @@ class VanillaRNN(BaseModel):
             # calculate the magnitude of gradient of the last layer hT wrt h1
             # self.state_grad = torch.autograd.grad(state_final.sum(), state_start, retain_graph=True)
             # self.state_grad = torch.norm(self.state_grad)
+
+   
+        # print(outputs.shape)
+        # print(self.labels.shape)
+        self.labels = self.labels.float()
         self.loss = self.criterion(outputs, self.labels)
         self.loss.backward()
+
         self.track_grad_flow(self.rnn_model.named_parameters())
 
         self.optimizer.step()
@@ -205,10 +209,9 @@ class VanillaRNN(BaseModel):
         """
         Save gradient
         """
-        # print(
-        #     f"{batch}"
-        # )
-        pass
+        np.savez(
+            self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.weight_hh.cpu())
+        
 
    # ----------------------------------------------
 
@@ -216,8 +219,12 @@ class VanillaRNN(BaseModel):
         """ 
         Obtain accuracy for training round 
         """
-        corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
-        accuracy = 100.0 * corrects/batch_size
+        # corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
+        # accuracy = 100.0 * corrects/batch_size
+        pred = logit >= 0.5
+        truth = target >= 0.5
+        accuracy = 100.* pred.eq(truth).sum()/batch_size 
+
         return accuracy.item()
 
     def save_losses(self, epoch):

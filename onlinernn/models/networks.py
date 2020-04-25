@@ -12,14 +12,13 @@ import torch.nn.functional as F
 class SimpleRNN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(SimpleRNN, self).__init__()
-        
         self.hidden_size = hidden_size
         self.input_size = input_size
         self.output_size = output_size
         self.basic_rnn = nn.RNN(self.input_size, self.hidden_size)
-        
-        self.FC = nn.Linear(self.hidden_size, self.output_size)
-        
+        # self.FC = nn.Linear(self.hidden_size, self.output_size)
+        self.FC = nn.Linear(self.hidden_size, 1)
+
     def forward(self, X, hidden):
 
         # transforms X to dimensions: n_steps X batch_size X n_inputs
@@ -32,13 +31,15 @@ class SimpleRNN(nn.Module):
         #     output: (seq_len, batch, hidden_size)
         #     state: (num_layers, batch, hidden_size)
         out, hidden_final = self.basic_rnn(X, hidden)  
-        out = out[-1]
-  
-        out = self.FC(out)
         
-        # out batch_size X n_output
-        return out.view(-1, self.output_size), hidden_final
+        # out = out[-1]
+        # out = self.FC(out)
+        # To make model structure identity with paper iRNN
+        out = torch.sigmoid(self.FC(hidden_final))
 
+        # out batch_size X n_output
+        # return out.view(-1, self.output_size), hidden_final
+        return out.view(-1), hidden_final
 
 # -------------------------------------------------------
 # RNN structure forward step by step at each time sequence

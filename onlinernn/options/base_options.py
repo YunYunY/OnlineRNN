@@ -63,13 +63,13 @@ class BaseOptions:
                     "--num_layers", type=int, default=1, help="number of layers in RNN"
                 )
         parser.add_argument(
-                    "--hidden_size", type=int, default=128 , help="number of neurons in hidden state"
+                    "--hidden_size", type=int, default=80 , help="number of neurons in hidden state"
                 ) # 256
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        parser.add_argument('--T', type=list, default=[1, 3, 5], help='Truncate parameter for TBPTT or iterT for VanillaRNN') #[7, 14, 21, 28] for truncation [1, 3, 5] for fgsm
-        parser.add_argument('--optimizer', type=str, default='Adam', help='Optimizer option') #["Adam, FGSM"]
+        parser.add_argument('--T', type=list, default=[3, 5], help='Truncate parameter for TBPTT or iterT for VanillaRNN') #[7, 14, 21, 28] for truncation [1, 3, 5] for fgsm
+        parser.add_argument('--optimizer', type=str, default='FGSM', help='Optimizer option') #["Adam, FGSM"]
 
 
 

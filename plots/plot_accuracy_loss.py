@@ -10,7 +10,7 @@ opt = TrainOptions().parse()
 result_dir = "../result/"
 epoch = "latest" # saved model epoch name
 nepoch = 10 # total epoch in training
-img_dir = os.path.join(result_dir, "plots", epoch)
+img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
