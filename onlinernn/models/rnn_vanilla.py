@@ -3,23 +3,18 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import os
-from onlinernn.models.networks import SimpleRNN
+from onlinernn.models.networks import SimpleRNN, StepRNN
 from onlinernn.models.base_model import BaseModel
+from onlinernn.models.fgsm import FGSM
 
 class VanillaRNN(BaseModel):
     def __init__(self, opt):
     # def __init__(self, input_size, hidden_size, output_size, lr, state_update, batch_size, T, reg_lambda, device):
         super(VanillaRNN, self).__init__(opt)
         # self.loss_method = "vanilla"
-        self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
+        # self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
         self.model_names = ["rnn_model"]
- 
-        # self.reg_lambda = opt.reg_lambda
-
-        # self.num_update = 1  # number of blocks to sample for each time step
-        # self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
-        # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-        # self._state = None
+        self.model_method = "StepRNN" # the way to construct model
 
   
     def init_net(self):
@@ -30,7 +25,11 @@ class VanillaRNN(BaseModel):
         It should be disabled during testing since you may want to use full model (no element is masked)
         
         """
-        self.rnn_model = SimpleRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+        if self.model_method == "Vanilla":
+            self.rnn_model = SimpleRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+        elif self.model_method == "StepRNN":
+            self.rnn_model = StepRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+
         # explicitly state the intent
         if self.istrain:
             self.rnn_model.train()
@@ -52,7 +51,11 @@ class VanillaRNN(BaseModel):
         Setup optimizers
         """
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-        self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
+        if self.opt.optimizer == 'Adam':
+            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
+
+        elif self.opt.optimizer == 'FGSM':
+            self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
     # ----------------------------------------------
 
     def print_networks(self, verbose):
@@ -131,7 +134,7 @@ class VanillaRNN(BaseModel):
     def set_input(self):
         self.inputs, self.labels = self.data
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
-        self.labels = self.labels.to(self.device)
+        self.labels = self.labels.view(-1).to(self.device)
         # update batch 
         self.batch_size = self.labels.shape[0]
 
@@ -148,28 +151,64 @@ class VanillaRNN(BaseModel):
 
     def init_states(self):
         # self.states = torch.zeros(self.num_layers, self.batch_size, self.hidden_size).to(self.device)
-        self.states = torch.zeros(self.batch_size, self.num_layers, self.hidden_size).to(self.device)
+        self.states = torch.zeros((self.batch_size, self.num_layers, self.hidden_size)).to(self.device)
+
+    def track_grad_flow(self, named_parameters):
+        ave_grads = []
+        layers = []
+        print(named_parameters)
+        for n, p in named_parameters:
+            if "weight_hh_l0" in n:
+                if p.requires_grad:
+                    layers.append(n)
+                    ave_grads.append(p.grad.abs().mean())
+                    print(ave_grads)
+        # plt.plot(ave_grads, alpha=0.3, color="b")
+        # plt.hlines(0, 0, len(ave_grads)+1, linewidth=1, color="k" )
+        # plt.xticks(range(0,len(ave_grads), 1), layers, rotation="vertical")
+        # plt.xlim(xmin=0, xmax=len(ave_grads))
+        # plt.xlabel("Layers")
+        # plt.ylabel("average gradient")
+        # plt.title("Gradient flow")
+        # plt.grid(True)
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self.optimizer.zero_grad()
         self.init_states()
-        outputs, state = self.rnn_model(self.inputs, self.states)
-        outputs, state = outputs.to(self.device), state.to(self.device)
+        
+        if self.model_method == "Vanilla":
+            outputs, _ = self.rnn_model(self.inputs, self.states)
+            outputs = outputs.to(self.device)
+        elif self.model_method == "StepRNN":
+            outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
+            outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
+            # state_start = states[1][1]
+            # state_final = states[-1][1]
+            # outputs, state_final, state_start = outputs.to(self.device), state_final.to(self.device), state_start.to(self.device)
+        
+            # calculate the magnitude of gradient of the last layer hT wrt h1
+            # self.state_grad = torch.autograd.grad(state_final.sum(), state_start, retain_graph=True)
+            # self.state_grad = torch.norm(self.state_grad)
         self.loss = self.criterion(outputs, self.labels)
         self.loss.backward()
+        self.track_grad_flow(self.rnn_model.named_parameters())
+
         self.optimizer.step()
+
         self.losses += self.loss.detach().item()
         self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
 
 
-    def training_log(self, i, epoch):
+
+    def training_log(self, batch):
         """
-        Create log
+        Save gradient
         """
-        print(
-            f"[{epoch}/{self.opt.n_epochs}], {i}, {self.datasize}, Loss: {self.loss.detach().item()}"
-        )
+        # print(
+        #     f"{batch}"
+        # )
+        pass
 
    # ----------------------------------------------
 

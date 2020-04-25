@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTShift, MNISTPermute
+from onlinernn.datasets.har import HAR_2
 from onlinernn.tests.test_utils import show_shift
 from onlinernn.datasets.data_utils import loop_queue
 
@@ -15,7 +16,17 @@ opt.batch_size = 64
 opt.istrain = False
 # ------------------------------------------------------------
 
+def test_har2():
+    d = HAR_2(opt)
+    if opt.istrain:
+        assert len(d) == 7352
+    else:
+        assert len(d) == 2947
+    batch = next(iter(d.dataloader))
+    assert list(batch[0][:64].shape) == [64, 1152, 1]
+    assert list(batch[1][:64].shape) == [64, 1]
 
+'''
 def test_mnist():
     """
     Test MNIST class
@@ -38,7 +49,7 @@ def test_mnist():
     assert list(batch[1][:64].shape) == [64]
     # test loop_queue 
     data_shift = loop_queue(d.dataset)
-
+    print(batch[1][:64])
 
 
 # ------------------------------------------------------------
@@ -77,3 +88,4 @@ def test_mnistpermute():
     os.makedirs(result_dir, exist_ok=True)
     # visually check image after shifting
     show_shift(data, 8, result_dir, "MNISTPermute.png")
+'''

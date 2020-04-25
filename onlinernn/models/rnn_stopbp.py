@@ -16,7 +16,7 @@ class StopBPRNN(VanillaRNN):
         super(StopBPRNN, self).__init__(opt)
         self.mse_loss = torch.nn.MSELoss()
         self.reg_lambda = opt.reg_lambda
-        # self._state = None
+
 
     # def initial_states(self):
     #     self.states = torch.zeros(size = [self.num_layers, self.batch_size, self.hidden_size], requires_grad=True).to(self.device)

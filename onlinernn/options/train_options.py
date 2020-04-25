@@ -14,6 +14,10 @@ class TrainOptions(BaseOptions):
             default=False,
             help="continue training from a saved step",
         ) 
+
+        parser.add_argument(
+            "--batch_size", type=int, default=64, help="input batch size"
+        ) # 64
         # model training log step
         parser.add_argument(
             "--log",
@@ -24,7 +28,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--log_freq",
             type=int,
-            default=100,
+            default=1,
             help="frequency of print the log while training",
         )
 
@@ -72,7 +76,7 @@ class TrainOptions(BaseOptions):
         )
         parser.add_argument(
             "--lr", type=float, default=0.001, help="initial learning rate for adam"
-        )
+        ) 
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 
         return parser

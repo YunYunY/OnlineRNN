@@ -1,6 +1,7 @@
 from exp.expConfig import ExpConfig
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTShift
+from onlinernn.datasets.har import HAR_2
 from onlinernn.models.setting import Setting
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
@@ -29,6 +30,20 @@ if opt.taskid == 0:
         d = MNIST(opt)
         s = RNN(opt)
         m = IRNN(opt)
+        p = ExpConfig(dataset=d, setting=s, model=m)
+        p.run()
+# -----------------------------------------------------------------------------------------------
+# Vanishing Gradient Solver FGSM
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 1:
+    for T in [1, 3, 5]:
+        print(f"----------------- Inside iteration T is {T} -----------------")
+        opt.T_ = T
+        # d = HAR_2(opt)
+        d = MNIST(opt)
+        s = RNN(opt)
+        m = VanillaRNN(opt)
         p = ExpConfig(dataset=d, setting=s, model=m)
         p.run()
 

@@ -31,13 +31,13 @@ class SimpleRNN(nn.Module):
         # self.basic output 
         #     output: (seq_len, batch, hidden_size)
         #     state: (num_layers, batch, hidden_size)
-        out, hidden = self.basic_rnn(X, hidden)    
+        out, hidden_final = self.basic_rnn(X, hidden)  
         out = out[-1]
   
         out = self.FC(out)
         
         # out batch_size X n_output
-        return out.view(-1, self.output_size), hidden 
+        return out.view(-1, self.output_size), hidden_final
 
 
 # -------------------------------------------------------
@@ -49,7 +49,9 @@ class StepRNN(SimpleRNN):
         super(StepRNN, self).__init__(input_size, hidden_size, output_size)
 
 
-    def forward(self, X, hidden, T):
+    # def forward(self, X, hidden, T):
+    def forward(self, X, hidden):
+
         batch_size = X.shape[0]
         seq_len = X.shape[1]
         # transforms X to dimensions: n_steps X batch_size X n_inputs
@@ -60,18 +62,23 @@ class StepRNN(SimpleRNN):
 
         for i in range(X.shape[0]):
             inp = X[i].clone().view(1, batch_size, self.input_size)
-            state = states[-1][1].detach()
-            state.requires_grad=True
+            state = states[-1][1]
+            # state = states[-1][1].detach()
+            # state.requires_grad=True
             output, new_state = self.basic_rnn(inp, state)    
+            if i == 0:
+                state_start = new_state
+            if i == (X.shape[0]-1):
+                state_final = new_state
             states.append((state, new_state))
-            while len(states) > T:
+            # while len(states) > T:
                     # Delete stuff that is too old
-                    del states[0]
+                    # del states[0]
         output = output[-1]
         output = self.FC(output)
         
         # out batch_size X n_output
-        return output.view(-1, self.output_size), states 
+        return output.view(-1, self.output_size), states, state_start, state_final 
 
 
 

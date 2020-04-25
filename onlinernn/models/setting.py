@@ -39,7 +39,7 @@ class Setting:
             If not, create the directory
         """
         
-        self.result_dir = os.path.join("resultpermute", self.model.name, self.dataset.name, "T"+str(self.model.T))
+        self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T))
         os.makedirs(self.result_dir, exist_ok=True)
         self.loss_dir = os.path.join(self.result_dir, "loss")
         os.makedirs(self.loss_dir, exist_ok=True)
@@ -97,12 +97,11 @@ class RNN(Setting):
         self.model.init_optimizer()
         # Load networks; create schedulers
         self.model.setup()
-        if self.opt.permute_row:
-            print("Input data will be permuted by row")
+  
         print("Start Training Loop...")
         self.model.datasize = len(self.dataset.dataloader)
         total_iters = 0  # the total number of training iterations
-
+        total_batches = 0 # the total number of batchs
         # for epoch in range(self.n_epochs):
         for epoch in range(
             self.opt.epoch_count, self.opt.n_epochs + 1):
@@ -113,15 +112,16 @@ class RNN(Setting):
 
             for i, data in enumerate(self.dataset.dataloader):
                 total_iters += self.opt.batch_size
+                total_batches += 1
                 # Setup input
                 self.model.data = data 
                 self.model.set_input()
                 # Forward, backward, update network weights
                 self.model.iload = i
                 self.model.train() 
-                # Output training stats
-                # if self.log and i % self.log_freq == 0:
-                #     self.model.training_log(i, epoch)
+                # Save gradients
+                if self.log and total_batches % self.log_freq == 0:
+                    self.model.training_log(total_batches)
 
             if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
                 print(
