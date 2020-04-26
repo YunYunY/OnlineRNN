@@ -59,7 +59,7 @@ class VanillaRNN(BaseModel):
         """
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
         if self.opt.optimizer == 'Adam':
-            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
+            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
 
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
