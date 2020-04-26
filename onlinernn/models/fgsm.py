@@ -62,9 +62,9 @@ class FGSM(Optimizer):
                 # inside iteration to update velocity
                 for t in range(1, iterT+1):
                     mu = 1. - (1./t) 
-                    buf.mul_(mu)
-                    buf.add_(-lr/t, grad_sgin)             
-                p.data.add_(lr,buf)
+                    buf.mul_(mu)                    
+                    buf.add_(-lr/t, grad_sgin)        
+                p.data.add_(buf)
         
         return loss
 
