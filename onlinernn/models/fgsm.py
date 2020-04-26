@@ -63,9 +63,7 @@ class FGSM(Optimizer):
                 for t in range(1, iterT+1):
                     mu = 1. - (1./t) 
                     buf.mul_(mu)
-                    lr = lr * (1./t)
-                    buf.add_(-lr,grad_sgin)
-             
+                    buf.add_(-lr/t, grad_sgin)             
                 p.data.add_(lr,buf)
         
         return loss
