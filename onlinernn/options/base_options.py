@@ -68,8 +68,8 @@ class BaseOptions:
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        parser.add_argument('--T', type=list, default=[1], help='Truncate parameter for TBPTT or iterT for VanillaRNN') #[7, 14, 21, 28] for truncation [1, 3, 5] for fgsm
-        parser.add_argument('--optimizer', type=str, default='Adam', help='Optimizer option') #["Adam, FGSM"]
+        parser.add_argument('--T', type=list, default=[1, 3, 5], help='Truncate parameter for TBPTT or iterT for VanillaRNN') #[7, 14, 21, 28] for truncation [1, 3, 5] for fgsm
+        parser.add_argument('--optimizer', type=str, default='FGSM', help='Optimizer option') #["Adam, FGSM"]
 
 
 
