@@ -56,7 +56,6 @@ class FGSM(Optimizer):
                 if 'momentum_buffer' not in param_state:
                     # initialize delta omega0 as 0
                     # TODO try initialization like pytorch current official code
-                    # TODO check MIT thesis defense paper 3
                     param_state['momentum_buffer'] = torch.zeros_like(p.data)
                 buf = param_state['momentum_buffer']
                 # inside iteration to update velocity
