@@ -28,18 +28,22 @@ class FGSM(Optimizer):
     def __setstate__(self, state):
         super(FGSM, self).__setstate__(state)
 
-    def step(self, closure=None):
+    def step(self, forward, criterion, labels, device):
         """ Performs a single optimization step.
         Arguments:
-            closure (callable, optional): A closure that reevaluates the model
-                and returns the loss.
+            closure_forward (callable) forward
+            criterion: loss function 
+            labels: target labels 
         """
-        loss = None
-        if closure is not None:
-            loss = closure()
 
-        # calculate gradient for the first time     
-        loss.backward(retain_graph = True)
+        outputs, _ = forward()
+        outputs = outputs.to(device)
+    
+        # calculate loss
+        orig_loss = criterion(outputs, labels)
+
+        # calculate w_k     
+        orig_loss.backward(retain_graph = True)
 
         for group in self.param_groups:
 
@@ -57,22 +61,28 @@ class FGSM(Optimizer):
                     # TODO try initialization like pytorch current official code
                     param_state['momentum_buffer'] = torch.zeros_like(p.data)
                 buf = param_state['momentum_buffer']
+
                 # inside iteration to update velocity
                 for t in range(1, iterT+1):
                     p.grad.data.zero_() # zero gradient to prevent grad accumulation
-                    p.data.add_(buf) # update weights w = w_k + Delta w_t-1
-                    loss.backward(retain_graph = True) # recalculate gradient
+                    p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
+                    outputs, _ = forward() # forward after w changes 
+                    outputs = outputs.to(device)
+                    loss = criterion(outputs, labels) # calculate loss 
+                    loss.backward(retain_graph = True) # calculate gradient wrt Delta w
                     grad_sign = p.grad.sign()
-                    buf.add_(-lr/t, grad_sign) # update Delta w_t 
-
+                    buf.mul_(1.-1./t).add_(-lr/t, grad_sign) # update Delta w_t 
+          
                 # recover weights to original 
                 with torch.no_grad():
                     p.data = p_data_orig
-                p.data.add_(buf)
-
                 p.buf = buf
+
+            # update parameters when all bufs are calculated
+            for p in group['params']:
+                p.data.add_(p.buf)
     
-        return loss, buf
+        return orig_loss, outputs
 
 
 

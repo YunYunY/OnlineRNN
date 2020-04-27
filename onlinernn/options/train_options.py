@@ -74,7 +74,7 @@ class TrainOptions(BaseOptions):
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.001, help="initial learning rate for adam"
+            "--lr", type=float, default=0.01, help="initial learning rate for adam"
         ) # 0.001
         parser.add_argument('--optimizer', type=str, default='FGSM', help='Optimizer option') #["Adam, FGSM"]
 

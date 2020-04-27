@@ -20,6 +20,7 @@ class HAR_2Dataset(Dataset):
         else:
             datalabels = np.load(path + '/test.npy')
         self.data = (datalabels[:, 1:] - mu) / sigma
+
         self.labels = datalabels[:, 0:1]
         # print(np.unique(datalabels[:, 0]))
 
@@ -36,7 +37,6 @@ class HAR_2Dataset(Dataset):
             tuple: (image, target) where target is index of the target class.
         """
         data, target = torch.Tensor(self.data[index]).view(-1, 1), torch.Tensor(self.labels[index]).long()
-        # data, target = torch.Tensor(self.datalabels[index, 1:]).view(-1, 1), torch.Tensor(self.datalabels[index, 0:1]).long()
 
         return data, target
 

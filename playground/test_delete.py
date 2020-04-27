@@ -15,17 +15,15 @@ h2 = U * h1 + W * x2
 h3 = U * h2 + W * x3
 
 L = h3
-h4 = h2.detach()
-h4.requires_grad = True 
-print(h4.grad)
+W.require_grad = False
+
 L.backward(retain_graph=True)
-# print(W.backward(W.grad, retain_graph=False))
 weight_names = ['W', 'U']
 for index, weight in enumerate(weights):
     gradient, *_ = weight.grad.data
     weight_name = weight_names[index]
     print(f"Gradient of {weight_name} w.r.t to L: {gradient}")
-    weight.grad.data.zero_()  
+    # weight.grad.data.zero_()  
 
 
 L.backward(retain_graph=False)

@@ -142,6 +142,8 @@ class VanillaRNN(BaseModel):
         self.inputs, self.labels = self.data
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
         self.labels = self.labels.view(-1).to(self.device)
+        self.labels = self.labels.float()
+
         # update batch 
         self.batch_size = self.labels.shape[0]
 
@@ -167,45 +169,37 @@ class VanillaRNN(BaseModel):
         for n, p in named_parameters:
             if "weight_hh_l0" in n:
                 if p.requires_grad:
-                    # print(p.buf)
                     # self.weight_hh = p.grad.abs().mean()
-                    self.weight_hh = torch.norm(p.grad)
+                    # self.weight_hh = torch.norm(p.grad)
+                    self.weight_hh = torch.norm(p.buf)
+
                
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self.optimizer.zero_grad()
         self.init_states()
-        
-        if self.model_method == "Vanilla":
-            outputs, _ = self.rnn_model(self.inputs, self.states)
-            outputs = outputs.to(self.device)
-        elif self.model_method == "StepRNN":
-            outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
-            outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
-            # state_start = states[1][1]
-            # state_final = states[-1][1]
-            # outputs, state_final, state_start = outputs.to(self.device), state_final.to(self.device), state_start.to(self.device)
-        
-            # calculate the magnitude of gradient of the last layer hT wrt h1
-            # self.state_grad = torch.autograd.grad(state_final.sum(), state_start, retain_graph=True)
-            # self.state_grad = torch.norm(self.state_grad)
 
-   
-        self.labels = self.labels.float()
-
-        # max_norm = 5.
-        # torch.nn.utils.clip_grad_norm_(self.rnn_model.parameters(), max_norm, norm_type=2)
         if self.opt.optimizer == 'FGSM':
-            self.loss = functools.partial(self.criterion, outputs, self.labels)
-            self.loss, self.buf = self.optimizer.step(self.loss)
+ 
+            rnn_model = functools.partial(self.rnn_model, self.inputs, self.states)
+            self.loss, outputs = self.optimizer.step(rnn_model, self.criterion, self.labels, self.device)
         else:
-            self.loss = self.criterion(outputs, self.labels)      
-            self.loss.backward()
-            self.optimizer.step()
+
+            if self.model_method == "Vanilla":
+                outputs, _ = self.rnn_model(self.inputs, self.states)
+                outputs = outputs.to(self.device)
+            elif self.model_method == "StepRNN":
+                outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
+                outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
+    
+            else:
+                self.loss = self.criterion(outputs, self.labels)      
+                self.loss.backward()
+                self.optimizer.step()
         self.losses += self.loss.detach().item()
 
-        # self.track_grad_flow(self.rnn_model.named_parameters())
+        self.track_grad_flow(self.rnn_model.named_parameters())
 
         self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
 
@@ -216,7 +210,7 @@ class VanillaRNN(BaseModel):
         Save gradient
         """
         np.savez(
-            self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.buf.cpu())
+            self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.weight_hh.cpu())
         
 
    # ----------------------------------------------

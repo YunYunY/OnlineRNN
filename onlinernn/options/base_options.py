@@ -63,7 +63,7 @@ class BaseOptions:
                     "--num_layers", type=int, default=1, help="number of layers in RNN"
                 )
         parser.add_argument(
-                    "--hidden_size", type=int, default=1 , help="number of neurons in hidden state"
+                    "--hidden_size", type=int, default=80 , help="number of neurons in hidden state"
                 ) # 256
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
