@@ -17,7 +17,7 @@ class TrainOptions(BaseOptions):
 
         parser.add_argument(
             "--batch_size", type=int, default=128, help="input batch size"
-        ) # 64
+        ) # 64 
         # model training log step
         parser.add_argument(
             "--log",
@@ -74,8 +74,10 @@ class TrainOptions(BaseOptions):
             "--lr_policy", type=str, default="linear", help="the learning rate policy"
         )
         parser.add_argument(
-            "--lr", type=float, default=0.01, help="initial learning rate for adam"
+            "--lr", type=float, default=0.001, help="initial learning rate for adam"
         ) # 0.001
+        parser.add_argument('--optimizer', type=str, default='FGSM', help='Optimizer option') #["Adam, FGSM"]
+
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 
         return parser

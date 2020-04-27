@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import os
+import functools 
 from onlinernn.models.networks import SimpleRNN, StepRNN
 from onlinernn.models.base_model import BaseModel
 from onlinernn.models.fgsm import FGSM
@@ -166,9 +167,10 @@ class VanillaRNN(BaseModel):
         for n, p in named_parameters:
             if "weight_hh_l0" in n:
                 if p.requires_grad:
-                    # layers.append(n)
-                    # ave_grads.append(p.grad.abs().mean())
-                    self.weight_hh = p.grad.abs().mean()
+                    # print(p.buf)
+                    # self.weight_hh = p.grad.abs().mean()
+                    self.weight_hh = torch.norm(p.grad)
+               
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
@@ -190,17 +192,21 @@ class VanillaRNN(BaseModel):
             # self.state_grad = torch.norm(self.state_grad)
 
    
-        # print(outputs.shape)
-        # print(self.labels.shape)
         self.labels = self.labels.float()
-        self.loss = self.criterion(outputs, self.labels)
-        self.loss.backward()
 
-        self.track_grad_flow(self.rnn_model.named_parameters())
-
-        self.optimizer.step()
-
+        # max_norm = 5.
+        # torch.nn.utils.clip_grad_norm_(self.rnn_model.parameters(), max_norm, norm_type=2)
+        if self.opt.optimizer == 'FGSM':
+            self.loss = functools.partial(self.criterion, outputs, self.labels)
+            self.loss, self.buf = self.optimizer.step(self.loss)
+        else:
+            self.loss = self.criterion(outputs, self.labels)      
+            self.loss.backward()
+            self.optimizer.step()
         self.losses += self.loss.detach().item()
+
+        # self.track_grad_flow(self.rnn_model.named_parameters())
+
         self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
 
 
@@ -210,7 +216,7 @@ class VanillaRNN(BaseModel):
         Save gradient
         """
         np.savez(
-            self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.weight_hh.cpu())
+            self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.buf.cpu())
         
 
    # ----------------------------------------------

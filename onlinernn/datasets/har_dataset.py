@@ -11,17 +11,21 @@ from onlinernn.datasets.base_dataset import BaseDataset
 
 class HAR_2Dataset(Dataset):
     def __init__(self, path, istrain):
-
+        # Normalization to Zero Mean and Unit Standard Deviation
+        mu = 0.10206605722975093
+        sigma = 0.4021651763839265
         # The first column is label
         if istrain:
-            self.datalabels = np.load(path + '/train.npy')
+            datalabels = np.load(path + '/train.npy')
         else:
-            self.datalabels = np.load(path + '/test.npy')
+            datalabels = np.load(path + '/test.npy')
+        self.data = (datalabels[:, 1:] - mu) / sigma
+        self.labels = datalabels[:, 0:1]
         # print(np.unique(datalabels[:, 0]))
 
 
     def __len__(self):
-        return len(self.datalabels)
+        return len(self.data)
         
     def __getitem__(self, index):
         """
@@ -31,6 +35,8 @@ class HAR_2Dataset(Dataset):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
-        data, target = torch.Tensor(self.datalabels[index, 1:]).view(-1, 1), torch.Tensor(self.datalabels[index, 0:1]).long()
+        data, target = torch.Tensor(self.data[index]).view(-1, 1), torch.Tensor(self.labels[index]).long()
+        # data, target = torch.Tensor(self.datalabels[index, 1:]).view(-1, 1), torch.Tensor(self.datalabels[index, 0:1]).long()
+
         return data, target
 

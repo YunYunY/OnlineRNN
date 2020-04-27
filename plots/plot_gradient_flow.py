@@ -23,8 +23,8 @@ if opt.taskid == 0:
 elif opt.taskid == 1:
     d = "HAR_2"
     m = "VanillaRNN"
-optimizer = "Adam"
-# optimizer = "FGSM"
+# optimizer = "Adam"
+optimizer = "FGSM"
 
 # -----------------------------------------------------------------------------------------------
 
@@ -34,27 +34,30 @@ optimizer = "Adam"
 # -----------------------------------------------------------------------------------------------
 
 def plot_gradient_flow():
-    avg_gradient = []
     total_batches = 6000
     batches = range(1, total_batches+1, 10)
     for T in opt.T:
     # for T in [5]:
         print("-------------" + str(T) + "-------------")
         opt.T_ = T
+        avg_gradient = []
+
         for ibatch in batches:
             gradient_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(ibatch) + "_weight_hh.npz"
             weight_hh_grad = np.load(gradient_file)["weight_hh"]
+            print(weight_hh_grad)
             avg_gradient.append(weight_hh_grad)
         imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + "_weight_hh_grad.png"
-
+        print(max(avg_gradient))
         plt.figure(figsize=(8, 8))
         plt.xlabel("# Batches")
-        plt.ylabel("Average Gradient of W_hh")
-        # plt.title(f"Gradient Flow {optimizer} niter={T}")
-        plt.title(f"Gradient Flow {optimizer}")
+        # plt.ylabel("Average Gradient of W_hh")
+        plt.ylabel("Magnitude of W_hh")
+        plt.title(f"Gradient Flow {optimizer} niter={T}")
+        # plt.title(f"Gradient Flow {optimizer}")
         plt.xticks(range(1, total_batches+1, 1000), range(0, total_batches, 1000), rotation="vertical")
         plt.xlim(xmin=0, xmax=total_batches)
-        plt.ylim(ymin=0, ymax=1)
+        # plt.ylim(ymin=0, ymax=1)
         plt.plot(batches, avg_gradient, color='r')
         plt.savefig(img_dir + "/" + imgname)
 

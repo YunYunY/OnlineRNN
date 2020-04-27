@@ -21,8 +21,8 @@ class FGSM(Optimizer):
         https://medium.com/the-artificial-impostor/sgd-implementation-in-pytorch-4115bcb9f02c
         https://github.com/facebookarchive/adversarial_image_defenses/blob/master/adversarial/lib/adversary.py
     """
-    def __init__(self, params, lr=required, iterT = 1, weight_decay=0):
-        defaults = dict(lr=lr, mu=mu, iterT=iterT, weight_decay=weight_decay)
+    def __init__(self, params, lr=required, iterT = 1):
+        defaults = dict(lr=lr, iterT=iterT)
         super(FGSM, self).__init__(params, defaults)
 
     def __setstate__(self, state):
@@ -38,34 +38,41 @@ class FGSM(Optimizer):
         if closure is not None:
             loss = closure()
 
+        # calculate gradient for the first time     
+        loss.backward(retain_graph = True)
+
         for group in self.param_groups:
-            weight_decay = group['weight_decay']
+
             lr = group['lr']
-            mu = group['mu']
             iterT = group['iterT']
 
             for p in group['params']:
                 if p.grad is None:
                     continue
-                d_p = p.grad.data
-                grad_sgin = p.grad.sign()
+                p_data_orig = p.data # keep original weights
 
-                if weight_decay != 0:
-                    d_p.add_(weight_decay, p.data)
                 param_state = self.state[p]
                 if 'momentum_buffer' not in param_state:
-                    # initialize delta omega0 as 0
+                    # initialize Delta w0 as 0
                     # TODO try initialization like pytorch current official code
                     param_state['momentum_buffer'] = torch.zeros_like(p.data)
                 buf = param_state['momentum_buffer']
                 # inside iteration to update velocity
                 for t in range(1, iterT+1):
-                    mu = 1. - (1./t) 
-                    buf.mul_(mu)                    
-                    buf.add_(-lr/t, grad_sgin)        
+                    p.grad.data.zero_() # zero gradient to prevent grad accumulation
+                    p.data.add_(buf) # update weights w = w_k + Delta w_t-1
+                    loss.backward(retain_graph = True) # recalculate gradient
+                    grad_sign = p.grad.sign()
+                    buf.add_(-lr/t, grad_sign) # update Delta w_t 
+
+                # recover weights to original 
+                with torch.no_grad():
+                    p.data = p_data_orig
                 p.data.add_(buf)
-        
-        return loss
+
+                p.buf = buf
+    
+        return loss, buf
 
 
 

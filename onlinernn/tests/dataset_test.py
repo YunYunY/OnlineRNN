@@ -13,7 +13,7 @@ from onlinernn.datasets.data_utils import loop_queue
 opt = TrainOptions().parse()
 opt.test_case = "test"
 opt.batch_size = 64
-opt.istrain = False
+opt.istrain = True
 # ------------------------------------------------------------
 
 def test_har2():
