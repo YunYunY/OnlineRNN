@@ -56,7 +56,7 @@ class TrainOptions(BaseOptions):
             "--load_iter",
             type=int,
             default="29",
-            help="which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]",
+            help="change this and change niter. Which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]",
         )
 
         # training parameters
@@ -76,7 +76,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--lr", type=float, default=0.01, help="initial learning rate for adam"
         ) # 0.001
-        parser.add_argument('--optimizer', type=str, default='FGSM', help='Optimizer option') #["Adam, FGSM"]
+        parser.add_argument('--optimizer', type=str, default='SGD', help='Optimizer option') #["Adam, FGSM"]
 
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 

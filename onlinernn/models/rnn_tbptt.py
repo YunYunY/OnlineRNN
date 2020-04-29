@@ -37,7 +37,8 @@ class TBPTT(StopBPRNN):
         # self.optimizer.zero_grad()
 
         self.init_states()
-        outputs, loss = self.rnn_model(self.inputs, self.states, self.T, self.optimizer, self.criterion, self.labels)
+  
+        outputs, loss = self.rnn_model(self.inputs, self.states, self.Trunc, self.optimizer, self.criterion, self.labels)
         self.losses += loss
         self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
         # self.new_weights_ih = copy.deepcopy(self.rnn_model.basic_rnn.weight_ih_l0.data)
@@ -47,7 +48,7 @@ class TBPTT(StopBPRNN):
     def test(self):
         with torch.no_grad():
             self.init_states()
-            outputs, _ = self.rnn_model(self.inputs, self.states, self.T, None, None, None)
+            outputs, _ = self.rnn_model(self.inputs, self.states, self.Trunc, None, None, None)
             outputs = outputs.to(self.device).detach()
             self.test_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
             # self.save_result()

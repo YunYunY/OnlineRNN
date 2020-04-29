@@ -35,9 +35,9 @@ optimizer = "FGSM"
 
 def plot_gradient_flow():
     total_batches = 6000
-    batches = range(1, total_batches+1, 10)
-    for T in opt.T:
-    # for T in [5]:
+    batches = range(4, total_batches+1, 4)
+    # for T in opt.T:
+    for T in [4]:
         print("-------------" + str(T) + "-------------")
         opt.T_ = T
         avg_gradient = []
@@ -45,7 +45,6 @@ def plot_gradient_flow():
         for ibatch in batches:
             gradient_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(ibatch) + "_weight_hh.npz"
             weight_hh_grad = np.load(gradient_file)["weight_hh"]
-            print(weight_hh_grad)
             avg_gradient.append(weight_hh_grad)
         imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + "_weight_hh_grad.png"
         print(max(avg_gradient))

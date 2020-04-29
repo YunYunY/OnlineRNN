@@ -66,10 +66,11 @@ class BaseOptions:
                     "--hidden_size", type=int, default=80 , help="number of neurons in hidden state"
                 ) # 256
         parser.add_argument(
-            "--init_mode", type=str, default="Zeros", help="Method to initialize first hidden state"
+            "--init_mode", type=str, default="Zeros", help="method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        parser.add_argument('--T', type=list, default=[3], help='Truncate parameter for TBPTT or iterT for VanillaRNN') #[7, 14, 21, 28] for truncation [1, 3, 5] for fgsm
+        parser.add_argument('--iterT', type=list, default=4, help='iterT for FGSM optimizer')
 
+        parser.add_argument('--Trunc', type=int, default=[28], help='truncate parameter for TBPTT ') 
 
 
         # -------------------------------------------------------

@@ -37,15 +37,13 @@ if opt.taskid == 0:
 # -----------------------------------------------------------------------------------------------
 
 if opt.taskid == 1:
-    for T in opt.T:
-        print(f"----------------- Inside iteration T is {T} -----------------")
-        opt.T_ = T
-        d = HAR_2(opt)
-        # d = MNIST(opt)
-        s = RNN(opt)
-        m = VanillaRNN(opt)
-        p = ExpConfig(dataset=d, setting=s, model=m)
-        p.run()
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    d = HAR_2(opt)
+    # d = MNIST(opt)
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m)
+    p.run()
 
 
 

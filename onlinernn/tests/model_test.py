@@ -1,8 +1,11 @@
 import torch
 import torch.nn as nn
-from torchsummary import summary
 import numpy as np
 from os import path
+import functools 
+from torchsummary import summary
+from torch.autograd import Variable
+from onlinernn.models.fgsm import FGSM
 from onlinernn.models.setting import Setting, RNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
@@ -19,7 +22,86 @@ opt.istrain = True
 opt.device = torch.device(
     "cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
 )
-opt.T_ = 28
+opt.T_ = 4
+
+device = torch.device("cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu")
+# -----------------------------------------------------
+# FGSM Optimizer
+# -----------------------------------------------------
+class simplelinear(torch.nn.Module):
+    def __init__(self, inputSize, outputSize):
+        super(simplelinear, self).__init__()
+        self.linear = torch.nn.Linear(inputSize, outputSize, bias=False)
+
+    def forward(self, x):
+        out = self.linear(x)
+        return out
+
+def test_fgsm():
+
+    # create dummy data for training
+    x_values = [i for i in range(2)]
+    x_train = np.array(x_values, dtype=np.float32)
+    x_train = x_train.reshape(-1, 1)
+
+    y_values = [2*i for i in x_values]
+    y_train = np.array(y_values, dtype=np.float32)
+    y_train = y_train.reshape(-1, 1)
+    inputDim = 1        # takes variable 'x' 
+    outputDim = 1       # takes variable 'y'
+    lr = 0.01 
+    epochs = 6
+
+    model = simplelinear(inputDim, outputDim)
+    ##### For GPU #######
+    if torch.cuda.is_available():
+        model.cuda()
+
+    criterion = torch.nn.MSELoss() 
+    optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+    print(model)
+    print(optimizer)
+    for p in model.parameters():
+        p.data.fill_(0)
+
+    for epoch in range(epochs):
+        # Converting inputs and labels to Variable
+        if torch.cuda.is_available():
+            inputs = Variable(torch.from_numpy(x_train).cuda())
+            labels = Variable(torch.from_numpy(y_train).cuda())
+        else:
+            inputs = Variable(torch.from_numpy(x_train))
+            labels = Variable(torch.from_numpy(y_train))
+
+        optimizer.zero_grad()
+        
+        
+        # get output from the model, given the inputs
+        outputs = model(inputs)
+        print(f'----epoch {epoch}-----------------')
+        
+        # get loss for the predicted output
+        loss = criterion(outputs, labels)
+        # print(loss)
+        
+        # get gradients w.r.t to parameters
+        loss.backward()
+        # for name, param in model.named_parameters():
+        #     if param.requires_grad:
+        #         print(param.data)
+        #         print(param.grad)
+        # update parameters
+        # optimizer.step()
+        optimizer.step(epoch+1)
+        # for name, param in model.named_parameters():
+        #     if param.requires_grad:
+        #         print(param.data)
+        #         print(param.grad)
+        print('-----------------------')
+
+        # print('epoch {}, loss {}'.format(epoch, loss.item()))
+
 
 # -----------------------------------------------------
 # VanillaRNN
@@ -84,17 +166,17 @@ opt.n_class = 10
 #     p.run()
 
 
-def test_IRNN():
-    d = MNIST(opt)
-    s = RNN(opt)
-    m = IRNN(opt)
-    p = ExpConfig(dataset=d, setting=s, model=m)
-    batch = next(iter(d.dataloader))
-    s.setup(dataset=d, model=m)
-    m.data = batch
-    m.init_net()
-    m.set_input()
-    m.init_states()
-    y = m.rnn_model(m.inputs, m.states)
-    print(y.shape)
-    print(m.labels.shape)
+# def test_IRNN():
+#     d = MNIST(opt)
+#     s = RNN(opt)
+#     m = IRNN(opt)
+#     p = ExpConfig(dataset=d, setting=s, model=m)
+#     batch = next(iter(d.dataloader))
+#     s.setup(dataset=d, model=m)
+#     m.data = batch
+#     m.init_net()
+#     m.set_input()
+#     m.init_states()
+#     y = m.rnn_model(m.inputs, m.states)
+#     print(y.shape)
+#     print(m.labels.shape)

@@ -14,15 +14,22 @@ img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
+opt.taskid = 1
 
 if opt.taskid == 0:
     d = "MNIST"
     # m = "StopBPRNN"
     m = "TBPTT"
+elif opt.taskid == 1:
+    d = "HAR_2"
+    m = "VanillaRNN"
+# optimizer = "Adam"
+# optimizer = "FGSM"
+optimizer = "SGD"
 # -----------------------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------
-# Plot loss change in training
+# Plot loss change in training task0
 # -----------------------------------------------------------------------------------------------
 def plot_training_loss():
     for T in opt.T:
@@ -59,7 +66,7 @@ def plot_training_loss():
             
 
 # -----------------------------------------------------------------------------------------------
-# Plot accuracy change on testing data
+# Plot accuracy change on testing data task0
 # -----------------------------------------------------------------------------------------------
 def plot_test_acc():
     test_acc = []
@@ -80,6 +87,41 @@ def plot_test_acc():
     plt.plot(opt.T, test_acc, linestyle='--', marker='o', color='r')
     plt.savefig(img_dir + "/" + imgname)
 
-plot_test_acc()
-plot_training_loss()
+
+# -----------------------------------------------------------------------------------------------
+# Plot loss change in training task1
+# -----------------------------------------------------------------------------------------------
+def plot_training_loss_task1():
+    total_batches = 6000
+    batches = range(4, total_batches+1, 4)
+
+    nepoch = 100
+    # for T in opt.T:
+    for T in [4]:
+        opt.iterT = T
+        losses = []
+        for ibatch in batches:
+            loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss/batch_" + str(ibatch) + "_losses.npz"
+            losses.append(np.load(loss_file)["loss"])
+        print(len(losses))
+        imgname = "/epoch_" + str(nepoch) + d + "_" + m + "_T" + str(T) + "_" + optimizer + "_losses.png"
+        plt.figure(figsize=(8, 8))
+        plt.xlabel("# Batches")
+        plt.ylabel("Losses at W_k")
+        plt.title(f"Loss Change {optimizer} niter={T}")
+        plt.xticks(range(1, total_batches+1, 1000), range(0, total_batches, 1000), rotation="vertical")
+        plt.xlim(xmin=0, xmax=total_batches)
+        plt.plot(batches, losses, color='r')
+        plt.savefig(img_dir + "/" + imgname)
+
+        # plt.figure(figsize=(8, 8))
+        # plt.xlabel("Epoch")
+        # plt.ylabel("Losses")
+        # plt.plot(range(nepoch), losses, linestyle='--', marker='o', color='r')
+        # plt.savefig(img_dir + "/" + imgname)
+        print(img_dir)
+
+# plot_test_acc()
+# plot_training_loss()
+plot_training_loss_task1()
 

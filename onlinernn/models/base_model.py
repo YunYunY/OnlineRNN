@@ -20,7 +20,7 @@ class BaseModel(ABC):
         self.hidden_size = opt.hidden_size
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
-        self.T = opt.T_
+        self.Trunc = opt.Trunc
         self.device = opt.device
     # ----------------------------------------------
     @classmethod

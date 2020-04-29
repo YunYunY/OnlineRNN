@@ -101,7 +101,7 @@ class RNN(Setting):
         print("Start Training Loop...")
         self.model.datasize = len(self.dataset.dataloader)
         total_iters = 0  # the total number of training iterations
-        total_batches = 0 # the total number of batchs
+        self.model.total_batches = 0 # the total number of batchs
         # for epoch in range(self.n_epochs):
         for epoch in range(
             self.opt.epoch_count, self.opt.n_epochs + 1):
@@ -112,7 +112,7 @@ class RNN(Setting):
 
             for i, data in enumerate(self.dataset.dataloader):
                 total_iters += self.opt.batch_size
-                total_batches += 1
+                self.model.total_batches += 1
                 # Setup input
                 self.model.data = data 
                 self.model.set_input()
@@ -120,8 +120,8 @@ class RNN(Setting):
                 self.model.iload = i
                 self.model.train() 
                 # Save gradients
-                if self.log and total_batches % self.log_freq == 0:
-                    self.model.training_log(total_batches)
+                if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
+                    self.model.training_log(self.model.total_batches)
 
             if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
                 print(
@@ -131,17 +131,22 @@ class RNN(Setting):
 
             if epoch == self.opt.n_epochs:
                 self.model.save_networks("latest")
-            print(
-                "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
-                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses/(i+1), self.model.train_acc/(i+1))
-            )
-
+            if self.opt.optimizer == 'FGSM':
+                print(
+                    "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
+                    % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc)
+                )
+            else:
+                print(
+                    "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
+                    % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses/(i+1), self.model.train_acc/(i+1))
+                )
             # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
-            # Save losses at each epoch
-            self.model.save_losses(epoch)
+            # Save losses at the end of each epoch
+            self.model.save_losses(epoch, i)
         # Plot loss at the end of the run
         # self.model.visualize()
-        print(f'Total batch is {total_batches}')
+        print(f'Total batch is { self.model.total_batches}')
         print(f'Total training time is {time.time() - global_start_time}')
 
 

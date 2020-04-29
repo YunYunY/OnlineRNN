@@ -17,7 +17,7 @@ class VanillaRNN(BaseModel):
         self.model_names = ["rnn_model"]
         self.model_method = "Vanilla" # the way to construct model
         self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
-
+        self.T = opt.iterT
   
     def init_net(self):
         """
@@ -59,9 +59,10 @@ class VanillaRNN(BaseModel):
         Setup optimizers
         """
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-        if self.opt.optimizer == 'Adam':
+        if self.opt.optimizer == 'SGD':
+            self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)
+        elif self.opt.optimizer == 'Adam':
             self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
-
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
     # ----------------------------------------------
@@ -150,6 +151,7 @@ class VanillaRNN(BaseModel):
 
 
     def set_output(self):
+        # initialize values at the beginning of each epoch
         self.losses = 0
         self.reg1 = 0
         self.reg2 = 0
@@ -164,15 +166,12 @@ class VanillaRNN(BaseModel):
 
     def track_grad_flow(self, named_parameters):
         # Reference: https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/7
-        # ave_grads = []
-        # layers = []
+  
         for n, p in named_parameters:
             if "weight_hh_l0" in n:
                 if p.requires_grad:
-                    # self.weight_hh = p.grad.abs().mean()
+                    self.weight_hh = p.buf.abs().mean()
                     # self.weight_hh = torch.norm(p.grad)
-                    self.weight_hh = torch.norm(p.buf)
-
                
 
     def train(self):
@@ -180,38 +179,49 @@ class VanillaRNN(BaseModel):
         self.optimizer.zero_grad()
         self.init_states()
 
+        # if self.opt.optimizer == 'FGSM':
+        #     outputs, _ = self.rnn_model(self.inputs, self.states)
+        #     outputs = outputs.to(self.device)                  
+        #     self.loss = self.criterion(outputs, self.labels)      
+        #     self.loss.backward()
+        #     self.optimizer.step(self.total_batches)
+
+        # else:
+        if self.model_method == "Vanilla":
+            outputs, _ = self.rnn_model(self.inputs, self.states)
+            outputs = outputs.to(self.device)
+        elif self.model_method == "StepRNN":
+            outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
+            outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
+        
+        self.loss = self.criterion(outputs, self.labels)      
+        self.loss.backward()
+
         if self.opt.optimizer == 'FGSM':
- 
-            rnn_model = functools.partial(self.rnn_model, self.inputs, self.states)
-            self.loss, outputs = self.optimizer.step(rnn_model, self.criterion, self.labels, self.device)
+            self.optimizer.step(self.total_batches)
+            if (self.total_batches-1)%self.T == (self.T-1):
+                # After last iterT, track Delta w, loss and acc
+                self.track_grad_flow(self.rnn_model.named_parameters())
+                self.losses = self.loss.detach().item()
+                self.train_acc = self.get_accuracy(outputs, self.labels, self.batch_size)
         else:
-
-            if self.model_method == "Vanilla":
-                outputs, _ = self.rnn_model(self.inputs, self.states)
-                outputs = outputs.to(self.device)
-            elif self.model_method == "StepRNN":
-                outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
-                outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
-    
-            else:
-                self.loss = self.criterion(outputs, self.labels)      
-                self.loss.backward()
-                self.optimizer.step()
-        self.losses += self.loss.detach().item()
-
-        self.track_grad_flow(self.rnn_model.named_parameters())
-
-        self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
-
+            self.optimizer.step()
+            self.losses += self.loss.detach().item()
+            self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
 
 
     def training_log(self, batch):
         """
-        Save gradient
-        """
-        np.savez(
-            self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.weight_hh.cpu())
-        
+        Save gradient and loss of the current single batch, not mean of the whole epoch 
+        """   
+        np.savez(self.loss_dir + "/batch_" + str(batch) + "_losses.npz", loss = self.loss.detach().item())
+        # not every model has Delta w stored
+        try:
+            np.savez(self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.weight_hh.cpu())
+        except:
+            pass
+     
+
 
    # ----------------------------------------------
 
@@ -227,13 +237,14 @@ class VanillaRNN(BaseModel):
 
         return accuracy.item()
 
-    def save_losses(self, epoch):
+    def save_losses(self, epoch, i):
         # if self.opt.verbose:
         #     print( "Loss of epoch %d / %d "
         #         % (epoch, self.loss))
+        # calculate average loss for each batch and save
         np.savez(
             self.loss_dir + "/" + str(epoch) + "_losses.npz",
-            losses=self.losses     )
+            losses = self.losses/(i+1)     )
     # ----------------------------------------------
     def save_networks(self, epoch):
         """Save all the networks to the disk.
