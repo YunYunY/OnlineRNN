@@ -55,28 +55,29 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--load_iter",
             type=int,
-            default="29",
+            default="0",
             help="change this and change niter. Which iteration to load? if load_iter > 0, the code will load models by iter_[load_iter]; otherwise, the code will load models by [epoch]",
         )
 
         # training parameters
         # niter and niter_decay only works when model requires lr decay, otherwise they are only used to calculate total number of epoch
         # both of indexes start from 0
-        parser.add_argument("--niter", type=int, default=110, help="# of iter at starting learning rate"
+        parser.add_argument("--niter", type=int, default=99, help="# of iter at starting learning rate decay"
         )
         parser.add_argument(
             "--niter_decay",
             type=int,
-            default=0,
-            help="# of iter to linearly decay learning rate to zero",
+            default=200,
+            help="# of iter to linearly decay learning rate to zero or period for step lr",
         ) 
+ 
         parser.add_argument(
-            "--lr_policy", type=str, default="linear", help="the learning rate policy"
-        )
+            "--lr_policy", type=str, default="step", help="the learning rate policy"
+        )  # 'linear', 'step'
         parser.add_argument(
-            "--lr", type=float, default=0.01, help="initial learning rate for adam"
+            "--lr", type=float, default=0.001, help="initial learning rate for adam"
         ) # 0.001
-        parser.add_argument('--optimizer', type=str, default='SGD', help='Optimizer option') #["Adam, FGSM"]
+        parser.add_argument('--optimizer', type=str, default='SGD_Momentum', help='Optimizer option') #["SGD, Adam, SGD_Momentum"]
 
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 

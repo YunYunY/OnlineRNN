@@ -38,15 +38,20 @@ class FGSM(Optimizer):
         # print(self.state)
         loss = None
 
-        first_iter = (total_batches-1)%self.iterT == 0
-        last_iter = (total_batches-1)%self.iterT == (self.iterT-1)
+        first_iter = (total_batches-1)%self.iterT == 0 # if this is the first iter of inner loop
+        last_iter = (total_batches-1)%self.iterT == (self.iterT-1) # if this is the last step of inner loop
         t = (total_batches-1)%self.iterT + 1
 
         for group in self.param_groups:
 
             lr = group['lr']
+            # weight_decay = group['weight_decay']
 
             for p in group['params']:
+                # d_p = p.grad
+                # if weight_decay != 0:
+                #     d_p = d_p.add(p, alpha=weight_decay)
+
                 if first_iter:
                     p.data_orig = p.data.clone() # keep original weights
                 param_state = self.state[p]

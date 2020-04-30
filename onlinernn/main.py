@@ -1,3 +1,5 @@
+import torch
+import numpy as np
 from exp.expConfig import ExpConfig
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTShift
@@ -8,6 +10,9 @@ from onlinernn.models.rnn_stopbp import StopBPRNN
 from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.models.setting import RNN
+
+torch.manual_seed(42)
+np.random.seed(42)
 
 """
 The script supports continue/resume training. Use '--continue_train' to resume your previous training.

@@ -1,6 +1,7 @@
 from abc import ABC
 import numpy as np
 import torch
+from onlinernn.models.fgsm import FGSM
 
 # ----------------------------------------------
 """
@@ -21,6 +22,7 @@ class BaseModel(ABC):
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
         self.Trunc = opt.Trunc
+        self.T = opt.iterT
         self.device = opt.device
     # ----------------------------------------------
     @classmethod
@@ -32,3 +34,28 @@ class BaseModel(ABC):
         return self.class_name()
 
     # ----------------------------------------------
+    def init_optimizer(self):
+        """
+        Setup optimizers
+        """
+        # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
+        if self.opt.optimizer == 'SGD':
+            self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
+        elif self.opt.optimizer == 'SGD_Momentum':
+            self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, momentum=0.9)
+        elif self.opt.optimizer == 'Adam':
+            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
+        elif self.opt.optimizer == 'FGSM':
+            self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
+
+ 
+    def init_loss(self):
+        """
+        Define Loss functions
+        """
+        if self.loss_method == "MSE":
+            self.criterion = torch.nn.MSELoss()
+        elif self.loss_method == "CrossEntropy":
+            self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
+        elif self.loss_method == "BCELogit":
+            self.criterion = torch.nn.BCEWithLogitsLoss()

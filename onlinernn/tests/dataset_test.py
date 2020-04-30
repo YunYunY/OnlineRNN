@@ -23,7 +23,7 @@ def test_har2():
     else:
         assert len(d) == 2947
     batch = next(iter(d.dataloader))
-    assert list(batch[0][:64].shape) == [64, 1152, 1]
+    assert list(batch[0][:64].shape) == [64, 128, 9]
     assert list(batch[1][:64].shape) == [64, 1]
 
 '''

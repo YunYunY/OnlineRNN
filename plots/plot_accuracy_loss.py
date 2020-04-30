@@ -24,8 +24,9 @@ elif opt.taskid == 1:
     d = "HAR_2"
     m = "VanillaRNN"
 # optimizer = "Adam"
-# optimizer = "FGSM"
-optimizer = "SGD"
+optimizer = "FGSM"
+# optimizer = "SGD"
+# optimizer = "SGD_Momentum"
 # -----------------------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------
@@ -92,7 +93,7 @@ def plot_test_acc():
 # Plot loss change in training task1
 # -----------------------------------------------------------------------------------------------
 def plot_training_loss_task1():
-    total_batches = 6000
+    total_batches = 11600 #5800
     batches = range(4, total_batches+1, 4)
 
     nepoch = 100
@@ -111,6 +112,8 @@ def plot_training_loss_task1():
         plt.title(f"Loss Change {optimizer} niter={T}")
         plt.xticks(range(1, total_batches+1, 1000), range(0, total_batches, 1000), rotation="vertical")
         plt.xlim(xmin=0, xmax=total_batches)
+        plt.ylim(ymin=0, ymax=0.4)
+
         plt.plot(batches, losses, color='r')
         plt.savefig(img_dir + "/" + imgname)
 
@@ -120,6 +123,7 @@ def plot_training_loss_task1():
         # plt.plot(range(nepoch), losses, linestyle='--', marker='o', color='r')
         # plt.savefig(img_dir + "/" + imgname)
         print(img_dir)
+        print(imgname)
 
 # plot_test_acc()
 # plot_training_loss()

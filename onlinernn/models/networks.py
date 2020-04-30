@@ -4,6 +4,7 @@ import numpy as np
 import copy
 from torch.autograd import Variable
 import torch.nn.functional as F
+from torch.optim import lr_scheduler
 
 # -------------------------------------------------------
 # Basic RNN structure
@@ -36,6 +37,7 @@ class SimpleRNN(nn.Module):
         # out = self.FC(out)
         # To make model structure identity with paper iRNN
         out = torch.sigmoid(self.FC(hidden_final))
+
 
         # out batch_size X n_output
         # return out.view(-1, self.output_size), hidden_final
@@ -224,3 +226,37 @@ class ERNNCell(SimpleRNN):
         # y1 = self.l_out2(y.view(Bsize, -1))
         y1 = self.l_out(h1)
         return y1, h1
+
+
+
+# -----------------------------------------------------
+# functions for learning rate schedule
+# ------------------------------------------------------
+
+
+def create_lambda_rule(opt):
+    def lambda_rule(epoch):
+        lr_l = 1.0 - max(0, epoch + 1 - opt.niter) / float(opt.niter_decay + 1)
+        return lr_l
+
+    return lambda_rule
+
+
+def get_scheduler(optimizer, opt):
+    """Return a learning rate scheduler
+        Parameters:
+            optimizer          -- the optimizer of the network
+            opt (option class) -- stores all the experiment flags　
+                                  opt.lr_policy is the name of learning rate policy: linear | step | plateau | cosine
+    For 'linear', we keep the same learning rate for the first <opt.niter> epochs
+    and linearly decay the rate to zero over the next <opt.niter_decay> epochs.
+    For other schedulers (step, plateau, and cosine), we use the default PyTorch schedulers.
+    https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/models/networks.py
+    """
+
+    if opt.lr_policy == "linear":
+        lr_lambda = create_lambda_rule(opt)
+        scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)
+    elif opt.lr_policy == 'step':
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.niter_decay, gamma=0.1)
+    return scheduler

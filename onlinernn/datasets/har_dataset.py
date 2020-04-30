@@ -5,7 +5,8 @@ import numpy as np
 from onlinernn.datasets.base_dataset import BaseDataset
 
 # -------------------------------------------------------
-# Custom HAR-2 data has 7352 record in training, 2947 record in test. The first row is label. 
+# Custom HAR-2 data has 7352 training series (with 50% overlap between each serie), 2947 record in test. The first row is label. 
+# 128 timesteps per series, 9 input parameters per timestep, 1152 features
 # Ref: https://openreview.net/pdf?id=HylpqA4FwS
 # -------------------------------------------------------
 
@@ -17,6 +18,7 @@ class HAR_2Dataset(Dataset):
         # The first column is label
         if istrain:
             datalabels = np.load(path + '/train.npy')
+            # print(*datalabels[0], sep='\n')
         else:
             datalabels = np.load(path + '/test.npy')
         self.data = (datalabels[:, 1:] - mu) / sigma
@@ -36,7 +38,7 @@ class HAR_2Dataset(Dataset):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
-        data, target = torch.Tensor(self.data[index]).view(-1, 1), torch.Tensor(self.labels[index]).long()
+        data, target = torch.Tensor(self.data[index]).view(128, 9), torch.Tensor(self.labels[index]).long()
 
         return data, target
 

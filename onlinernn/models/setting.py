@@ -141,7 +141,7 @@ class RNN(Setting):
                     "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
                     % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses/(i+1), self.model.train_acc/(i+1))
                 )
-            # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
+            self.model.update_learning_rate()  # update learning rates at the end of every epoch.
             # Save losses at the end of each epoch
             self.model.save_losses(epoch, i)
         # Plot loss at the end of the run

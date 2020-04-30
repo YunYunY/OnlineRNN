@@ -4,20 +4,17 @@ import torch.optim as optim
 import numpy as np
 import os
 import functools 
-from onlinernn.models.networks import SimpleRNN, StepRNN
+from onlinernn.models.networks import SimpleRNN, StepRNN, get_scheduler
 from onlinernn.models.base_model import BaseModel
-from onlinernn.models.fgsm import FGSM
 
 class VanillaRNN(BaseModel):
     def __init__(self, opt):
     # def __init__(self, input_size, hidden_size, output_size, lr, state_update, batch_size, T, reg_lambda, device):
         super(VanillaRNN, self).__init__(opt)
         # self.loss_method = "vanilla"
-        # self.optimizers = ([])  # define and initialize optimizers. You can define one optimizer for each network. If two networks are updated at the same time, you can use itertools.chain to group them.
         self.model_names = ["rnn_model"]
         self.model_method = "Vanilla" # the way to construct model
         self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
-        self.T = opt.iterT
   
     def init_net(self):
         """
@@ -42,29 +39,6 @@ class VanillaRNN(BaseModel):
             self.rnn_model = nn.DataParallel(self.rnn_model, list(range(self.opt.ngpu)))
 
 
-    def init_loss(self):
-        """
-        Define Loss functions
-        """
-        if self.loss_method == "MSE":
-            self.criterion = torch.nn.MSELoss()
-        elif self.loss_method == "CrossEntropy":
-            self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
-        elif self.loss_method == "BCELogit":
-            self.criterion = torch.nn.BCEWithLogitsLoss()
-        
-
-    def init_optimizer(self):
-        """
-        Setup optimizers
-        """
-        # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-        if self.opt.optimizer == 'SGD':
-            self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)
-        elif self.opt.optimizer == 'Adam':
-            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
-        elif self.opt.optimizer == 'FGSM':
-            self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
     # ----------------------------------------------
 
     def print_networks(self, verbose):
@@ -90,10 +64,9 @@ class VanillaRNN(BaseModel):
         """
         # TODO LR SCHEDULER MAY NEED TO BE STORED FOR RESUME
 #https://discuss.pytorch.org/t/why-doesnt-resuming-work-properly-in-pytorch/19430/4
-        # if self.istrain:
-            # self.schedulers = [
-            #     get_scheduler(optimizer, self.opt) for optimizer in self.optimizers
-            # ]
+        if self.istrain:
+            self.schedulers = [get_scheduler(self.optimizer, self.opt)]
+          
         if (not self.istrain) or self.opt.continue_train:
             load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
             print(f'Load the {load_prefix} epoch network')
@@ -102,6 +75,16 @@ class VanillaRNN(BaseModel):
 
         self.print_networks(self.opt.verbose)
     
+    def update_learning_rate(self):
+        """Update learning rates for all the networks; called at the end of every epoch"""
+        for scheduler in self.schedulers:
+            if self.opt.lr_policy == 'plateau':
+                scheduler.step(self.metric)
+            else:
+                scheduler.step()
+
+        lr = self.optimizer.param_groups[0]['lr']
+        print('learning rate = %.7f' % lr)
     # ----------------------------------------------
     def load_networks(self, load_prefix):
         """Load all the networks from the disk.
@@ -193,7 +176,7 @@ class VanillaRNN(BaseModel):
         elif self.model_method == "StepRNN":
             outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
             outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
-        
+  
         self.loss = self.criterion(outputs, self.labels)      
         self.loss.backward()
 
@@ -231,6 +214,11 @@ class VanillaRNN(BaseModel):
         """
         # corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
         # accuracy = 100.0 * corrects/batch_size
+
+        # y_pred_tag = torch.round(torch.sigmoid(logit))
+        # corrects = (y_pred_tag.data == target.data).sum().float()
+        # accuracy = 100.0 * corrects/batch_size
+
         pred = logit >= 0.5
         truth = target >= 0.5
         accuracy = 100.* pred.eq(truth).sum()/batch_size 

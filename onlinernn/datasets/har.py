@@ -12,8 +12,8 @@ from onlinernn.datasets.har_dataset import HAR_2Dataset
 class HAR_2(BaseDataset):
     def __init__(self, opt):
         opt.n_class = 2
-        opt.feature_shape = 1
-        opt.seq_len = 1152
+        opt.feature_shape = 9
+        opt.seq_len = 128
         self.opt = opt
         super(HAR_2, self).__init__(opt)
         istrain = (opt.istrain or opt.continue_train)
