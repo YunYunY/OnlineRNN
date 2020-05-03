@@ -41,7 +41,8 @@ class Setting:
         
         self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer)
         os.makedirs(self.result_dir, exist_ok=True)
-        self.loss_dir = os.path.join(self.result_dir, "loss")
+        print(f"Output folder {self.result_dir}")
+        self.loss_dir = os.path.join(self.result_dir, "loss_acc")
         os.makedirs(self.loss_dir, exist_ok=True)
 
     # ----------------------------------------------
@@ -49,6 +50,7 @@ class Setting:
         self,
         dataset,  # the dataset object of the experiment
         model,  # the deep learning model object in the experiment
+        dataset_test, # test dataset
     ):
         """
             setup everything before running experiment
@@ -58,6 +60,7 @@ class Setting:
         self.model = model
         # setup dataset
         self.dataset = dataset
+        self.dataset_test = dataset_test
         # setup model
         self.model.dataname = self.dataset.name
         # output related
@@ -102,6 +105,7 @@ class RNN(Setting):
         self.model.datasize = len(self.dataset.dataloader)
         total_iters = 0  # the total number of training iterations
         self.model.total_batches = 0 # the total number of batchs
+        self.model.max_test_acc = 0
         # for epoch in range(self.n_epochs):
         for epoch in range(
             self.opt.epoch_count, self.opt.n_epochs + 1):
@@ -117,7 +121,6 @@ class RNN(Setting):
                 self.model.data = data 
                 self.model.set_input()
                 # Forward, backward, update network weights
-                self.model.iload = i
                 self.model.train() 
                 # Save gradients
                 if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
@@ -131,45 +134,46 @@ class RNN(Setting):
 
             if epoch == self.opt.n_epochs:
                 self.model.save_networks("latest")
-            if self.opt.optimizer == 'FGSM':
-                print(
-                    "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
-                    % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc)
-                )
-            else:
-                print(
-                    "End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
-                    % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses/(i+1), self.model.train_acc/(i+1))
-                )
-            self.model.update_learning_rate()  # update learning rates at the end of every epoch.
-            # Save losses at the end of each epoch
-            self.model.save_losses(epoch, i)
-        # Plot loss at the end of the run
-        # self.model.visualize()
+
+            # ----------------------------------------------
+          
+            self.model.save_losses(epoch)
+            print("End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
+                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc))
+            # ----------------------------------------------
+            if self.opt.eval_freq != 0: # evaluate 
+                self.model.set_test_output()
+                for i, data in enumerate(self.dataset_test.dataloader):
+                    self.model.data = data 
+                    self.model.set_test_input()  # unpack data from data loader
+                    self.model.test()  # run inference
+                self.model.get_test_acc() # calculate and save global acc
+            self.model.save_test_acc(epoch)
+
+
+            # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
         print(f'Total batch is { self.model.total_batches}')
         print(f'Total training time is {time.time() - global_start_time}')
+        
 
 
     def test(self):
         """
         Test a model
         """
-        torch.manual_seed(42)
 
         # Build network structure
         self.model.init_net()
         self.model.init_optimizer()
         # Load the model and losses
         self.model.setup()
-        
+        self.model.set_test_output()
         
         for i, data in enumerate(self.dataset.dataloader):
             # if i >= self.opt.num_test:  # only apply our model to opt.num_test images.
             #     break
             # Setup input
             self.model.data = data 
-            # if hasattr(self.dataset, "flipdataloader"):
-            #     self.model.flipdata = next(iter(self.dataset.flipdataloader))
             self.model.set_test_input()  # unpack data from data loader
             self.model.test()  # run inference
-        self.model.get_test_acc(i+1) # calculate and save global acc
+        self.model.get_test_acc() # calculate and save global acc

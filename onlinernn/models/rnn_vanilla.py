@@ -63,15 +63,13 @@ class VanillaRNN(BaseModel):
             Setup the schedulers or load the model
         """
         # TODO LR SCHEDULER MAY NEED TO BE STORED FOR RESUME
-#https://discuss.pytorch.org/t/why-doesnt-resuming-work-properly-in-pytorch/19430/4
-        if self.istrain:
+        #https://discuss.pytorch.org/t/why-doesnt-resuming-work-properly-in-pytorch/19430/4
+        if self.istrain and self.opt.optimizer != 'FGSM_Adam':
             self.schedulers = [get_scheduler(self.optimizer, self.opt)]
-          
         if (not self.istrain) or self.opt.continue_train:
             load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
             print(f'Load the {load_prefix} epoch network')
             self.load_networks(load_prefix)
-            self.test_acc = 0
 
         self.print_networks(self.opt.verbose)
     
@@ -106,18 +104,17 @@ class VanillaRNN(BaseModel):
                     del state_dict._metadata
                 net.load_state_dict(state_dict)
 
-   
-            load_filename = f"{load_prefix}_optimizer_T{self.T}.pth"
-            load_path = os.path.join(self.result_dir, load_filename)
-            optimizer = getattr(self, "optimizer")
-    
-            print("loading the optimizer from %s" % load_path)
-            # if you are using PyTorch newer than 0.4 (e.g., built from
-            # GitHub source), you can remove str() on self.device
-            state_dict = torch.load(load_path, map_location=self.device)
-            if hasattr(state_dict, "_metadata"):
-                del state_dict._metadata
-            optimizer.load_state_dict(state_dict)
+            for i, optimizer in enumerate(self.optimizers):
+                load_filename = "%s_optimizer_T%s_optimizer_%s.pth" % (load_prefix, self.T, i)
+                load_path = os.path.join(self.result_dir, load_filename)
+                # optimizer = getattr(self, "optimizer")
+                print("loading the optimizer from %s" % load_path)
+                # if you are using PyTorch newer than 0.4 (e.g., built from
+                # GitHub source), you can remove str() on self.device
+                state_dict = torch.load(load_path, map_location=self.device)
+                if hasattr(state_dict, "_metadata"):
+                    del state_dict._metadata
+                optimizer.load_state_dict(state_dict)
     # ----------------------------------------------
     def set_test_input(self):
         self.set_input()
@@ -127,19 +124,18 @@ class VanillaRNN(BaseModel):
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
         self.labels = self.labels.view(-1).to(self.device)
         self.labels = self.labels.float()
-
         # update batch 
         self.batch_size = self.labels.shape[0]
 
-
-
     def set_output(self):
         # initialize values at the beginning of each epoch
-        self.losses = 0
+        self.losses = []
         self.reg1 = 0
         self.reg2 = 0
-        self.train_acc = 0
+        self.train_acc = []
 
+    def set_test_output(self):
+        self.test_acc = []
     # -------------------------------------------------------
     # Initialize first hidden state      
 
@@ -153,7 +149,8 @@ class VanillaRNN(BaseModel):
         for n, p in named_parameters:
             if "weight_hh_l0" in n:
                 if p.requires_grad:
-                    self.weight_hh = p.buf.abs().mean()
+                    # self.weight_hh = p.buf.abs().mean()
+                    self.weight_hh = p.grad.abs().mean()
                     # self.weight_hh = torch.norm(p.grad)
                
 
@@ -161,15 +158,6 @@ class VanillaRNN(BaseModel):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self.optimizer.zero_grad()
         self.init_states()
-
-        # if self.opt.optimizer == 'FGSM':
-        #     outputs, _ = self.rnn_model(self.inputs, self.states)
-        #     outputs = outputs.to(self.device)                  
-        #     self.loss = self.criterion(outputs, self.labels)      
-        #     self.loss.backward()
-        #     self.optimizer.step(self.total_batches)
-
-        # else:
         if self.model_method == "Vanilla":
             outputs, _ = self.rnn_model(self.inputs, self.states)
             outputs = outputs.to(self.device)
@@ -180,17 +168,18 @@ class VanillaRNN(BaseModel):
         self.loss = self.criterion(outputs, self.labels)      
         self.loss.backward()
 
-        if self.opt.optimizer == 'FGSM':
+        first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
+        last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
+        if 'FGSM' in self.opt.optimizer:
             self.optimizer.step(self.total_batches)
-            if (self.total_batches-1)%self.T == (self.T-1):
-                # After last iterT, track Delta w, loss and acc
-                self.track_grad_flow(self.rnn_model.named_parameters())
-                self.losses = self.loss.detach().item()
-                self.train_acc = self.get_accuracy(outputs, self.labels, self.batch_size)
         else:
             self.optimizer.step()
-            self.losses += self.loss.detach().item()
-            self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
+
+        if last_iter:
+            # After last iterT, track Delta w, loss and acc
+            self.track_grad_flow(self.rnn_model.named_parameters())
+            self.losses.append(self.loss.detach().item())
+            self.train_acc.append(self.get_accuracy(outputs, self.labels, self.batch_size))
 
 
     def training_log(self, batch):
@@ -221,18 +210,27 @@ class VanillaRNN(BaseModel):
 
         pred = logit >= 0.5
         truth = target >= 0.5
-        accuracy = 100.* pred.eq(truth).sum()/batch_size 
+        accuracy = 100.* pred.eq(truth).sum()/batch_size
 
         return accuracy.item()
 
-    def save_losses(self, epoch, i):
-        # if self.opt.verbose:
-        #     print( "Loss of epoch %d / %d "
-        #         % (epoch, self.loss))
+    def save_losses(self, epoch):
         # calculate average loss for each batch and save
+        self.losses = sum(self.losses) / len(self.losses)
+        self.train_acc = sum(self.train_acc) / len(self.train_acc)
         np.savez(
-            self.loss_dir + "/" + str(epoch) + "_losses.npz",
-            losses = self.losses/(i+1)     )
+            self.loss_dir + "/epoch_" + str(epoch) + "_losses_train_acc.npz",
+            losses = self.losses, train_acc = self.train_acc)
+
+    def save_test_acc(self, epoch):
+        self.max_test_acc = max(self.max_test_acc, self.test_acc)
+        print(f"Maximum test acc is {self.max_test_acc}")
+        np.savez(
+        self.loss_dir + "/epoch_" + str(epoch) + "_test_acc.npz",
+        test_acc = self.test_acc)
+
+
+
     # ----------------------------------------------
     def save_networks(self, epoch):
         """Save all the networks to the disk.
@@ -254,29 +252,27 @@ class VanillaRNN(BaseModel):
                     torch.save(net.cpu().state_dict(), save_path)
 
         # Save optimizers
-
-        save_filename = "%s_optimizer_T%s.pth" % (epoch, self.T)
-        save_path = os.path.join(self.result_dir, save_filename)
-        optimizer = getattr(self, "optimizer")
-        torch.save(optimizer.state_dict(), save_path)
-
-
+        for i, optimizer in enumerate(self.optimizers):
+            save_filename = "%s_optimizer_T%s_optimizer_%s.pth" % (epoch, self.T, i)
+            save_path = os.path.join(self.result_dir, save_filename)
+            # optimizer = getattr(self, "optimizer")
+            torch.save(optimizer.state_dict(), save_path)
+      
+    # ----------------------------------------------
+ 
     # ----------------------------------------------
     def test(self):
         with torch.no_grad():
             self.init_states()
             outputs, _ = self.rnn_model(self.inputs, self.states)
             outputs = outputs.to(self.device).detach()
-            self.test_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
-      
-            # self.save_result()
+            self.test_acc.append(self.get_accuracy(outputs, self.labels, self.batch_size))
 
     # ----------------------------------------------
-    def get_test_acc(self, n):
-        print(f"Calculate accuracy after {n} loads")
-        self.test_acc = self.test_acc / (n)
+    def get_test_acc(self):
+        self.test_acc = sum(self.test_acc)/len(self.test_acc) 
         print(f"Test accuracy is {self.test_acc}")
-        self.save_result()
+        # self.save_result()
     # ----------------------------------------------
 
     def save_result(self):

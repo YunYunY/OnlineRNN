@@ -44,10 +44,17 @@ if opt.taskid == 0:
 if opt.taskid == 1:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     d = HAR_2(opt)
-    # d = MNIST(opt)
+    if opt.eval_freq > 0:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
     s = RNN(opt)
     m = VanillaRNN(opt)
-    p = ExpConfig(dataset=d, setting=s, model=m)
+    if opt.eval_freq > 0:
+        p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    else:
+        p = ExpConfig(dataset=d, setting=s, model=m)
+
     p.run()
 
 

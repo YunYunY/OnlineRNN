@@ -30,6 +30,8 @@ class BaseOptions:
         parser.add_argument(
             "--taskid", type=int, default=0, help="the experiment task to run"
         )
+        parser.add_argument('--eval_freq', type=int, default=1, help='validation frequency while training')
+
         # -------------------------------------------------------
         # data parameters
         # -------------------------------------------------------
@@ -44,7 +46,7 @@ class BaseOptions:
             "--shuffle",
             action="store_true",
             default=True,
-            help="shuffle MNIST data",
+            help="shuffle data for dataloader",
         )
         parser.add_argument(
             "--mnist_standardize",
@@ -68,9 +70,9 @@ class BaseOptions:
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        parser.add_argument('--iterT', type=list, default=4, help='iterT for FGSM optimizer')
+        parser.add_argument('--iterT', type=int, default=1, help='iterT for FGSM optimizer')
 
-        parser.add_argument('--Trunc', type=int, default=[28], help='truncate parameter for TBPTT ') 
+        parser.add_argument('--Trunc', type=list, default=[28], help='truncate parameter for TBPTT ') 
 
 
         # -------------------------------------------------------

@@ -1,8 +1,8 @@
 from abc import ABC
 import numpy as np
 import torch
-from onlinernn.models.fgsm import FGSM
-
+from onlinernn.models.fgsm import FGSM, MultipleOptimizer
+from onlinernn.models.adam import Adam 
 # ----------------------------------------------
 """
     Abstract class defining the APIs for model classes
@@ -38,16 +38,22 @@ class BaseModel(ABC):
         """
         Setup optimizers
         """
+        self.optimizers = []
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
         if self.opt.optimizer == 'SGD':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
         elif self.opt.optimizer == 'SGD_Momentum':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, momentum=0.9)
-        elif self.opt.optimizer == 'Adam':
-            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
-
+        elif self.opt.optimizer == 'FGSM_Adam':
+            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
+                        [Adam(self.rnn_model.parameters(), lr=self.lr)]     
+            self.optimizer = MultipleOptimizer(*self.optimizers)
+        
+        if len(self.optimizers) == 0:
+            self.optimizers.append(self.optimizer)
+ 
  
     def init_loss(self):
         """

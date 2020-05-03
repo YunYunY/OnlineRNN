@@ -5,7 +5,8 @@ from os import path
 import functools 
 from torchsummary import summary
 from torch.autograd import Variable
-from onlinernn.models.fgsm import FGSM
+from onlinernn.models.fgsm import FGSM, MultipleOptimizer
+from onlinernn.models.adam import Adam 
 from onlinernn.models.setting import Setting, RNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
@@ -22,7 +23,7 @@ opt.istrain = True
 opt.device = torch.device(
     "cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
 )
-opt.T_ = 4
+opt.T_ = 1
 
 device = torch.device("cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu")
 # -----------------------------------------------------
@@ -50,7 +51,7 @@ def test_fgsm():
     inputDim = 1        # takes variable 'x' 
     outputDim = 1       # takes variable 'y'
     lr = 0.01 
-    epochs = 6
+    epochs = 10
 
     model = simplelinear(inputDim, outputDim)
     ##### For GPU #######
@@ -58,10 +59,12 @@ def test_fgsm():
         model.cuda()
 
     criterion = torch.nn.MSELoss() 
-    optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
+    # optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
+    optimizer =  MultipleOptimizer(FGSM(model.parameters(), lr=lr, iterT=opt.T_, mergeadam=True), 
+                        Adam(model.parameters(), lr=lr))
+    # optimizer =  torch.optim.Adam(model.parameters(), lr=lr)
     # optimizer = torch.optim.SGD(model.parameters(), lr=lr)
-    print(model)
-    print(optimizer)
+
     for p in model.parameters():
         p.data.fill_(0)
 
@@ -75,8 +78,7 @@ def test_fgsm():
             labels = Variable(torch.from_numpy(y_train))
 
         optimizer.zero_grad()
-        
-        
+            
         # get output from the model, given the inputs
         outputs = model(inputs)
         print(f'----epoch {epoch}-----------------')
@@ -94,10 +96,12 @@ def test_fgsm():
         # update parameters
         # optimizer.step()
         optimizer.step(epoch+1)
-        # for name, param in model.named_parameters():
-        #     if param.requires_grad:
-        #         print(param.data)
-        #         print(param.grad)
+
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                print(param.data)
+                print(param.buf)
+                print(param.grad)
         print('-----------------------')
 
         # print('epoch {}, loss {}'.format(epoch, loss.item()))

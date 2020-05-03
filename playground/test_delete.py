@@ -9,15 +9,19 @@ x1, x2, x3 = x
 # define W and U as constant
 weights = [Variable(torch.FloatTensor([i]), requires_grad=True) for i in (1, 2)]
 W, U = weights
-
+print(x)
+print(W)
 h1 = W * x1 
 h2 = U * h1 + W * x2
 h3 = U * h2 + W * x3
 
-L = h3
+L = W * x1
+L2 = W * x2
 W.require_grad = False
-
+L3 = L + L2
+L3.backward(retain_graph=True)
 L.backward(retain_graph=True)
+
 weight_names = ['W', 'U']
 for index, weight in enumerate(weights):
     gradient, *_ = weight.grad.data
