@@ -24,8 +24,8 @@ elif opt.taskid == 1:
     d = "HAR_2"
     m = "VanillaRNN"
 # optimizer = "Adam"
-# optimizer = "FGSM"
-optimizer = "FGSM_Adam"
+optimizer = "FGSM"
+# optimizer = "FGSM_Adam"
 # optimizer = "SGD"
 # optimizer = "SGD_Momentum"
 # -----------------------------------------------------------------------------------------------
@@ -99,11 +99,11 @@ def plot_training_loss_task1():
 
     nepoch = 100
     # for T in opt.T:
-    for T in [1]:
+    for T in [4]:
         opt.iterT = T
         losses = []
         for ibatch in batches:
-            loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss/batch_" + str(ibatch) + "_losses.npz"
+            loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss_acc/batch_" + str(ibatch) + "_losses.npz"
             losses.append(np.load(loss_file)["loss"])
         print(len(losses))
         imgname = "/epoch_" + str(nepoch) + d + "_" + m + "_T" + str(T) + "_" + optimizer + "_losses.png"

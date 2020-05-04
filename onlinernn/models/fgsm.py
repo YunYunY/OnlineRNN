@@ -49,16 +49,18 @@ class FGSM(Optimizer):
         super(FGSM, self).__init__(params, defaults)
         self.iterT = iterT
         self.inside_loop = True
+        self.sign_vote = False # use Algorithm3 in https://arxiv.org/pdf/1802.04434.pdf
 
     def __setstate__(self, state):
         super(FGSM, self).__setstate__(state)
     
 
 
-    def step(self, total_batches):
+    def step(self, total_batches, sign_option=None):
         """ Performs a single optimization step.
         Arguments:
             total_batches: total batch number 
+            sign_option: apply sign option method modified from Algorithm3 in https://arxiv.org/pdf/1802.04434.pdf
         """
         loss = None
         if self.inside_loop:
@@ -66,6 +68,7 @@ class FGSM(Optimizer):
             first_iter = (total_batches-1)%self.iterT == 0 # if this is the first iter of inner loop
             last_iter = (total_batches-1)%self.iterT == (self.iterT-1) # if this is the last step of inner loop
             t = (total_batches-1)%self.iterT + 1
+         
         else:
             first_iter = True 
             last_iter = True 
@@ -92,23 +95,35 @@ class FGSM(Optimizer):
                     if first_iter:
                         # initialize Delta w0 as 0, param_state['momentum_buffer'] will change according to buf
                         param_state['momentum_buffer'] = torch.zeros_like(p.data)
+                        if self.sign_vote:
+                            # Vote method 
+                            param_state['sign_vote'] = torch.zeros_like(p.data)
+
                     buf = param_state['momentum_buffer']
                     grad_sign = p.grad.sign()
-                    buf.mul_(1.-1./t).add_(-lr/t, grad_sign) # update Delta w_t 
-
+                    if sign_option:
+                        # Modified average sign method
+                        buf.add_(grad_sign)
+                    else:
+                        buf.mul_(1.-1./t).add_(-lr/t, grad_sign) # update Delta w_t 
+             
+                    if self.sign_vote:
+                        param_state['sign_vote'] += buf.sign()
                 else:
+                    # Momentum FGSM
                     if 'momentum_buffer' not in param_state:
                         # initialize Delta w0 as 0, param_state['momentum_buffer'] will change according to buf
                         param_state['momentum_buffer'] = torch.zeros_like(p.data)
+
                     buf = param_state['momentum_buffer']
                     grad_sign = p.grad.sign()
                     mu1 = 1.-1/t
                     mu2 = -lr/t
                     buf.mul_(mu1).add_(mu2, grad_sign) # update Delta w_t 
                     # buf.mul_(1.-2./(t+1)).add_(-2*lr/(t+1), grad_sign) # update Delta w_t 
-                p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
+                if sign_option is None:
+                    p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
                 p.buf = buf.clone() 
-
                 if self.inside_loop and last_iter:
                     with torch.no_grad():
                         # recover w_k to original value before inner loop at the last iterT
@@ -117,16 +132,14 @@ class FGSM(Optimizer):
                     if mergeadam:
                         # use Delta w_t in adam 
                         p.grad = buf.clone()/(-lr)
+                    elif self.sign_vote:
+                        p.data.add_(-lr, param_state['sign_vote'].sign())
+                    elif sign_option:
+                        p.data.add_(-lr, buf.sign())
                     else:
                         # update w_k by adding Detal w_t 
                         p.data.add_(p.buf)
                                 
-    
-
-
-
-
-
         return loss
 
 

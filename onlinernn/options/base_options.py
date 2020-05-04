@@ -70,7 +70,8 @@ class BaseOptions:
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        parser.add_argument('--iterT', type=int, default=1, help='iterT for FGSM optimizer')
+        parser.add_argument('--iterT', type=int, default=4, help='iterT for FGSM optimizer')
+        parser.add_argument('--iterB', type=int, default=1, help='inside sample batches for FGSM') 
 
         parser.add_argument('--Trunc', type=list, default=[28], help='truncate parameter for TBPTT ') 
 

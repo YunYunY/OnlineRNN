@@ -1,9 +1,10 @@
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 import numpy as np
 from onlinernn.datasets.base_dataset import BaseDataset
 from onlinernn.datasets.har_dataset import HAR_2Dataset
+
 # -------------------------------------------------------
 # HAR-2 data has 7352 in training, 2947 in test. The first row is label. 
 # Ref: https://openreview.net/pdf?id=HylpqA4FwS
@@ -23,7 +24,7 @@ class HAR_2(BaseDataset):
     def __len__(self):
         return len(self.dataset)
         
-     # ----------------------------------------------
+    # ----------------------------------------------
     def torch_loader(self, istrain):
         """
             Fetch data by torch.utils.data.Dataset
@@ -34,6 +35,7 @@ class HAR_2(BaseDataset):
 
 
         dataset = HAR_2Dataset(self.path, istrain)
+
         dataloader = torch.utils.data.DataLoader(
                 dataset,
                 batch_size=self.batch_size,
@@ -44,3 +46,18 @@ class HAR_2(BaseDataset):
 
         return dataset, dataloader
 
+  # ----------------------------------------------
+    def subset_loader(self, i):
+        """
+            Fetch data by torch.utils.data.Subset
+            Create dataloader
+            Args:
+                i: index 
+        """
+        sampler = SubsetRandomSampler(list(range(i, i + self.batch_size)))
+        train_loader = torch.utils.data.DataLoader(self.dataset,
+                sampler=sampler, 
+                batch_size=self.batch_size,
+                shuffle=False,
+                num_workers=self.num_threads, drop_last=True)
+        return train_loader

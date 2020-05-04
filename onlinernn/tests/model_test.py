@@ -23,7 +23,7 @@ opt.istrain = True
 opt.device = torch.device(
     "cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu"
 )
-opt.T_ = 1
+opt.T_ = 4
 
 device = torch.device("cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu")
 # -----------------------------------------------------
@@ -59,9 +59,9 @@ def test_fgsm():
         model.cuda()
 
     criterion = torch.nn.MSELoss() 
-    # optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
-    optimizer =  MultipleOptimizer(FGSM(model.parameters(), lr=lr, iterT=opt.T_, mergeadam=True), 
-                        Adam(model.parameters(), lr=lr))
+    optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
+    # optimizer =  MultipleOptimizer(FGSM(model.parameters(), lr=lr, iterT=opt.T_, mergeadam=True), 
+                        # Adam(model.parameters(), lr=lr))
     # optimizer =  torch.optim.Adam(model.parameters(), lr=lr)
     # optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 
@@ -95,13 +95,13 @@ def test_fgsm():
         #         print(param.grad)
         # update parameters
         # optimizer.step()
-        optimizer.step(epoch+1)
+        optimizer.step(epoch+1, True)
 
-        for name, param in model.named_parameters():
-            if param.requires_grad:
-                print(param.data)
-                print(param.buf)
-                print(param.grad)
+        # for name, param in model.named_parameters():
+        #     if param.requires_grad:
+        #         print(param.data)
+        #         print(param.buf)
+        #         print(param.grad)
         print('-----------------------')
 
         # print('epoch {}, loss {}'.format(epoch, loss.item()))

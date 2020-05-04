@@ -63,6 +63,10 @@ class Setting:
         self.dataset_test = dataset_test
         # setup model
         self.model.dataname = self.dataset.name
+        self.model.trainsize = len(self.dataset)
+        self.model.trainloadersize = len(self.dataset.dataloader)
+        self.model.dataset = self.dataset
+     
         # output related
         self.model.plt_n = 8
         self.create_final_dir()
@@ -102,7 +106,6 @@ class RNN(Setting):
         self.model.setup()
   
         print("Start Training Loop...")
-        self.model.datasize = len(self.dataset.dataloader)
         total_iters = 0  # the total number of training iterations
         self.model.total_batches = 0 # the total number of batchs
         self.model.max_test_acc = 0
@@ -113,10 +116,16 @@ class RNN(Setting):
             epoch_start_time = time.time()  # timer for entire epoch
 
             self.model.set_output()
-
             for i, data in enumerate(self.dataset.dataloader):
                 total_iters += self.opt.batch_size
                 self.model.total_batches += 1
+
+                # if self.opt.iterB > 0: # sample batches and train multiple times 
+                    # if i % self.opt.iterT != 0:
+                    #     continue 
+                    # else:
+                    #     self.model.inner_sample_train()
+                # else:
                 # Setup input
                 self.model.data = data 
                 self.model.set_input()

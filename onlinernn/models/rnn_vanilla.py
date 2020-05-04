@@ -4,6 +4,7 @@ import torch.optim as optim
 import numpy as np
 import os
 import functools 
+import random
 from onlinernn.models.networks import SimpleRNN, StepRNN, get_scheduler
 from onlinernn.models.base_model import BaseModel
 
@@ -153,25 +154,60 @@ class VanillaRNN(BaseModel):
                     self.weight_hh = p.grad.abs().mean()
                     # self.weight_hh = torch.norm(p.grad)
                
+    # -------------------------------------------------------
+    # Train model 
+    def inner_sample_train(self):
+        sample_seed = random.sample(range(0, self.trainsize-self.opt.batch_size), self.T)  
 
-    def train(self):
-        """Calculate losses, gradients, and update network weights; called in every training iteration"""
+        iter = 0
+        # load subset of data 
+        for i in sample_seed:
+            iter += 1
+            subset_loader = self.dataset.subset_loader(i)
+            for _, data in enumerate(subset_loader):
+                self.data = data
+                self.set_input()
+            self.forward()
+            self.backward()
+            self.optimizer.step(iter, sign_option=True)
+
+        # After last iterT, track Delta w, loss and acc
+        self.track_grad_flow(self.rnn_model.named_parameters())
+        self.losses.append(self.loss.detach().item())
+        self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
+
+    def forward(self):
+        """
+        Forward path 
+        """
         self.optimizer.zero_grad()
         self.init_states()
         if self.model_method == "Vanilla":
             outputs, _ = self.rnn_model(self.inputs, self.states)
-            outputs = outputs.to(self.device)
+            self.outputs = outputs.to(self.device)
         elif self.model_method == "StepRNN":
             outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
-            outputs, state_start, state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
+            self.outputs, self.state_start, self.state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
   
-        self.loss = self.criterion(outputs, self.labels)      
+    def backward(self):
+        """
+        Backward path 
+        """
+        self.loss = self.criterion(self.outputs, self.labels)      
         self.loss.backward()
+        
 
+    def train(self):
+        """Calculate losses, gradients, and update network weights; called in every training iteration"""
+        self.forward()
+        self.backward()
         first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
         last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         if 'FGSM' in self.opt.optimizer:
-            self.optimizer.step(self.total_batches)
+            if self.opt.iterB > 0:
+                self.optimizer.step(self.total_batches, sign_option=True)
+            else:
+                self.optimizer.step(self.total_batches)
         else:
             self.optimizer.step()
 
@@ -179,7 +215,7 @@ class VanillaRNN(BaseModel):
             # After last iterT, track Delta w, loss and acc
             self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss.detach().item())
-            self.train_acc.append(self.get_accuracy(outputs, self.labels, self.batch_size))
+            self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
 
     def training_log(self, batch):
