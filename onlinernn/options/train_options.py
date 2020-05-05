@@ -77,7 +77,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--lr", type=float, default=0.001, help="initial learning rate for adam"
         ) # 0.001
-        parser.add_argument('--optimizer', type=str, default='FGSM', help='Optimizer option') #["SGD, Adam, SGD_Momentum, FGSM_Adam"]
+        parser.add_argument('--optimizer', type=str, default='FGSM_Adam', help='Optimizer option') #["SGD, Adam, SGD_Momentum, FGSM_Adam"]
 
         parser.add_argument('--reg_lambda', type=float, default=0, help='Lambda for StopBP')
 

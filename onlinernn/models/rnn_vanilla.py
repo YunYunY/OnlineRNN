@@ -15,7 +15,11 @@ class VanillaRNN(BaseModel):
         # self.loss_method = "vanilla"
         self.model_names = ["rnn_model"]
         self.model_method = "Vanilla" # the way to construct model
-        self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
+        if opt.predic_task == 'Binary':
+            self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
+        else:
+            self.loss_method = "CrossEntropy" # ["BCELogit" "CrossEntropy" "MSE"]
+
   
     def init_net(self):
         """
@@ -26,7 +30,8 @@ class VanillaRNN(BaseModel):
         
         """
         if self.model_method == "Vanilla":
-            self.rnn_model = SimpleRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+            # self.rnn_model = SimpleRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+            self.rnn_model = SimpleRNN(self.opt).to(self.device)
         elif self.model_method == "StepRNN":
             self.rnn_model = StepRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
 
@@ -124,7 +129,8 @@ class VanillaRNN(BaseModel):
         self.inputs, self.labels = self.data
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
         self.labels = self.labels.view(-1).to(self.device)
-        self.labels = self.labels.float()
+        if self.opt.predic_task == 'Binary':
+            self.labels = self.labels.float()
         # update batch 
         self.batch_size = self.labels.shape[0]
 
@@ -193,6 +199,7 @@ class VanillaRNN(BaseModel):
         """
         Backward path 
         """
+    
         self.loss = self.criterion(self.outputs, self.labels)      
         self.loss.backward()
         
@@ -235,18 +242,18 @@ class VanillaRNN(BaseModel):
 
     def get_accuracy(self, logit, target, batch_size):
         """ 
-        Obtain accuracy for training round 
+        Obtain accuracy 
         """
-        # corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
-        # accuracy = 100.0 * corrects/batch_size
-
         # y_pred_tag = torch.round(torch.sigmoid(logit))
         # corrects = (y_pred_tag.data == target.data).sum().float()
         # accuracy = 100.0 * corrects/batch_size
-
-        pred = logit >= 0.5
-        truth = target >= 0.5
-        accuracy = 100.* pred.eq(truth).sum()/batch_size
+        if self.opt.predic_task == 'Binary':
+            pred = logit >= 0.5
+            truth = target >= 0.5
+            accuracy = 100.* pred.eq(truth).sum()/batch_size
+        else:
+            corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
+            accuracy = 100.0 * corrects/batch_size
 
         return accuracy.item()
 
@@ -305,7 +312,7 @@ class VanillaRNN(BaseModel):
             self.test_acc.append(self.get_accuracy(outputs, self.labels, self.batch_size))
 
     # ----------------------------------------------
-    def get_test_acc(self):
+    def get_test_acc(self):        
         self.test_acc = sum(self.test_acc)/len(self.test_acc) 
         print(f"Test accuracy is {self.test_acc}")
         # self.save_result()

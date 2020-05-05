@@ -23,9 +23,12 @@ if opt.taskid == 0:
 elif opt.taskid == 1:
     d = "HAR_2"
     m = "VanillaRNN"
+elif opt.taskid == 2:
+    d = "DSA_19"
+    m = "VanillaRNN"
 # optimizer = "Adam"
-optimizer = "FGSM"
-# optimizer = "FGSM_Adam"
+# optimizer = "FGSM"
+optimizer = "FGSM_Adam"
 # optimizer = "SGD"
 # optimizer = "SGD_Momentum"
 # -----------------------------------------------------------------------------------------------
@@ -94,26 +97,34 @@ def plot_test_acc():
 # Plot loss change in training task1
 # -----------------------------------------------------------------------------------------------
 def plot_training_loss_task1():
-    total_batches = 11600 #5800
+    if d == "HAR_2":
+        total_batches = 11600
+    else:
+        total_batches = 7200 # 11600 
     batches = range(4, total_batches+1, 4)
 
     nepoch = 100
     # for T in opt.T:
     for T in [4]:
         opt.iterT = T
+
         losses = []
         for ibatch in batches:
             loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss_acc/batch_" + str(ibatch) + "_losses.npz"
             losses.append(np.load(loss_file)["loss"])
-        print(len(losses))
+        print(max(losses))
         imgname = "/epoch_" + str(nepoch) + d + "_" + m + "_T" + str(T) + "_" + optimizer + "_losses.png"
         plt.figure(figsize=(8, 8))
         plt.xlabel("# Batches")
         plt.ylabel("Losses at W_k")
-        plt.title(f"Loss Change {optimizer} niter={T}")
+        plt.title(f"{d} Loss Change {optimizer} niter={T}")
         plt.xticks(range(1, total_batches+1, 1000), range(0, total_batches, 1000), rotation="vertical")
         plt.xlim(xmin=0, xmax=total_batches)
-        plt.ylim(ymin=0, ymax=0.4)
+        if d == "HAR_2":
+            plt.ylim(ymin=0, ymax=0.4) # HAR
+        else:
+            plt.ylim(ymin=0, ymax=3) # DSA
+
 
         plt.plot(batches, losses, color='r')
         plt.savefig(img_dir + "/" + imgname)

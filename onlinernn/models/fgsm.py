@@ -63,6 +63,9 @@ class FGSM(Optimizer):
             sign_option: apply sign option method modified from Algorithm3 in https://arxiv.org/pdf/1802.04434.pdf
         """
         loss = None
+        if total_batches == 1:
+            print(f'inner loop is {self.inside_loop}')
+            print(f'sign average is {sign_option}')
         if self.inside_loop:
             # inner loop
             first_iter = (total_batches-1)%self.iterT == 0 # if this is the first iter of inner loop

@@ -4,6 +4,7 @@ import numpy as np
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTShift, MNISTPermute
 from onlinernn.datasets.har import HAR_2
+from onlinernn.datasets.dsa import DSA_19
 from onlinernn.tests.test_utils import show_shift
 from onlinernn.datasets.data_utils import loop_queue
 
@@ -13,8 +14,16 @@ from onlinernn.datasets.data_utils import loop_queue
 opt = TrainOptions().parse()
 opt.test_case = "test"
 opt.batch_size = 64
-opt.istrain = True
+opt.istrain = False
 # ------------------------------------------------------------
+
+def test_dsa19():
+    d = DSA_19(opt)
+    assert len(d) == 4560
+    batch = next(iter(d.dataloader))
+    assert list(batch[0][:64].shape) == [64, 125, 45]
+    assert list(batch[1][:64].shape) == [64, 1]
+
 
 def test_har2():
     d = HAR_2(opt)
@@ -25,8 +34,8 @@ def test_har2():
     batch = next(iter(d.dataloader))
     assert list(batch[0][:64].shape) == [64, 128, 9]
     assert list(batch[1][:64].shape) == [64, 1]
-
 '''
+
 def test_mnist():
     """
     Test MNIST class

@@ -60,7 +60,9 @@ class BaseOptions:
         # model parameters
         # -------------------------------------------------------
 
-        # Dropout and Batchnorm have different behavioir during training and test.
+        parser.add_argument(
+            "--predic_task", type=str, default="Binary", help="prediction task, decide final layer in RNN"
+        ) # ["Binary", "Softmax"]
         parser.add_argument(
                     "--num_layers", type=int, default=1, help="number of layers in RNN"
                 )
@@ -71,7 +73,7 @@ class BaseOptions:
             "--init_mode", type=str, default="Zeros", help="method to initialize first hidden state"
         ) #["Zeros",  "Random"]
         parser.add_argument('--iterT', type=int, default=4, help='iterT for FGSM optimizer')
-        parser.add_argument('--iterB', type=int, default=1, help='inside sample batches for FGSM') 
+        parser.add_argument('--iterB', type=int, default=0, help='inside sample batches for FGSM') # run exp 10
 
         parser.add_argument('--Trunc', type=list, default=[28], help='truncate parameter for TBPTT ') 
 

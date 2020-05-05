@@ -4,6 +4,7 @@ from exp.expConfig import ExpConfig
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTShift
 from onlinernn.datasets.har import HAR_2
+from onlinernn.datasets.dsa import DSA_19
 from onlinernn.models.setting import Setting
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
@@ -43,19 +44,37 @@ if opt.taskid == 0:
 
 if opt.taskid == 1:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
     d = HAR_2(opt)
-    if opt.eval_freq > 0:
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
         d_test = HAR_2(opt)
         opt.istrain = True
+    else:
+        d_test = None 
     s = RNN(opt)
     m = VanillaRNN(opt)
-    if opt.eval_freq > 0:
-        p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
-    else:
-        p = ExpConfig(dataset=d, setting=s, model=m)
-
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
+if opt.taskid == 2:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.hidden_size = 64
+    opt.batch_size = 128
+    opt.predic_task = 'Softmax'
+    d = DSA_19(opt)
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = DSA_19(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
 
 

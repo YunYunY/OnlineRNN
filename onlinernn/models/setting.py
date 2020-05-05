@@ -4,6 +4,7 @@ import torch.nn as nn
 import os
 import time
 import numpy as np
+import shutil
 
 
 class Setting:
@@ -40,7 +41,10 @@ class Setting:
         """
         
         self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer)
-        os.makedirs(self.result_dir, exist_ok=True)
+        # os.makedirs(self.result_dir, exist_ok=True)
+        if os.path.exists(self.result_dir):
+            shutil.rmtree(self.result_dir)
+        os.makedirs(self.result_dir)
         print(f"Output folder {self.result_dir}")
         self.loss_dir = os.path.join(self.result_dir, "loss_acc")
         os.makedirs(self.loss_dir, exist_ok=True)
