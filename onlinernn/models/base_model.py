@@ -21,7 +21,6 @@ class BaseModel(ABC):
         self.hidden_size = opt.hidden_size
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
-        self.Trunc = opt.Trunc
         self.T = opt.iterT
         self.device = opt.device
     # ----------------------------------------------
@@ -49,10 +48,16 @@ class BaseModel(ABC):
         elif self.opt.optimizer == 'FGSM_Adam':
             self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
                         [Adam(self.rnn_model.parameters(), lr=self.lr)]     
-            self.optimizer = MultipleOptimizer(*self.optimizers)
+        elif self.opt.optimizer == 'FGSM_RMSProp':  
+            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
+                        [torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr)]
+
         
         if len(self.optimizers) == 0:
             self.optimizers.append(self.optimizer)
+        else:
+            self.optimizer = MultipleOptimizer(*self.optimizers)
+
  
  
     def init_loss(self):

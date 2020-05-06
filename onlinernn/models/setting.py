@@ -167,7 +167,8 @@ class RNN(Setting):
             # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
         print(f'Total batch is { self.model.total_batches}')
         print(f'Total training time is {time.time() - global_start_time}')
-        
+        print(f"Output folder {self.result_dir}")
+
 
 
     def test(self):

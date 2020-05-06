@@ -70,7 +70,7 @@ class VanillaRNN(BaseModel):
         """
         # TODO LR SCHEDULER MAY NEED TO BE STORED FOR RESUME
         #https://discuss.pytorch.org/t/why-doesnt-resuming-work-properly-in-pytorch/19430/4
-        if self.istrain and self.opt.optimizer != 'FGSM_Adam':
+        if self.istrain and self.opt.niter_decay != 0:
             self.schedulers = [get_scheduler(self.optimizer, self.opt)]
         if (not self.istrain) or self.opt.continue_train:
             load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
@@ -199,7 +199,6 @@ class VanillaRNN(BaseModel):
         """
         Backward path 
         """
-    
         self.loss = self.criterion(self.outputs, self.labels)      
         self.loss.backward()
         
@@ -229,7 +228,11 @@ class VanillaRNN(BaseModel):
         """
         Save gradient and loss of the current single batch, not mean of the whole epoch 
         """   
-        np.savez(self.loss_dir + "/batch_" + str(batch) + "_losses.npz", loss = self.loss.detach().item())
+        try:
+            np.savez(self.loss_dir + "/batch_" + str(batch) + "_losses.npz", loss = self.loss.detach().item())
+        except:
+            np.savez(self.loss_dir + "/batch_" + str(batch) + "_losses.npz", loss = self.loss)
+
         # not every model has Delta w stored
         try:
             np.savez(self.result_dir + "/" + str(batch) + "_weight_hh.npz", weight_hh=self.weight_hh.cpu())

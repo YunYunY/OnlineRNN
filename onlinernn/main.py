@@ -78,3 +78,40 @@ if opt.taskid == 2:
     p.run()
 
 
+# -----------------------------------------------------------------------------------------------
+# Vanishing Gradient Solver FGSM + Adam with TBPTT
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 3:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam"
+    d = HAR_2(opt)
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+if opt.taskid == 4:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam"
+    opt.for_trunc = 25
+    opt.predic_task = 'Softmax'
+    d = DSA_19(opt)
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = DSA_19(opt)
+        opt.istrain = True 
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()

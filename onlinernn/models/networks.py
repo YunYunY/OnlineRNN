@@ -11,7 +11,6 @@ from torch.optim import lr_scheduler
 # -------------------------------------------------------
 
 class SimpleRNN(nn.Module):
-    # def __init__(self, input_size, hidden_size, output_size):
     def __init__(self, opt):
         super(SimpleRNN, self).__init__()
         self.opt = opt
@@ -24,6 +23,20 @@ class SimpleRNN(nn.Module):
         else:
             self.FC = nn.Linear(self.hidden_size, self.output_size)
 
+    def last_layer(self):
+        if self.opt.predic_task == 'Binary':
+            # To make model structure identity with paper iRNN
+            out = torch.sigmoid(self.FC(self.hidden_final))
+            return out.view(-1), self.hidden_final
+        else:
+            # out = torch.relu(self.FC(hidden_final))
+            # out = out[-1]
+            # out = torch.sigmoid(self.FC(out))
+            out = self.out[-1]
+            out = self.FC(out)
+            # out batch_size X n_output
+            return out.view(-1, self.output_size), self.hidden_final
+
     def forward(self, X, hidden):
 
         # transforms X to dimensions: n_steps X batch_size X n_inputs
@@ -35,20 +48,9 @@ class SimpleRNN(nn.Module):
         # self.basic output 
         #     output: (seq_len, batch, hidden_size)
         #     state: (num_layers, batch, hidden_size)
-        out, hidden_final = self.basic_rnn(X, hidden)  
-    
-        if self.opt.predic_task == 'Binary':
-            # To make model structure identity with paper iRNN
-            out = torch.sigmoid(self.FC(hidden_final))
-            return out.view(-1), hidden_final
-        else:
-            # out = torch.relu(self.FC(hidden_final))
-            # out = out[-1]
-            # out = torch.sigmoid(self.FC(out))
-            out = out[-1]
-            out = self.FC(out)
-            # out batch_size X n_output
-            return out.view(-1, self.output_size), hidden_final
+        self.out, self.hidden_final = self.basic_rnn(X, hidden)  
+        return self.last_layer()
+ 
 
 # -------------------------------------------------------
 # RNN structure forward step by step at each time sequence
@@ -64,7 +66,7 @@ class StepRNN(SimpleRNN):
 
         batch_size = X.shape[0]
         seq_len = X.shape[1]
-        # transforms X to dimensions: n_steps X batch_size X n_inputs
+        # transforms X to dimensions: x: (seq_len, batch, input_size) 
         X = X.permute(1, 0, 2)
         hidden = hidden.permute(1, 0, 2)
 
@@ -97,57 +99,61 @@ class StepRNN(SimpleRNN):
 # -------------------------------------------------------
 
 class TBPTTRNN(SimpleRNN):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(TBPTTRNN, self).__init__(input_size, hidden_size, output_size)
-
-    def forward(self, X, hidden, T, optimizer, criterion, labels):
+    def __init__(self, opt):
+        super(TBPTTRNN, self).__init__(opt)
+        self.T1 = opt.for_trunc
+        self.T2 = opt.back_trunc
+        self.retain_graph = self.T1 < self.T2
+        
+    def forward(self, X, hidden, optimizer=None, total_batches=None, criterion=None, labels=None):
         """
         Args:
             X: Input Sequential data
             hidden: Initialized hidden layer
-            T1: forward step parameter in TBPTT
-            T2: backward step parameter in TBPTT
         """
         losses = 0
         nloss = 0
-        self.T1 = self.T2 = T
-        self.retain_graph = self.T1 < self.T2
         batch_size = X.shape[0]
         seq_len = X.shape[1]
-        # transforms X to dimensions: n_steps X batch_size X n_inputs
+        # transforms X to dimensions: x: (seq_len, batch, input_size) 
         X = X.permute(1, 0, 2)
         hidden = hidden.permute(1, 0, 2)
         states = [(None, hidden)] # save previous and current hidden pairs
 
-        if labels == None: # test
-            for i in range(X.shape[0]):
+        if labels == None: # model test
+            for i in range(seq_len):
                 inp = X[i].clone().view(1, batch_size, self.input_size)
                 state = states[-1][1].detach()
                 state.requires_grad=True
                 output, new_state = self.basic_rnn(inp, state)    
                 states.append((state, new_state))
-                while len(states) > T:
+                while len(states) > 2:
                         # Delete stuff that is too old
                         del states[0]
-            output = output[-1]
-            output = self.FC(output)
-            
-            # out batch_size X n_output
-            return output.view(-1, self.output_size), states 
+            self.out, self.hidden_final = output, new_state
+            # output = output[-1]
+            # output = self.FC(output)
+            return self.last_layer()
+            # return output.view(-1, self.output_size), states 
 
+        last_iter = (total_batches-1)%self.opt.iterT == (self.opt.iterT-1) # if this is the last step of inner loop
+        first_iter = (total_batches-1)%self.opt.iterT == 0 # if this is the first iter of inner loop
 
         # every T1 steps backpropagate taking T2 back steps
-
-        for j in range(X.shape[0]):
+        for j in range(seq_len):
             inp = X[j].clone().view(1, batch_size, self.input_size)
             state = states[-1][1].detach()
             state.requires_grad=True
       
             output, new_state = self.basic_rnn(inp, state)    
             states.append((state, new_state))
-            output = output[-1]
-            output = self.FC(output) 
-
+            # output = output[-1]
+            # output = self.FC(output) 
+            self.out, self.hidden_final = output, new_state
+      
+            output, _ =  self.last_layer()
+            
+            '''
             # check the gradient calculation step
             def get_pr(idx_val):
                     def pr(*args):
@@ -156,12 +162,14 @@ class TBPTTRNN(SimpleRNN):
             new_state.register_hook(get_pr(j))
             output.register_hook(get_pr(j))
             print("doing fw {}".format(j))
-
+            '''
 
             while len(states) > self.T2:
                     # Delete stuff that is too old
                     del states[0] 
-            if (j+1)% self.T1 == 0:
+            if (j+1)% self.T1 == 0: # start backward after T1 forward steps 
+                # FGSM flag, first batch in inner loop and first 
+                initial = first_iter and j+1 == self.T1
                 optimizer.zero_grad()
                 # output.view(-1, self.output_size)
                 loss = criterion(output, labels)
@@ -175,8 +183,14 @@ class TBPTTRNN(SimpleRNN):
                         break
                     curr_grad = states[-i-1][0].grad
                     states[-i-2][1].backward(curr_grad, retain_graph=self.retain_graph)
-                optimizer.step()
-        
+               
+                if 'FGSM' in self.opt.optimizer:
+                    if self.opt.iterB > 0:
+                        optimizer.step(total_batches, sign_option=True)
+                    else:
+                        optimizer.step(total_batches)
+                else:
+                    optimizer.step()
 
         # out batch_size X n_output
         return output, losses/nloss

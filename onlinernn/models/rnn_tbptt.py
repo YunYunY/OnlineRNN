@@ -5,12 +5,12 @@ import copy
 import numpy as np
 import os
 from onlinernn.models.networks import StepRNN, TBPTTRNN
-from onlinernn.models.rnn_stopbp import StopBPRNN
-
+# from onlinernn.models.rnn_stopbp import StopBPRNN
+from onlinernn.models.rnn_vanilla import VanillaRNN
 # -------------------------------------------------------
 # Truncated BPTT 
 # -------------------------------------------------------
-class TBPTT(StopBPRNN):
+class TBPTT(VanillaRNN):
     def __init__(self, opt):
         super(TBPTT, self).__init__(opt)
 
@@ -18,7 +18,7 @@ class TBPTT(StopBPRNN):
         """
         Initialize model        
         """
-        self.rnn_model = TBPTTRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+        self.rnn_model = TBPTTRNN(self.opt).to(self.device)
         # explicitly state the intent
         if self.istrain:
             self.rnn_model.train()
@@ -32,23 +32,25 @@ class TBPTT(StopBPRNN):
         self.old_weights_ih = copy.deepcopy(self.rnn_model.basic_rnn.weight_ih_l0.data) 
         self.old_weights_hh = copy.deepcopy(self.rnn_model.basic_rnn.weight_hh_l0.data)
 
+
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
-        # self.optimizer.zero_grad()
+        first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
+        last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
+        self.init_states()  
+        self.outputs, self.loss = self.rnn_model(self.inputs, self.states, self.optimizer, self.total_batches, self.criterion, self.labels)
 
-        self.init_states()
-  
-        outputs, loss = self.rnn_model(self.inputs, self.states, self.Trunc, self.optimizer, self.criterion, self.labels)
-        self.losses += loss
-        self.train_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
-        # self.new_weights_ih = copy.deepcopy(self.rnn_model.basic_rnn.weight_ih_l0.data)
-        # self.new_weights_hh = copy.deepcopy(self.rnn_model.basic_rnn.weight_hh_l0.data)
-   
-   # ----------------------------------------------
+        if last_iter:
+            # After last iterT, track Delta w, loss and acc
+            self.track_grad_flow(self.rnn_model.named_parameters())
+            self.losses.append(self.loss)
+            self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
+           
+
+    # ----------------------------------------------
     def test(self):
         with torch.no_grad():
             self.init_states()
-            outputs, _ = self.rnn_model(self.inputs, self.states, self.Trunc, None, None, None)
+            outputs, _ = self.rnn_model(self.inputs, self.states)
             outputs = outputs.to(self.device).detach()
-            self.test_acc += self.get_accuracy(outputs, self.labels, self.batch_size)
-            # self.save_result()
+            self.test_acc.append(self.get_accuracy(outputs, self.labels, self.batch_size))

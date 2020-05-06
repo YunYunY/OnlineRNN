@@ -33,7 +33,7 @@ class HAR_2(BaseDataset):
                 istrain: flag condition for getting training or test data
         """
 
-        dataset = HAR_2Dataset(self.path, istrain)
+        dataset = HAR_2Dataset(self.path, istrain, self.opt.slice)
 
         dataloader = torch.utils.data.DataLoader(
                 dataset,

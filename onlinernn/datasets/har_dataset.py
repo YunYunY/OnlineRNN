@@ -15,6 +15,7 @@ class HAR_2Dataset(Dataset):
         # Normalization to Zero Mean and Unit Standard Deviation
         mu = 0.10206605722975093
         sigma = 0.4021651763839265
+        slice_interval = 8 
         # The first column is label
         if istrain:
             datalabels = np.load(path + '/train.npy')

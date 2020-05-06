@@ -14,7 +14,7 @@ img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
-opt.taskid = 1
+opt.taskid = 4
 
 if opt.taskid == 0:
     d = "MNIST"
@@ -26,9 +26,19 @@ elif opt.taskid == 1:
 elif opt.taskid == 2:
     d = "DSA_19"
     m = "VanillaRNN"
+elif opt.taskid == 3:
+    d = "HAR_2"
+    m = "TBPTT"
+    optimizer = "FGSM_Adam"
+elif opt.taskid == 4:
+    d = "DSA_19"
+    m = "TBPTT"
+    optimizer = "FGSM_Adam"
+
 # optimizer = "Adam"
 # optimizer = "FGSM"
-optimizer = "FGSM_Adam"
+# optimizer = "FGSM_Adam"
+# optimizer = "FGSM_RMSProp"
 # optimizer = "SGD"
 # optimizer = "SGD_Momentum"
 # -----------------------------------------------------------------------------------------------
@@ -104,8 +114,7 @@ def plot_training_loss_task1():
     batches = range(4, total_batches+1, 4)
 
     nepoch = 100
-    # for T in opt.T:
-    for T in [4]:
+    for T in [opt.iterT]:
         opt.iterT = T
 
         losses = []
@@ -117,7 +126,7 @@ def plot_training_loss_task1():
         plt.figure(figsize=(8, 8))
         plt.xlabel("# Batches")
         plt.ylabel("Losses at W_k")
-        plt.title(f"{d} Loss Change {optimizer} niter={T}")
+        plt.title(f"{d} Loss Change {m} {optimizer} niter={T}")
         plt.xticks(range(1, total_batches+1, 1000), range(0, total_batches, 1000), rotation="vertical")
         plt.xlim(xmin=0, xmax=total_batches)
         if d == "HAR_2":

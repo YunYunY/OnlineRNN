@@ -70,6 +70,7 @@ class FGSM(Optimizer):
             # inner loop
             first_iter = (total_batches-1)%self.iterT == 0 # if this is the first iter of inner loop
             last_iter = (total_batches-1)%self.iterT == (self.iterT-1) # if this is the last step of inner loop
+           
             t = (total_batches-1)%self.iterT + 1
          
         else:
@@ -126,6 +127,7 @@ class FGSM(Optimizer):
                     # buf.mul_(1.-2./(t+1)).add_(-2*lr/(t+1), grad_sign) # update Delta w_t 
                 if sign_option is None:
                     p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
+                    
                 p.buf = buf.clone() 
                 if self.inside_loop and last_iter:
                     with torch.no_grad():
