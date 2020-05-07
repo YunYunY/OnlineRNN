@@ -1,9 +1,11 @@
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
+from torchvision import transforms
 import numpy as np
 from onlinernn.datasets.base_dataset import BaseDataset
 from onlinernn.datasets.har_dataset import HAR_2Dataset
+from onlinernn.datasets.data_utils import AddGaussianNoise
 
 # -------------------------------------------------------
 # HAR-2 data has 7352 in training, 2947 in test. The first row is label. 
@@ -33,7 +35,15 @@ class HAR_2(BaseDataset):
                 istrain: flag condition for getting training or test data
         """
 
-        dataset = HAR_2Dataset(self.path, istrain, self.opt.slice)
+        # dataset = HAR_2Dataset(self.path, istrain, self.opt.slice)
+        
+        if self.opt.add_noise:
+            transform=transforms.Compose([
+                    AddGaussianNoise(0., 2.)
+                ])
+        else:
+            transform = None 
+        dataset = HAR_2Dataset(self.path, istrain, transform)
 
         dataloader = torch.utils.data.DataLoader(
                 dataset,

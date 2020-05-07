@@ -4,7 +4,7 @@ import torch.optim as optim
 import copy
 import numpy as np
 import os
-from onlinernn.models.networks import StepRNN, TBPTTRNN
+from onlinernn.models.networks import SimpleRNN, TBPTTRNN
 # from onlinernn.models.rnn_stopbp import StopBPRNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 # -------------------------------------------------------
@@ -18,7 +18,10 @@ class TBPTT(VanillaRNN):
         """
         Initialize model        
         """
-        self.rnn_model = TBPTTRNN(self.opt).to(self.device)
+        if self.opt.subsequene:
+            self.rnn_model = SimpleRNN(self.opt).to(self.device)
+        else:
+            self.rnn_model = TBPTTRNN(self.opt).to(self.device)
         # explicitly state the intent
         if self.istrain:
             self.rnn_model.train()
@@ -33,14 +36,49 @@ class TBPTT(VanillaRNN):
         self.old_weights_hh = copy.deepcopy(self.rnn_model.basic_rnn.weight_hh_l0.data)
 
 
+    def train_subsequence(self):
+        """
+        Reference: https://patrykchrabaszcz.github.io/when-truncated-bptt-fails/
+        """
+        losses = []
+        nchunks = self.seq_len // self.opt.subseq_size
+        # subbatches = self.generate_subbatches(size=self.opt.subseq_size)
+        # for sub_inputs, sub_labels in self.generate_subbatches(size=self.opt.subseq_size):
+        for i in range(nchunks):
+            sub_inputs, sub_labels = self.generate_subbatches(i, size=self.opt.subseq_size)
+            self.optimizer.zero_grad()
+            # self.states.detach()
+            self.states = self.states.detach()
+         
+            outputs, self.states = self.rnn_model(sub_inputs, self.states)
+            self.states = self.states.view(-1, self.num_layers, self.hidden_size)
+
+            loss = self.criterion(outputs, sub_labels)      
+            loss.backward()
+            losses.append(loss.detach().item())
+            if 'FGSM' in self.opt.optimizer:
+                tbptt_first_iter = self.first_iter and i==0 # first iterT and first chunk in tbptt
+                tbptt_last_iter = self.last_iter and i==nchunks-1 # last iterT and last chunk in tbptt
+                self.optimizer.step(self.total_batches, tbptt_first_iter, tbptt_last_iter)
+            else:
+                self.optimizer.step()
+        self.loss = sum(losses)/len(losses)
+        self.outputs = outputs
+  
+
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
-        first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
-        last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
-        self.init_states()  
-        self.outputs, self.loss = self.rnn_model(self.inputs, self.states, self.optimizer, self.total_batches, self.criterion, self.labels)
 
-        if last_iter:
+        self.first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
+        self.last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
+        self.init_states() 
+        if self.opt.subsequene:
+            # generate subsequene of data
+            self.train_subsequence()  
+        else:
+            self.outputs, self.loss = self.rnn_model(self.inputs, self.states, self.optimizer, self.total_batches, self.criterion, self.labels)
+
+        if self.last_iter:
             # After last iterT, track Delta w, loss and acc
             self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss)

@@ -39,7 +39,9 @@ class BaseModel(ABC):
         """
         self.optimizers = []
         # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-        if self.opt.optimizer == 'SGD':
+        if self.opt.optimizer == 'Adam':
+            self.optimizer = Adam(self.rnn_model.parameters(), lr=self.lr)
+        elif self.opt.optimizer == 'SGD':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
         elif self.opt.optimizer == 'SGD_Momentum':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, momentum=0.9)
@@ -70,3 +72,17 @@ class BaseModel(ABC):
             self.criterion = torch.nn.CrossEntropyLoss()  # Input: (N, C), Target: (N)
         elif self.loss_method == "BCELogit":
             self.criterion = torch.nn.BCEWithLogitsLoss()
+
+    # ----------------------------------------------
+    def generate_subbatches(self, i, size):
+        """
+        Generate sub batches of data by splitting data along time sequence
+        """
+        # for i in range(self.seq_len // size):
+        #     yield self.inputs[:, i*size: (i+1)*size, :], self.labels
+        return self.inputs[:, i*size: (i+1)*size, :], self.labels
+
+    
+
+
+ 

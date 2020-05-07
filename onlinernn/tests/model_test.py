@@ -13,6 +13,7 @@ from onlinernn.models.rnn_stopbp import StopBPRNN
 from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.datasets.mnist import MNIST, MNISTShift
+from onlinernn.datasets.har import HAR_2
 from onlinernn.options.train_options import TrainOptions
 from onlinernn.models.networks import SimpleRNN
 from onlinernn.exp.expConfig import ExpConfig
@@ -59,9 +60,9 @@ def test_fgsm():
         model.cuda()
 
     criterion = torch.nn.MSELoss() 
-    optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
-    # optimizer =  MultipleOptimizer(FGSM(model.parameters(), lr=lr, iterT=opt.T_, mergeadam=True), 
-                        # Adam(model.parameters(), lr=lr))
+    # optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
+    optimizer =  MultipleOptimizer(FGSM(model.parameters(), lr=lr, iterT=opt.T_, mergeadam=True), 
+                        Adam(model.parameters(), lr=lr))
     # optimizer =  torch.optim.Adam(model.parameters(), lr=lr)
     # optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 
@@ -95,7 +96,7 @@ def test_fgsm():
         #         print(param.grad)
         # update parameters
         # optimizer.step()
-        optimizer.step(epoch+1, True)
+        optimizer.step(epoch+1)
 
         # for name, param in model.named_parameters():
         #     if param.requires_grad:
@@ -110,19 +111,21 @@ def test_fgsm():
 # -----------------------------------------------------
 # VanillaRNN
 # -----------------------------------------------------
-opt.feature_shape = 28
-opt.n_class = 10
-# def test_set_input():
-#     """
-#         Inut and label size feed into RNN
-#     """
-#     d = MNIST(opt)
-#     m = VanillaRNN(opt)
-#     m.data = next(iter(d.dataloader))
-#     m.set_input()
-#     assert list(m.inputs.shape) == [64, 28, 28]
-#     assert list(m.labels.shape) == [64]
+# opt.feature_shape = 28
+# opt.n_class = 10
+opt.batch_size = 64
+def test_set_input():
+    """
+        Inut and label size feed into RNN
+    """
+    d = HAR_2(opt)
+    m = VanillaRNN(opt)
+    m.data = next(iter(d.dataloader))
+    m.set_input()
 
+    assert list(m.inputs.shape) == [64, 128, 9]
+    assert list(m.labels.shape) == [64]
+    
 # accuracy should be around 95%
 # opt.niter = 9
 # opt.niter_decay = 0

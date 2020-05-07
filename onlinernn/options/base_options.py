@@ -55,7 +55,19 @@ class BaseOptions:
             help="the way to standardize MNIST data",
         ) #[originalmean, zeromean]
 
-    
+        parser.add_argument(
+            "--subsequene",
+            action="store_true",
+            default=False,
+            help="slice data to get new batches, if orginal data is 100, slice will get 5 * 20 if 5 is slice interval",
+        )
+        parser.add_argument(
+            "--subseq_size", type=int, default=8, help="length of subsequence"
+        ) 
+
+        parser.add_argument(
+            "--add_noise", action="store_true", default=False, help="add noise to data"
+        ) 
         # -------------------------------------------------------
         # model parameters
         # -------------------------------------------------------
@@ -78,7 +90,7 @@ class BaseOptions:
         parser.add_argument('--iterB', type=int, default=0, help='inside sample batches for FGSM') # run exp 10
 
         # TBPTT
-        parser.add_argument('--for_trunc', type=list, default=128, help='truncate parameter forward steps for TBPTT ') 
+        parser.add_argument('--for_trunc', type=list, default=30, help='truncate parameter forward steps for TBPTT ') 
         parser.add_argument('--back_trunc', type=list, default=20, help='truncate parameter backward steps for TBPTT ') 
 
 

@@ -93,7 +93,6 @@ class StepRNN(SimpleRNN):
         return output.view(-1, self.output_size), states, state_start, state_final 
 
 
-
 # -------------------------------------------------------
 # TBPTTRNN 
 # -------------------------------------------------------

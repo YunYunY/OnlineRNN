@@ -66,6 +66,7 @@ class Adam(Optimizer):
                 if p.grad is None:
                     continue
                 grad = p.grad
+             
                 if grad.is_sparse:
                     raise RuntimeError('Adam does not support sparse gradients, please consider SparseAdam instead')
                 amsgrad = group['amsgrad']

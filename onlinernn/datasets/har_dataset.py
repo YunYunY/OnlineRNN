@@ -11,11 +11,12 @@ from onlinernn.datasets.base_dataset import BaseDataset
 # -------------------------------------------------------
 
 class HAR_2Dataset(Dataset):
-    def __init__(self, path, istrain):
+    def __init__(self, path, istrain, transform=None):
+        self.transform = transform
         # Normalization to Zero Mean and Unit Standard Deviation
         mu = 0.10206605722975093
         sigma = 0.4021651763839265
-        slice_interval = 8 
+        # self.slice_interval = 8 
         # The first column is label
         if istrain:
             datalabels = np.load(path + '/train.npy')
@@ -27,6 +28,22 @@ class HAR_2Dataset(Dataset):
 
         self.labels = datalabels[:, 0:1]
         # print(np.unique(datalabels[:, 0]))
+        # dim0, dim1 = self.data.shape[0], self.data.shape[1]
+        # if slice:
+        #     print('Slice data')
+        #     result = np.zeros(shape=(int(dim0 * (dim1/9/self.slice_interval)), 9*self.slice_interval))
+        #     result_labels = np.zeros(shape=(int(dim0 * (dim1/9/self.slice_interval)), 1))
+        #     count = 0
+        #     for i in range(dim0):
+        #         for j in range(0, dim1, 9 * self.slice_interval):
+        #             result[count, :] = self.data[i, j:j+9*self.slice_interval]
+        #             result_labels[count, :] = self.labels[i, :]
+        #             count += 1
+        #     self.data = result
+        #     self.labels = result_labels
+        
+
+
 
 
     def __len__(self):
@@ -40,7 +57,13 @@ class HAR_2Dataset(Dataset):
         Returns:
             tuple: (image, target) where target is index of the target class.
         """
-        data, target = torch.Tensor(self.data[index]).view(128, 9), torch.Tensor(self.labels[index]).long()
+        # if self.slice:
+            # data, target = torch.Tensor(self.data[index]).view(self.slice_interval, 9), torch.Tensor(self.labels[index]).long()
 
+        # else:
+
+        data, target = torch.Tensor(self.data[index]).view(128, 9), torch.Tensor(self.labels[index]).long()
+        if self.transform:
+            data = self.transform(data)
         return data, target
 

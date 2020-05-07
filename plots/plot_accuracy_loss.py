@@ -30,17 +30,14 @@ elif opt.taskid == 3:
     d = "HAR_2"
     m = "TBPTT"
     optimizer = "FGSM_Adam"
+    opt.iterT = 1
 elif opt.taskid == 4:
-    d = "DSA_19"
+    d = "HAR_2"
     m = "TBPTT"
-    optimizer = "FGSM_Adam"
+    optimizer = "Adam"
+    opt.iterT = 1
 
-# optimizer = "Adam"
-# optimizer = "FGSM"
-# optimizer = "FGSM_Adam"
-# optimizer = "FGSM_RMSProp"
-# optimizer = "SGD"
-# optimizer = "SGD_Momentum"
+
 # -----------------------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------
@@ -108,9 +105,9 @@ def plot_test_acc():
 # -----------------------------------------------------------------------------------------------
 def plot_training_loss_task1():
     if d == "HAR_2":
-        total_batches = 11600
+        total_batches = 2900#11600
     else:
-        total_batches = 7200 # 11600 
+        total_batches = 7200 
     batches = range(4, total_batches+1, 4)
 
     nepoch = 100
