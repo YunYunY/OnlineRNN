@@ -101,7 +101,6 @@ def test_fgsm():
         # for name, param in model.named_parameters():
         #     if param.requires_grad:
         #         print(param.data)
-        #         print(param.buf)
         #         print(param.grad)
         print('-----------------------')
 

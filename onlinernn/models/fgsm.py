@@ -15,11 +15,14 @@ class MultipleOptimizer(object):
             op.zero_grad()
 
     def step(self, total_batches, first_chunk=None, last_chunk=None, sign_option=None):
-        for op in self.optimizers:
-            try:
-                op.step(total_batches, first_chunk, last_chunk, sign_option)
-            except:
-                op.step()
+        continue_Adam = self.optimizers[0].step(total_batches, first_chunk, last_chunk, sign_option)
+        if continue_Adam:
+            self.optimizers[1].step()
+        # for op in self.optimizers:
+        #     try:
+        #         op.step(total_batches, first_chunk, last_chunk, sign_option)
+        #     except:
+        #         op.step()
 
  
 
@@ -34,7 +37,7 @@ class FGSM(Optimizer):
     Example:
         >>> from FGSM import *
         >>> optimizer = FGSM(model.parameters(), lr=0.1, iter=3)
-        >>> optimizer.step()
+        >>> optimizer.step(total_batches)
  
     Reference: 
         https://github.com/rahulkidambi/AccSGD/blob/master/AccSGD.py
@@ -49,6 +52,7 @@ class FGSM(Optimizer):
         self.inside_loop = True # use inner loop or not, default True
         self.sign_vote = True # let all previous sign vote for the last iter's update, default False
         self.fgsm_apply_sign = True # in FGSM method, apply sign or magnitude, default True  
+    
 
     def __setstate__(self, state):
         super(FGSM, self).__setstate__(state)
@@ -61,7 +65,7 @@ class FGSM(Optimizer):
             first_chunk: is first_iter when not in tbptt, otherwise it's first chunk in inner iteration 
             sign_option: apply sign option method modified from Algorithm3 in https://arxiv.org/pdf/1802.04434.pdf
         """
-        loss = None
+        continue_Adam = False
         if total_batches == 1:
             print(f'inner loop is {self.inside_loop}')
             print(f'sign average is {sign_option}')
@@ -102,6 +106,7 @@ class FGSM(Optimizer):
                         # --------------------------multiple sign vote method-----------------------------------
                         if self.sign_vote and first_chunk:
                             param_state['sign_vote'] = torch.zeros_like(p.data)
+                            param_state['nupdate']  = 0.
 
                     buf = param_state['momentum_buffer']
                     grad_sign = p.grad.sign()
@@ -114,13 +119,17 @@ class FGSM(Optimizer):
                         if self.fgsm_apply_sign:
                             # -------------------FGSM with sign of grad------------------
                             buf.mul_(1.-1./t).add_(-lr/t, grad_sign) # update Delta w_t 
+                            # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), grad_sign) # update Delta w_t 
 
                         else: 
-                            # -------------------FGSM with grad value---------------------
+                            # -------------------FGSM with grad value ---------------------
                             buf.mul_(1.-1./t).add_(-lr/t, p.grad) # update Delta w_t 
+                            # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), p.grad) # update Delta w_t 
+
                     # ------------------------Algorithm 3 in Amazon paper------------------
                     if self.sign_vote:
                         param_state['sign_vote'] += buf.sign()
+                        param_state['nupdate'] += 1.
                 else:
                     # --------------------------------No inner loop-------------------------------------------
                     # Momentum FGSM
@@ -134,33 +143,41 @@ class FGSM(Optimizer):
                     mu2 = -lr/t
                     buf.mul_(mu1).add_(mu2, grad_sign) # update Delta w_t 
                     # buf.mul_(1.-2./(t+1)).add_(-2*lr/(t+1), grad_sign) # update Delta w_t 
+
+                # -------------------------------------update grad and p.data--------------------------    
                 # -------------------------------------modified Algorithm 3 of Amazon paper------------
-                if sign_option is None:
-                    p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
+                if not sign_option :
+                    # # ----------------------------Adam method-------------------------------
+                    # if mergeadam:
+                    #     p.grad = buf.clone()/(-lr)
+                    #     # use Delta w_t in adam as grad, need to rescale
+                    # else:
+                    #     p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
+                    #     p.grad = buf.clone()
                     
-                p.buf = buf.clone() 
-          
+                    p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
+                    p.grad = buf.clone()        
                 # -----------------------------last iterT update w-------------------------
                 if self.inside_loop and last_chunk:
                     with torch.no_grad():
                         # recover w_k to original value before inner loop at the last iterT
                         p.data = p.data_orig.clone()
-                    # ----------------------------Adam method-------------------------------
-                    if mergeadam:
-                        # use Delta w_t in adam as grad, need to rescale
+                    # ---------------------------modified Algorithm3 in exp 10--------------
+                    if sign_option:
+                        p.data.add_(-lr, buf.sign())
+                    elif mergeadam:
                         if self.sign_vote:
-                            p.grad = param_state['sign_vote'].sign()
+                            p.grad = -param_state['sign_vote']/param_state['nupdate']
+                            # p.grad = -param_state['sign_vote'].sign()
                         else:
                             p.grad = buf.clone()/(-lr)
-                    # ---------------------------modified Algorithm3 in exp 10--------------
-                    elif sign_option:
-                        p.data.add_(-lr, buf.sign())
+
+                        continue_Adam = True
                     # ----------------------------general FGSM-------------------------------
                     else:
                         # update w_k by adding Detal w_t 
-                        p.data.add_(p.buf)
-                                
-        return loss
+                        p.data.add_(buf.clone())
+        return continue_Adam 
 
 
 
