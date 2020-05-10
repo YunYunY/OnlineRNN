@@ -41,10 +41,10 @@ class Setting:
         """
         
         self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer)
-        # os.makedirs(self.result_dir, exist_ok=True)
-        if os.path.exists(self.result_dir):
-            shutil.rmtree(self.result_dir)
-        os.makedirs(self.result_dir)
+        os.makedirs(self.result_dir, exist_ok=True)
+        # if os.path.exists(self.result_dir):
+        #     shutil.rmtree(self.result_dir)
+        # os.makedirs(self.result_dir)
         print(f"Output folder {self.result_dir}")
         self.loss_dir = os.path.join(self.result_dir, "loss_acc")
         os.makedirs(self.loss_dir, exist_ok=True)
@@ -113,7 +113,15 @@ class RNN(Setting):
         total_iters = 0  # the total number of training iterations
         self.model.total_batches = 0 # the total number of batchs
         self.model.max_test_acc = 0
-        # for epoch in range(self.n_epochs):
+
+        # from onlinernn.datasets.Data_gen import DataHandler,evalDataHandler,testDataHandler
+        # batch_size = 32
+        # dh_train=DataHandler(batch_size)
+        # dh_eval=evalDataHandler(batch_size)
+        # dh_test=testDataHandler(batch_size)
+        # num_train_batches=int(np.ceil(dh_train.GetDatasetSize()/(batch_size+0.0)))
+
+#---------------------------------------------
         for epoch in range(
             self.opt.epoch_count, self.opt.n_epochs + 1):
 
@@ -133,6 +141,18 @@ class RNN(Setting):
                 # Setup input
                 self.model.data = data 
                 self.model.set_input()
+                # ---------------------------------------------------
+
+                # self.model.inputs,self.model.labels=dh_train.GetBatch()
+              
+                # self.model.inputs=self.model.inputs.transpose(1,0,2)
+                # print('here')
+                # print(self.model.inputs[211, 0, 0])
+                # exit(0)
+    
+                # self.model.inputs=torch.from_numpy(self.model.inputs).cuda()
+                # self.model.labels=torch.from_numpy(np.int64(self.model.labels)).cuda()
+
                 # Forward, backward, update network weights
                 self.model.train() 
                 # Save gradients
@@ -163,8 +183,10 @@ class RNN(Setting):
                 self.model.get_test_acc() # calculate and save global acc
             self.model.save_test_acc(epoch)
 
-
-            # self.model.update_learning_rate()  # update learning rates at the end of every epoch.
+            lr = self.model.update_learning_rate()  # update learning rates at the end of every epoch.
+            print('learning rate = %.7f' % lr)
+            if lr < self.opt.end_rate:
+                break
         print(f'Total batch is { self.model.total_batches}')
         print(f'Total training time is {time.time() - global_start_time}')
         print(f"Output folder {self.result_dir}")

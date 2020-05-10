@@ -4,7 +4,7 @@ To install extra required packages, run $pip install -e .[dev]
 
 To run nosetest $./local_test.sh onlinernn/tests/model_test.py
 
-To train model $python onlinernn/main.py --istrain --taskid=1
+To train model $CUDA_VISIBLE_DEVICES=2 python onlinernn/main.py --istrain --taskid=1
 
 To test model $python onlinernn/main.py --taskid=1 --load_iter=299
 

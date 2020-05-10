@@ -2,11 +2,13 @@ import glob, os
 import torch
 import numpy as np
 from onlinernn.options.train_options import TrainOptions
-from onlinernn.datasets.mnist import MNIST, MNISTShift, MNISTPermute
+from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTShift, MNISTPermute
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
 from onlinernn.tests.test_utils import show_shift
 from onlinernn.datasets.data_utils import loop_queue
+from onlinernn.datasets.mnist_byte import MNIST_byte
+
 
 
 # ------------------------------------------------------------
@@ -14,8 +16,36 @@ from onlinernn.datasets.data_utils import loop_queue
 opt = TrainOptions().parse()
 opt.test_case = "test"
 opt.batch_size = 64
-opt.istrain = False
+opt.istrain = True
 # ------------------------------------------------------------
+
+# def test_MNIST_byte():
+#     """
+#     Test MNIST class
+#     """
+#     d = MNIST_byte(opt)
+#     batch = next(iter(d.dataloader))    
+#     assert list(batch[0][:64].shape) == [64, 784, 1]
+#     data = batch[0][:64]
+#     result_dir = "result/dataset_test/pixelMNIST_byte"
+#     os.makedirs(result_dir, exist_ok=True)
+#     data = data.view(64, 1, 28, 28)
+#     show_shift(data, 8, result_dir, "pixelMNIST_byte.png")
+
+def test_pixelmnist():
+    """
+    Test MNIST class
+    """
+    opt.download_daa = False
+    d = MNISTPixel(opt)
+    batch = next(iter(d.dataloader))
+    assert list(batch[0][:64].shape) == [64, 784, 1]
+    data = batch[0][:64]
+    result_dir = "result/dataset_test/pixelMNIST"
+    os.makedirs(result_dir, exist_ok=True)
+    print(data.shape)
+    data = data.view(64, 1, 28, 28)
+    show_shift(data, 8, result_dir, "pixelMNIST.png")
 
 def test_dsa19():
     d = DSA_19(opt)
@@ -24,7 +54,7 @@ def test_dsa19():
     assert list(batch[0][:64].shape) == [64, 125, 45]
     assert list(batch[1][:64].shape) == [64, 1]
 
-
+'''
 def test_har2():
     d = HAR_2(opt)
     if opt.istrain:
@@ -35,7 +65,7 @@ def test_har2():
     print(batch[0][:64].mean())
     assert list(batch[0][:64].shape) == [64, 128, 9]
     assert list(batch[1][:64].shape) == [64, 1]
-'''
+
 
 def test_mnist():
     """
@@ -98,4 +128,5 @@ def test_mnistpermute():
     os.makedirs(result_dir, exist_ok=True)
     # visually check image after shifting
     show_shift(data, 8, result_dir, "MNISTPermute.png")
+
 '''

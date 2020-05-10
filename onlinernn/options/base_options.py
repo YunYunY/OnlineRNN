@@ -93,6 +93,19 @@ class BaseOptions:
         parser.add_argument('--for_trunc', type=list, default=30, help='truncate parameter forward steps for TBPTT ') 
         parser.add_argument('--back_trunc', type=list, default=20, help='truncate parameter backward steps for TBPTT ') 
 
+        # indRNN sequential MNIST
+        parser.add_argument('--MAG', type=float, default=5.0)
+        parser.add_argument('--u_lastlayer_ini', action='store_true', default=True)
+        parser.add_argument('--constrain_U', action='store_true', default=True)
+        parser.add_argument('--model', type=str, default='plainIndRNN')
+        parser.add_argument('--bn_location', type=str, default='bn_after')
+        parser.add_argument('--dropout', type=float, default=0.1)
+        parser.add_argument('--pThre', type=int, default=100)
+        parser.add_argument('--U_bound', type=float, default=0.0)
+        parser.add_argument('--decayfactor', type=float, default=1e-4,help='lr')
+        parser.add_argument('--gradclipvalue', type=float, default=10, help='gradclipvalue')
+       
+
 
         # -------------------------------------------------------
         # additional parameters 

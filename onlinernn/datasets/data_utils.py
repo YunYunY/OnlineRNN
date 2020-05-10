@@ -48,4 +48,10 @@ class AddGaussianNoise(object):
     def __repr__(self):
         return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
 
+# ----------------------------------------------
+class ReshapeTransform:
+    def __init__(self, new_size):
+        self.new_size = new_size
 
+    def __call__(self, img):
+        return torch.reshape(img, self.new_size)

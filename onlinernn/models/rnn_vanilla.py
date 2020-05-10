@@ -19,7 +19,6 @@ class VanillaRNN(BaseModel):
             self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
         else:
             self.loss_method = "CrossEntropy" # ["BCELogit" "CrossEntropy" "MSE"]
-
   
     def init_net(self):
         """
@@ -71,7 +70,10 @@ class VanillaRNN(BaseModel):
         # TODO LR SCHEDULER MAY NEED TO BE STORED FOR RESUME
         #https://discuss.pytorch.org/t/why-doesnt-resuming-work-properly-in-pytorch/19430/4
         if self.istrain and self.opt.niter_decay != 0:
-            self.schedulers = [get_scheduler(self.optimizer, self.opt)]
+            # self.schedulers = [get_scheduler(self.optimizer, self.opt)]
+            self.schedulers = [
+                get_scheduler(optimizer, self.opt) for optimizer in self.optimizers
+            ]
         if (not self.istrain) or self.opt.continue_train:
             load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
             print(f'Load the {load_prefix} epoch network')
@@ -87,8 +89,11 @@ class VanillaRNN(BaseModel):
             else:
                 scheduler.step()
 
-        lr = self.optimizer.param_groups[0]['lr']
-        print('learning rate = %.7f' % lr)
+        # lr = self.optimizer.param_groups[0]['lr']
+        lr = self.optimizers[0].param_groups[0]['lr']
+        return lr
+
+
     # ----------------------------------------------
     def load_networks(self, load_prefix):
         """Load all the networks from the disk.
@@ -257,18 +262,20 @@ class VanillaRNN(BaseModel):
         else:
             corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
             accuracy = 100.0 * corrects/batch_size
-
+        
         return accuracy.item()
 
     def save_losses(self, epoch):
         # calculate average loss for each batch and save
         self.losses = sum(self.losses) / len(self.losses)
         self.train_acc = sum(self.train_acc) / len(self.train_acc)
+        
         np.savez(
             self.loss_dir + "/epoch_" + str(epoch) + "_losses_train_acc.npz",
             losses = self.losses, train_acc = self.train_acc)
 
     def save_test_acc(self, epoch):
+
         self.max_test_acc = max(self.max_test_acc, self.test_acc)
         print(f"Maximum test acc is {self.max_test_acc}")
         np.savez(

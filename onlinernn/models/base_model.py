@@ -45,6 +45,11 @@ class BaseModel(ABC):
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, weight_decay=0.0001)
         elif self.opt.optimizer == 'SGD_Momentum':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, momentum=0.9)
+        elif self.opt.optimizer == 'irnn_Adam':
+            self.optimizer = torch.optim.Adam([
+                    {'params': self.param_nodecay},
+                    {'params': self.param_decay, 'weight_decay': self.opt.decayfactor}
+                ], lr=self.lr) 
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
         elif self.opt.optimizer == 'FGSM_Adam':

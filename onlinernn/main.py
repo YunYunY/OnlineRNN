@@ -2,7 +2,8 @@ import torch
 import numpy as np
 from exp.expConfig import ExpConfig
 from onlinernn.options.train_options import TrainOptions
-from onlinernn.datasets.mnist import MNIST, MNISTShift
+from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTShift
+from onlinernn.datasets.mnist_byte import MNIST_byte
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
 from onlinernn.models.setting import Setting
@@ -10,11 +11,12 @@ from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
 from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.rnn_irnn import IRNN
+from onlinernn.models.rnn_ind import IndRNN
 from onlinernn.models.setting import RNN
 
 torch.manual_seed(42)
 np.random.seed(42)
-
+torch.set_printoptions(precision=8)
 """
 The script supports continue/resume training. Use '--continue_train' to resume your previous training.
 """
@@ -91,6 +93,7 @@ if opt.taskid == 3:
     opt.add_noise = True
     opt.iterT = 4
     d = HAR_2(opt)
+
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
@@ -127,5 +130,90 @@ if opt.taskid == 4:
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+# -----------------------------------------------------------------------------------------------
+# Repeat result of sequential MNIST publish on indRNN
+# Reference: https://github.com/Sunnydreamrain/IndRNN_pytorch/tree/master/pixelMNIST
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 5:
+    opt.optimizer = "irnn_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 1
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
 
-    
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 6:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 1
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 7:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 4
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()

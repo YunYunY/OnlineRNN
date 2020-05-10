@@ -70,10 +70,19 @@ class TrainOptions(BaseOptions):
             default=0,
             help="# of iter to linearly decay learning rate to zero or period for step lr",
         ) 
- 
+        parser.add_argument('--end_rate', type=float, default=1e-6) # end training once accuracy lower than this 
+
         parser.add_argument(
             "--lr_policy", type=str, default="step", help="the learning rate policy"
         )  # 'linear', 'step'
+
+        parser.add_argument(
+            "--endless_train",
+            action="store_true",
+            default=False,
+            help="reduce the lr by a factor after certain condition, until converge. Otherwise keep training",
+        ) 
+     
         parser.add_argument(
             "--lr", type=float, default=0.001, help="initial learning rate for adam"
         ) # 0.001

@@ -1,0 +1,69 @@
+import numpy as np
+import torch
+import gzip
+from torch.utils.data import Dataset, DataLoader
+from onlinernn.datasets.base_dataset import BaseDataset
+
+# -------------------------------------------------------
+# Custom HAR-2 data has 7352 training series (with 50% overlap between each serie), 2947 record in test. The first row is label. 
+# 128 timesteps per series, 9 input parameters per timestep, 1152 features
+# Ref: https://openreview.net/pdf?id=HylpqA4FwS
+# -------------------------------------------------------
+torch.set_printoptions(precision=8)
+
+class MNIST_byte_Dataset(Dataset):
+    def __init__(self, path, istrain, transform=None):
+        self.transform = transform
+       
+        if istrain:
+            data_filename = path + '/raw/train-images-idx3-ubyte.gz'
+            label_filename = path + '/raw/train-labels-idx1-ubyte.gz'
+        else:
+            data_filename = path + '/raw/t10k-images-idx3-ubyte.gz'
+            label_filename = path + '/raw/t10k-labels-idx1-ubyte.gz'
+
+        # Read the inputs in Yann LeCun's binary format.
+        with gzip.open(data_filename, 'rb') as f:
+            data = np.frombuffer(f.read(), np.uint8, offset=16)
+
+        # The inputs are vectors now, we reshape them to monochrome 2D images,
+        # following the shape convention: (examples, channels, rows, columns)
+        data = data.reshape(-1, 1, 28, 28)
+
+        # The inputs come as bytes, we convert them to float32 in range [0,1].
+        # (Actually to range [0, 255/256], for compatibility to the version
+        # provided at http://deeplearning.net/data/mnist/mnist.pkl.gz.)
+        data = data / np.float32(256)
+
+     
+        data = data.reshape(data.shape[0], -1, 1)
+  
+        self.data = data.astype('float32')
+        self.data -= 0.5
+        self.data *= 2
+        # print(self.data[0, 211])
+        with gzip.open(label_filename, 'rb') as f:
+            self.labels = np.frombuffer(f.read(), np.uint8, offset=8)
+        self.labels = self.labels.astype(np.int32)
+            # print(len(labels))
+
+            
+    def __len__(self):
+        return len(self.data)
+        
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+
+        data, target = torch.Tensor(self.data[index]), torch.from_numpy(np.asarray(self.labels[index])).long()
+
+
+        if self.transform:
+            data = self.transform(data)
+        return data, target
+

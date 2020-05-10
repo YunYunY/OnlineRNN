@@ -51,7 +51,7 @@ class FGSM(Optimizer):
         self.iterT = iterT
         self.inside_loop = True # use inner loop or not, default True
         self.sign_vote = True # let all previous sign vote for the last iter's update, default False
-        self.fgsm_apply_sign = True # in FGSM method, apply sign or magnitude, default True  
+        self.fgsm_apply_sign = False # in FGSM method, apply sign or magnitude, default True  
     
 
     def __setstate__(self, state):
@@ -167,8 +167,8 @@ class FGSM(Optimizer):
                         p.data.add_(-lr, buf.sign())
                     elif mergeadam:
                         if self.sign_vote:
-                            p.grad = -param_state['sign_vote']/param_state['nupdate']
-                            # p.grad = -param_state['sign_vote'].sign()
+                            # p.grad = -param_state['sign_vote']/param_state['nupdate']
+                            p.grad = -param_state['sign_vote'].sign()
                         else:
                             p.grad = buf.clone()/(-lr)
 

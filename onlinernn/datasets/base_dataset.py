@@ -23,7 +23,7 @@ class BaseDataset(ABC):
 
     @property
     def name(self):
-        if self.class_name() == "MNISTPermute":
+        if self.class_name() in["MNISTPermute", "MNISTPixel", "MNIST_byte"]:
             return "MNIST"
         return self.class_name()
 
@@ -61,6 +61,7 @@ class BaseDataset(ABC):
                 num_workers=self.num_threads,
             )
 
+  
         return dataset, dataloader
 
     # ----------------------------------------------
