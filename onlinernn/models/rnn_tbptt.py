@@ -47,7 +47,6 @@ class TBPTT(VanillaRNN):
         for i in range(nchunks):
             sub_inputs, sub_labels = self.generate_subbatches(i, size=self.opt.subseq_size)
             self.optimizer.zero_grad()
-            # self.states.detach()
             self.states = self.states.detach()
          
             outputs, self.states = self.rnn_model(sub_inputs, self.states)

@@ -40,7 +40,7 @@ class Setting:
             If not, create the directory
         """
         
-        self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer)
+        self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer, str(self.opt.taskid))
         os.makedirs(self.result_dir, exist_ok=True)
         # if os.path.exists(self.result_dir):
         #     shutil.rmtree(self.result_dir)
@@ -114,12 +114,7 @@ class RNN(Setting):
         self.model.total_batches = 0 # the total number of batchs
         self.model.max_test_acc = 0
 
-        # from onlinernn.datasets.Data_gen import DataHandler,evalDataHandler,testDataHandler
-        # batch_size = 32
-        # dh_train=DataHandler(batch_size)
-        # dh_eval=evalDataHandler(batch_size)
-        # dh_test=testDataHandler(batch_size)
-        # num_train_batches=int(np.ceil(dh_train.GetDatasetSize()/(batch_size+0.0)))
+     
 
 #---------------------------------------------
         for epoch in range(
@@ -142,16 +137,6 @@ class RNN(Setting):
                 self.model.data = data 
                 self.model.set_input()
                 # ---------------------------------------------------
-
-                # self.model.inputs,self.model.labels=dh_train.GetBatch()
-              
-                # self.model.inputs=self.model.inputs.transpose(1,0,2)
-                # print('here')
-                # print(self.model.inputs[211, 0, 0])
-                # exit(0)
-    
-                # self.model.inputs=torch.from_numpy(self.model.inputs).cuda()
-                # self.model.labels=torch.from_numpy(np.int64(self.model.labels)).cuda()
 
                 # Forward, backward, update network weights
                 self.model.train() 

@@ -13,8 +13,29 @@ from onlinernn.models.cuda_IndRNN_onlyrecurrent import IndRNN_onlyrecurrent as I
 
 # from IndRNN_onlyrecurrent import IndRNN_onlyrecurrent as IndRNN
 
+def generate_subbatches(inputs, i, size):
+    """
+    Generate sub batches of data by splitting data along time sequence
+    """
+  
+    return inputs[i*size: (i+1)*size, :, :]
 
 
+def set_bn_train(m):
+    classname = m.__class__.__name__
+    if classname.find('BatchNorm') != -1:
+      m.train()   
+
+def clip_weight(RNNmodel, clip):
+    for name, param in RNNmodel.named_parameters():
+        if 'weight_hh' in name:
+            param.data.clamp_(-clip,clip)
+    
+def clip_gradient(model, clip):
+    for p in model.parameters():    
+        p.grad.data.clamp_(-clip,clip)
+  
+ 
 class Batch_norm_overtime(nn.Module):
     def __init__(self, hidden_size, seq_len):
         super(Batch_norm_overtime, self).__init__()
@@ -57,7 +78,7 @@ class Linear_overtime_module(nn.Module):
         self.input_size = input_size
         self.hidden_size = hidden_size
 
-    def forward(self, x):
+    def forward(self, x, h0=None):
         y = x.contiguous().view(-1, self.input_size)
         y = self.fc(y)
         y = y.view(x.size()[0], x.size()[1], self.hidden_size)

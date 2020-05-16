@@ -214,7 +214,6 @@ class IndRNN_Compute_GPU(Function):
 
 
 
-
 class IndRNN_onlyrecurrent(nn.Module):
     def __init__(self, hidden_size,gradclipvalue=0,
                  hidden_max_abs=None, recurrent_init=None):
@@ -233,15 +232,23 @@ class IndRNN_onlyrecurrent(nn.Module):
                 else:
                     self.recurrent_init(weight)
 
-    def forward(self, input, h0=None):
+    def forward(self, inputs, h0=None):
+        
+        if type(inputs) is dict:
+            input = inputs[0]
+            h0 = inputs[1]
+        else:
+            input = inputs
+
         assert input.dim() == 2 or input.dim() == 3        
         if h0 is None:
             h0 = input.data.new(input.size(-2),input.size(-1)).zero_()
+        
         elif (h0.size(-1)!=input.size(-1)) or (h0.size(-2)!=input.size(-2)):
             raise RuntimeError(
                 'The initial hidden size must be equal to input_size. Expected {}, got {}'.format(
                     h0.size(), input.size()))
+      
         IndRNN_Compute = IndRNN_Compute_GPU().apply
-        # IndRNN_Compute = IndRNN_Compute_GPU(self.gradclipvalue)
-        #h=IndRNN_Compute(input, self.weight_hh, h0)
+     
         return IndRNN_Compute(input, self.weight_hh, h0)

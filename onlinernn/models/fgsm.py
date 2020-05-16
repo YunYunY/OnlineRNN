@@ -50,7 +50,7 @@ class FGSM(Optimizer):
         super(FGSM, self).__init__(params, defaults)
         self.iterT = iterT
         self.inside_loop = True # use inner loop or not, default True
-        self.sign_vote = True # let all previous sign vote for the last iter's update, default False
+        self.sign_vote = False # let all previous sign vote for the last iter's update, default False
         self.fgsm_apply_sign = False # in FGSM method, apply sign or magnitude, default True  
     
 
@@ -91,9 +91,8 @@ class FGSM(Optimizer):
             mergeadam = group['mergeadam']
 
             # weight_decay = group['weight_decay']
-
             for p in group['params']:
-               
+              
                 if first_chunk:
                     p.data_orig = p.data.clone() # keep original weights
                 param_state = self.state[p]
@@ -110,6 +109,7 @@ class FGSM(Optimizer):
 
                     buf = param_state['momentum_buffer']
                     grad_sign = p.grad.sign()
+                
                     # -------------------------------Modified Algorithm 3 from Amazon sign paper------------------
                     if sign_option:
                         # Modified average sign method
@@ -122,8 +122,15 @@ class FGSM(Optimizer):
                             # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), grad_sign) # update Delta w_t 
 
                         else: 
-                            # -------------------FGSM with grad value ---------------------
-                            buf.mul_(1.-1./t).add_(-lr/t, p.grad) # update Delta w_t 
+                            # -------------------FGSM with grad value ---------------------    
+                            # id20 
+                            d_p = p.grad.data.clone()
+                            d_p_norm = torch.norm(d_p)
+                            d_p.div_(d_p_norm)
+                            buf.mul_(1.-1./t).add_(-lr/t, d_p) # update Delta w_t 
+
+                            # use grad only
+                            # buf.mul_(1.-1./t).add_(-lr/t, p.grad) # update Delta w_t 
                             # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), p.grad) # update Delta w_t 
 
                     # ------------------------Algorithm 3 in Amazon paper------------------
@@ -156,7 +163,7 @@ class FGSM(Optimizer):
                     #     p.grad = buf.clone()
                     
                     p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
-                    p.grad = buf.clone()        
+                    p.grad = buf.clone()    
                 # -----------------------------last iterT update w-------------------------
                 if self.inside_loop and last_chunk:
                     with torch.no_grad():
@@ -167,8 +174,8 @@ class FGSM(Optimizer):
                         p.data.add_(-lr, buf.sign())
                     elif mergeadam:
                         if self.sign_vote:
-                            # p.grad = -param_state['sign_vote']/param_state['nupdate']
-                            p.grad = -param_state['sign_vote'].sign()
+                            p.grad = -param_state['sign_vote']/param_state['nupdate']
+                            # p.grad = -param_state['sign_vote'].sign()
                         else:
                             p.grad = buf.clone()/(-lr)
 
@@ -177,6 +184,7 @@ class FGSM(Optimizer):
                     else:
                         # update w_k by adding Detal w_t 
                         p.data.add_(buf.clone())
+
         return continue_Adam 
 
 

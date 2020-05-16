@@ -217,3 +217,462 @@ if opt.taskid == 7:
     m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 8:
+    opt.optimizer = "Adam" 
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 1
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 9:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 10
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 10:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 20
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+# average of sign
+if opt.taskid == 11:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 20
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# No FGSM sign, sum every sign, final update with average of sum,
+if opt.taskid == 12:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 30
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+# No FGSM sign, sum every sign, final update with average of sum,
+if opt.taskid == 13:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+# No FGSM sign, sum every sign, final update with average of sum,
+if opt.taskid == 14:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 50
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+# FGSM sign, sum every sign, final update with average of sum, 1/t coefficient, iterT=40, lr=2e-4
+if opt.taskid == 15:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+# FGSM sign, sum every sign, final update with average of sum, 1/t coefficient, iterT=40, lr=2e-3
+if opt.taskid == 16:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-3
+    opt.end_rate = 1e-5
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+# FGSM sign, sum every sign, final update with average of sum, 2/(t+2) coefficient, iterT=40, lr=2e-4
+if opt.taskid == 17:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+# FGSM sign, sum every sign, final update with average of sum, 2/(t+2) coefficient, iterT=40, lr=2e-3
+if opt.taskid == 18:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-3
+    opt.end_rate = 1e-5
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+# FGSM sign, sum every sign, final update with average of sum, 1/t coefficient, iterT=40, lr=2e-4
+if opt.taskid == 19:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-5
+    opt.end_rate = 1e-7
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+# FGSM grad/2norm of grad, sum every sign, final update with average of sum, 1/t coefficient, iterT=40, lr=2e-4
+if opt.taskid == 20:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 40
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# FGSM grad/2norm of grad, sum every sign, final update with average of sum, 1/t coefficient, iterT=1, lr=2e-4
+if opt.taskid == 21:
+    opt.optimizer = "FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    input_size = 1
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 1
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# tbptt with indRNN no BN layer
+if opt.taskid == 22:
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 4
+    opt.subsequene = True
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+
+
+    
