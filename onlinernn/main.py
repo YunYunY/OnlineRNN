@@ -30,16 +30,7 @@ if not opt.istrain:
     # opt.num_test = 1  # how many test batches to run
 # -----------------------------------------------------------------------------------------------
 
-if opt.taskid == 0:
-    for T in opt.T:
-        print(f"----------------- Truncation T is {T} -----------------")
-        opt.T_ = T
 
-        d = MNIST(opt)
-        s = RNN(opt)
-        m = IRNN(opt)
-        p = ExpConfig(dataset=d, setting=s, model=m)
-        p.run()
 # -----------------------------------------------------------------------------------------------
 # Vanishing Gradient Solver FGSM
 # -----------------------------------------------------------------------------------------------
@@ -672,7 +663,161 @@ if opt.taskid == 22:
     p.run()
 
 
+# -----------------------------------------------------------------------------------------------
+# pixelMNIST with tbptt
+
+if opt.taskid == 23:
+
+    opt.optimizer = "Adam"
+    opt.subsequene = True
+    opt.mnist_standardize = "originalmean"
+    opt.subseq_size = 28
+    opt.hidden_size = 128
+    opt.niter_decay = 200
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.predic_task = "Softmax"
+    opt.lrgamma = 0.5
+    opt.iterT = 1
+    opt.batch_size = 512
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt) 
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# tbptt with indRNN no BN layer, 1 layer 
+if opt.taskid == 24:
+    opt.optimizer = "FGSM_Adam" 
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 4
+    opt.subsequene = True
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# pixelMNIST with tbptt
+
+if opt.taskid == 25:
+
+    opt.optimizer = "Adam"
+    opt.subsequene = True
+    opt.mnist_standardize = "originalmean"
+    opt.subseq_size = 196
+    opt.hidden_size = 128
+    opt.niter_decay = 200
+    opt.endless_train = False
+    opt.niter = 759
+    opt.predic_task = "Softmax"
+    opt.lrgamma = 0.5
+    opt.iterT = 1
+    opt.batch_size = 512
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt) 
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
 
 
+# -----------------------------------------------------------------------------------------------
+# pixelMNIST with tbptt
 
-    
+if opt.taskid == 26:
+
+    opt.optimizer = "Adam"
+    opt.subsequene = True
+    opt.mnist_standardize = "originalmean"
+    opt.subseq_size = 28
+    opt.hidden_size = 128
+    opt.niter_decay = 200
+    opt.endless_train = False
+    opt.niter = 10000000-1
+    opt.epoch_count = 0
+    # opt.epoch = "2"
+    opt.predic_task = "Softmax"
+    opt.lrgamma = 0.5
+    opt.iterT = 1
+    opt.batch_size = 512
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt) 
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# pixelMNIST with tbptt
+
+if opt.taskid == 27:
+
+    opt.optimizer = "Adam"
+    opt.subsequene = True
+    opt.mnist_standardize = "originalmean"
+    opt.subseq_size = 196
+    opt.hidden_size = 128
+    opt.niter_decay = 200
+    opt.endless_train = False
+    opt.niter = 10000000-1
+    opt.epoch_count = 0
+    # opt.epoch = "2"
+    opt.predic_task = "Softmax"
+    opt.lrgamma = 0.5
+    opt.iterT = 1
+    opt.batch_size = 512
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt) 
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+

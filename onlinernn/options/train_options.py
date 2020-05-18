@@ -75,6 +75,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--lr_policy", type=str, default="step", help="the learning rate policy"
         )  # 'linear', 'step'
+        parser.add_argument('--lrgamma', type=float, default=0.1) # lr decay rate
 
         parser.add_argument(
             "--endless_train",

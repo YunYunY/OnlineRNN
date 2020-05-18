@@ -278,5 +278,5 @@ def get_scheduler(optimizer, opt):
         lr_lambda = create_lambda_rule(opt)
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_lambda)
     elif opt.lr_policy == 'step':
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.niter_decay, gamma=0.1)
+        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.niter_decay, gamma=opt.lrgamma)
     return scheduler

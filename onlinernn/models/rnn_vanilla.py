@@ -74,6 +74,7 @@ class VanillaRNN(BaseModel):
             self.schedulers = [
                 get_scheduler(optimizer, self.opt) for optimizer in self.optimizers
             ]
+         
         if (not self.istrain) or self.opt.continue_train:
             load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
             print(f'Load the {load_prefix} epoch network')
@@ -83,13 +84,14 @@ class VanillaRNN(BaseModel):
     
     def update_learning_rate(self):
         """Update learning rates for all the networks; called at the end of every epoch"""
-        for scheduler in self.schedulers:
-            if self.opt.lr_policy == 'plateau':
-                scheduler.step(self.metric)
-            else:
-                scheduler.step()
+        if self.istrain and self.opt.niter_decay != 0:
+            for scheduler in self.schedulers:
+                if self.opt.lr_policy == 'plateau':
+                    scheduler.step(self.metric)
+                else:
+                    scheduler.step()
 
-        # lr = self.optimizer.param_groups[0]['lr']
+            # lr = self.optimizer.param_groups[0]['lr']
         lr = self.optimizers[0].param_groups[0]['lr']
         return lr
 
@@ -115,17 +117,27 @@ class VanillaRNN(BaseModel):
                     del state_dict._metadata
                 net.load_state_dict(state_dict)
 
-            for i, optimizer in enumerate(self.optimizers):
-                load_filename = "%s_optimizer_T%s_optimizer_%s.pth" % (load_prefix, self.T, i)
-                load_path = os.path.join(self.result_dir, load_filename)
-                # optimizer = getattr(self, "optimizer")
-                print("loading the optimizer from %s" % load_path)
-                # if you are using PyTorch newer than 0.4 (e.g., built from
-                # GitHub source), you can remove str() on self.device
-                state_dict = torch.load(load_path, map_location=self.device)
-                if hasattr(state_dict, "_metadata"):
-                    del state_dict._metadata
-                optimizer.load_state_dict(state_dict)
+        for i, optimizer in enumerate(self.optimizers):
+            load_filename = "%s_optimizer_T%s_optimizer_%s.pth" % (load_prefix, self.T, i)
+            load_path = os.path.join(self.result_dir, load_filename)
+            # optimizer = getattr(self, "optimizer")
+            print("loading the optimizer from %s" % load_path)
+            # if you are using PyTorch newer than 0.4 (e.g., built from
+            # GitHub source), you can remove str() on self.device
+            state_dict = torch.load(load_path, map_location=self.device)
+            if hasattr(state_dict, "_metadata"):
+                del state_dict._metadata
+            optimizer.load_state_dict(state_dict)
+
+        for i, scheduler in enumerate(self.schedulers):
+            load_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (load_prefix, self.T, i)
+            load_path = os.path.join(self.result_dir, load_filename)
+            print("loading the scheduler from %s" % load_path)
+            state_dict = torch.load(load_path, map_location=self.device)
+           
+            if hasattr(state_dict, "_metadata"):
+                del state_dict._metadata
+            scheduler.load_state_dict(state_dict)
     # ----------------------------------------------
     def set_test_input(self):
         self.set_input()
@@ -133,6 +145,7 @@ class VanillaRNN(BaseModel):
     def set_input(self):
         self.inputs, self.labels = self.data
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
+      
         self.labels = self.labels.view(-1).to(self.device)
         if self.opt.predic_task == 'Binary':
             self.labels = self.labels.float()
@@ -310,6 +323,13 @@ class VanillaRNN(BaseModel):
             save_path = os.path.join(self.result_dir, save_filename)
             # optimizer = getattr(self, "optimizer")
             torch.save(optimizer.state_dict(), save_path)
+
+        
+        # Save schedulers
+        for i, scheduler in enumerate(self.schedulers):
+            save_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (epoch, self.T, i)
+            save_path = os.path.join(self.result_dir, save_filename)
+            torch.save(scheduler.state_dict(), save_path)
       
     # ----------------------------------------------
  

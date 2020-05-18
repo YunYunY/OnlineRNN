@@ -42,8 +42,7 @@ class TBPTT(VanillaRNN):
         """
         losses = []
         nchunks = self.seq_len // self.opt.subseq_size
-        # subbatches = self.generate_subbatches(size=self.opt.subseq_size)
-        # for sub_inputs, sub_labels in self.generate_subbatches(size=self.opt.subseq_size):
+       
         for i in range(nchunks):
             sub_inputs, sub_labels = self.generate_subbatches(i, size=self.opt.subseq_size)
             self.optimizer.zero_grad()
