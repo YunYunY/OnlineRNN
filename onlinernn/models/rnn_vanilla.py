@@ -128,16 +128,16 @@ class VanillaRNN(BaseModel):
             if hasattr(state_dict, "_metadata"):
                 del state_dict._metadata
             optimizer.load_state_dict(state_dict)
-
-        for i, scheduler in enumerate(self.schedulers):
-            load_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (load_prefix, self.T, i)
-            load_path = os.path.join(self.result_dir, load_filename)
-            print("loading the scheduler from %s" % load_path)
-            state_dict = torch.load(load_path, map_location=self.device)
-           
-            if hasattr(state_dict, "_metadata"):
-                del state_dict._metadata
-            scheduler.load_state_dict(state_dict)
+        if self.opt.niter_decay != 0:
+            for i, scheduler in enumerate(self.schedulers):
+                load_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (load_prefix, self.T, i)
+                load_path = os.path.join(self.result_dir, load_filename)
+                print("loading the scheduler from %s" % load_path)
+                state_dict = torch.load(load_path, map_location=self.device)
+            
+                if hasattr(state_dict, "_metadata"):
+                    del state_dict._metadata
+                scheduler.load_state_dict(state_dict)
     # ----------------------------------------------
     def set_test_input(self):
         self.set_input()
@@ -326,10 +326,11 @@ class VanillaRNN(BaseModel):
 
         
         # Save schedulers
-        for i, scheduler in enumerate(self.schedulers):
-            save_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (epoch, self.T, i)
-            save_path = os.path.join(self.result_dir, save_filename)
-            torch.save(scheduler.state_dict(), save_path)
+        if self.opt.niter_decay != 0:
+            for i, scheduler in enumerate(self.schedulers):
+                save_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (epoch, self.T, i)
+                save_path = os.path.join(self.result_dir, save_filename)
+                torch.save(scheduler.state_dict(), save_path)
       
     # ----------------------------------------------
  

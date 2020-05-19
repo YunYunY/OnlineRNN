@@ -50,7 +50,7 @@ class FGSM(Optimizer):
         super(FGSM, self).__init__(params, defaults)
         self.iterT = iterT
         self.inside_loop = True # use inner loop or not, default True
-        self.sign_vote = False # let all previous sign vote for the last iter's update, default False
+        self.sign_vote = False # let all previous sign vote for the last iter of inner loop's update, default False
         self.fgsm_apply_sign = False # in FGSM method, apply sign or magnitude, default True  
     
 
@@ -63,19 +63,21 @@ class FGSM(Optimizer):
         Arguments:
             total_batches: total batch number 
             first_chunk: is first_iter when not in tbptt, otherwise it's first chunk in inner iteration 
+            last_chunk: similar to first_chunk, for stand for last one
             sign_option: apply sign option method modified from Algorithm3 in https://arxiv.org/pdf/1802.04434.pdf
         """
+        # Adam update only works in the last step after inner iteration
         continue_Adam = False
+
         if total_batches == 1:
             print(f'inner loop is {self.inside_loop}')
             print(f'sign average is {sign_option}')
         if self.inside_loop:
-            # inner loop
             first_iter = (total_batches-1)%self.iterT == 0 # if this is the first iter of inner loop
             last_iter = (total_batches-1)%self.iterT == (self.iterT-1) # if this is the last step of inner loop
            
             t = (total_batches-1)%self.iterT + 1
-            # --------------------Case for TBPTT---------------------------
+            # --------------------for TBPTT---------------------------
             if not first_chunk and not last_chunk:
                 first_chunk = first_iter
                 last_chunk = last_iter
@@ -90,7 +92,6 @@ class FGSM(Optimizer):
             lr = group['lr']
             mergeadam = group['mergeadam']
 
-            # weight_decay = group['weight_decay']
             for p in group['params']:
               
                 if first_chunk:
@@ -105,14 +106,13 @@ class FGSM(Optimizer):
                         # --------------------------multiple sign vote method-----------------------------------
                         if self.sign_vote and first_chunk:
                             param_state['sign_vote'] = torch.zeros_like(p.data)
-                            param_state['nupdate']  = 0.
+                            param_state['n_update']  = 0.
 
                     buf = param_state['momentum_buffer']
                     grad_sign = p.grad.sign()
                 
-                    # -------------------------------Modified Algorithm 3 from Amazon sign paper------------------
                     if sign_option:
-                        # Modified average sign method
+                        # ---------------Modified Algorithm 3 from Amazon sign paper-----
                         buf.add_(grad_sign)
                     else:
                         #--------------------------FGSM----------------------------------
@@ -133,10 +133,10 @@ class FGSM(Optimizer):
                             # buf.mul_(1.-1./t).add_(-lr/t, p.grad) # update Delta w_t 
                             # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), p.grad) # update Delta w_t 
 
-                    # ------------------------Algorithm 3 in Amazon paper------------------
+                    # ------------------------Algorithm 3 in Amazon paper exp 10------------------
                     if self.sign_vote:
                         param_state['sign_vote'] += buf.sign()
-                        param_state['nupdate'] += 1.
+                        param_state['n_update'] += 1.
                 else:
                     # --------------------------------No inner loop-------------------------------------------
                     # Momentum FGSM
@@ -164,21 +164,26 @@ class FGSM(Optimizer):
                     
                     p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
                     p.grad = buf.clone()    
+
+
                 # -----------------------------last iterT update w-------------------------
                 if self.inside_loop and last_chunk:
                     with torch.no_grad():
-                        # recover w_k to original value before inner loop at the last iterT
+                        # recover w_k to original value before the last iterT of inner loop 
                         p.data = p.data_orig.clone()
-                    # ---------------------------modified Algorithm3 in exp 10--------------
                     if sign_option:
+                        # ---------------------------modified Algorithm3 in exp 10----------
                         p.data.add_(-lr, buf.sign())
                     elif mergeadam:
                         if self.sign_vote:
-                            p.grad = -param_state['sign_vote']/param_state['nupdate']
+                            # average of sum of sign
+                            p.grad = -param_state['sign_vote']/param_state['n_update']
+                            # sign of sum of sign
                             # p.grad = -param_state['sign_vote'].sign()
                         else:
                             p.grad = buf.clone()/(-lr)
 
+                        # set to True so that second optimizer can work
                         continue_Adam = True
                     # ----------------------------general FGSM-------------------------------
                     else:

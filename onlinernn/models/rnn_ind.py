@@ -78,7 +78,7 @@ class IndRNN(VanillaRNN):
 
         self.init_states()
     
-        for i in range(self.opt.iterT-1, self.opt.iterT):
+        for i in range(self.opt.iterT):
             sub_inputs  = generate_subbatches(self.inputs, i, size=self.opt.subseq_size)
 
             self.rnn_model.zero_grad()
@@ -122,16 +122,14 @@ class IndRNN(VanillaRNN):
             self.optimizer.step()
 
 
-
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self.first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
         self.last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         
         if self.opt.subsequene:
-            # generate subsequene of data
-            self.train_subsequence()  
-            
+            # tbptt train
+            self.train_subsequence()              
         else:
             self.forward_indrnn()
             self.backward_indrnn()
