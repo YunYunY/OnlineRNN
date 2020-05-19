@@ -78,12 +78,12 @@ class IndRNN(VanillaRNN):
 
         self.init_states()
     
+        
         for i in range(self.opt.iterT):
             sub_inputs  = generate_subbatches(self.inputs, i, size=self.opt.subseq_size)
-
+           
             self.rnn_model.zero_grad()
             self.states = self.states.detach()
-
             if self.opt.constrain_U:
                 clip_weight(self.rnn_model, self.U_bound)
             self.outputs, self.states =self.rnn_model(sub_inputs, self.states)
@@ -92,14 +92,23 @@ class IndRNN(VanillaRNN):
             self.loss.backward()
 
             clip_gradient(self.rnn_model, self.gradientclip_value)
+
             if 'FGSM' in self.opt.optimizer:
-                if self.opt.iterB > 0:
-                    self.optimizer.step(self.total_batches, sign_option=True)
-                else:
-                    self.optimizer.step(self.total_batches)
+                
+                tbptt_first_iter = i==0 # first iterT and first chunk in tbptt
+                tbptt_last_iter = i==self.opt.iterT-1 # last iterT and last chunk in tbptt
+               
+                self.optimizer.step(self.total_batches, tbptt_first_iter, tbptt_last_iter)
             else:
                 self.optimizer.step()
-    
+            # old id 28 & 29 results
+            # if 'FGSM' in self.opt.optimizer:
+            #     if self.opt.iterB > 0:
+            #         self.optimizer.step(self.total_batches, sign_option=True)
+            #     else:
+            #         self.optimizer.step(self.total_batches)
+            # else:
+            #     self.optimizer.step()
 
     def forward_indrnn(self):
         self.rnn_model.zero_grad()
@@ -128,17 +137,20 @@ class IndRNN(VanillaRNN):
         self.last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         
         if self.opt.subsequene:
-            # tbptt train
-            self.train_subsequence()              
+            # tbptt train, tbptt segments and iterT is same. 
+            self.train_subsequence()     
+            self.track_grad_flow(self.rnn_model.named_parameters())
+            self.losses.append(self.loss.detach().item())
+            self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))         
         else:
             self.forward_indrnn()
             self.backward_indrnn()
        
-        if self.last_iter:
-            # after last iterT, track Delta w, loss and acc
-            self.track_grad_flow(self.rnn_model.named_parameters())
-            self.losses.append(self.loss.detach().item())
-            self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
+            if self.last_iter:
+                # after last iterT, track Delta w, loss and acc
+                self.track_grad_flow(self.rnn_model.named_parameters())
+                self.losses.append(self.loss.detach().item())
+                self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
     # ----------------------------------------------
     def test(self):

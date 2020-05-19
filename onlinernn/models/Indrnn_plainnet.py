@@ -77,13 +77,11 @@ class stackedIndRNN_encoder(nn.Module):
         if 'bias' in name:
             param.data.fill_(0.0)
 
-    def layer_forward(self, rnncell, sub_inputs, h0):
-        sub_inputs = rnncell[0](sub_inputs, h0)
-        # sub_inputs = rnncell[1](sub_inputs)
-        return sub_inputs
+    
 
     def forward(self, input, h0=None):
       
+        
         rnnoutputs={}    
         rnnoutputs['outlayer-1']=input
         if self.args.subsequene:
@@ -98,7 +96,6 @@ class stackedIndRNN_encoder(nn.Module):
                 input_dic[1] = h0[x]
                 rnnoutputs['outlayer%d'%x]= self.RNNs[x](input_dic)   
 
-                # rnnoutputs['outlayer%d'%x] = self.layer_forward(self.RNNs[x], rnnoutputs['dilayer%d'%x], h0[x])
                 if self.args.dropout>0:
                     rnnoutputs['outlayer%d'%x]= dropout_overtime(rnnoutputs['outlayer%d'%x],self.args.dropout,self.training) 
                 nextstates[x] = rnnoutputs['outlayer%d'%x][-1]
