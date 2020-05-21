@@ -55,14 +55,16 @@ class TBPTT(VanillaRNN):
             loss.backward()
             losses.append(loss.detach().item())
             if 'FGSM' in self.opt.optimizer:
+          
                 tbptt_first_iter = self.first_iter and i==0 # first iterT and first chunk in tbptt
                 tbptt_last_iter = self.last_iter and i==nchunks-1 # last iterT and last chunk in tbptt
+                # tbptt_first_iter = True
+                # tbptt_last_iter = True
                 self.optimizer.step(self.total_batches, tbptt_first_iter, tbptt_last_iter)
             else:
                 self.optimizer.step()
         self.loss = sum(losses)/len(losses)
         self.outputs = outputs
-  
 
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
@@ -71,7 +73,6 @@ class TBPTT(VanillaRNN):
         self.last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         self.init_states() 
         if self.opt.subsequene:
-            # generate subsequene of data
             self.train_subsequence()  
         else:
             self.outputs, self.loss = self.rnn_model(self.inputs, self.states, self.optimizer, self.total_batches, self.criterion, self.labels)

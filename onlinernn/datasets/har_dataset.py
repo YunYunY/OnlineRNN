@@ -28,19 +28,7 @@ class HAR_2Dataset(Dataset):
 
         self.labels = datalabels[:, 0:1]
         # print(np.unique(datalabels[:, 0]))
-        # dim0, dim1 = self.data.shape[0], self.data.shape[1]
-        # if slice:
-        #     print('Slice data')
-        #     result = np.zeros(shape=(int(dim0 * (dim1/9/self.slice_interval)), 9*self.slice_interval))
-        #     result_labels = np.zeros(shape=(int(dim0 * (dim1/9/self.slice_interval)), 1))
-        #     count = 0
-        #     for i in range(dim0):
-        #         for j in range(0, dim1, 9 * self.slice_interval):
-        #             result[count, :] = self.data[i, j:j+9*self.slice_interval]
-        #             result_labels[count, :] = self.labels[i, :]
-        #             count += 1
-        #     self.data = result
-        #     self.labels = result_labels
+     
         
 
 

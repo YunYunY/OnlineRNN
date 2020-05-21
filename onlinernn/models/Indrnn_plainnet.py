@@ -25,7 +25,8 @@ class IndRNNwithBN(nn.Sequential):
         super(IndRNNwithBN, self).__init__()  
         if bn_location=="bn_before":      
             self.add_module('norm1', BN(hidden_size, args.seq_len))
-        self.add_module('indrnn1', IndRNN(hidden_size))        
+        self.add_module('indrnn1', IndRNN(hidden_size))      
+
         # if bn_location=="bn_after":   
         #     self.add_module('norm1', BN(hidden_size, args.seq_len))
         # if (bn_location!='bn_before') and (bn_location!='bn_after'):
@@ -40,7 +41,6 @@ class stackedIndRNN_encoder(nn.Module):
       
         super(stackedIndRNN_encoder, self).__init__()     
         self.args = args
-        self.args.subseq_size = args.seq_len//args.iterT
         self.U_bound = U_bound
         self.U_lowbound=np.power(10,(np.log10(1.0/args.MAG)/args.seq_len))  
 

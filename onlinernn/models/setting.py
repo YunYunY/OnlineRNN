@@ -31,7 +31,6 @@ class Setting:
         # Output related
         self.log = opt.log
         self.log_freq = opt.log_freq
-
     # ----------------------------------------------
 
     def create_final_dir(self):
@@ -102,6 +101,7 @@ class RNN(Setting):
 
         # Build network structure
         self.model.init_net()
+
         # Setup loss
         self.model.init_loss()
         # Setup optimizer
@@ -121,7 +121,6 @@ class RNN(Setting):
             self.opt.epoch_count, self.opt.n_epochs + 1):
 
             epoch_start_time = time.time()  # timer for entire epoch
-
             self.model.set_output()
             for i, data in enumerate(self.dataset.dataloader):
                 total_iters += self.opt.batch_size

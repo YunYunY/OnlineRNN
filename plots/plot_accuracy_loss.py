@@ -13,7 +13,7 @@ img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
-opt.taskid = 13
+opt.taskid = 4
 
 if opt.taskid == 0:
     d = "MNIST"
@@ -35,8 +35,9 @@ elif opt.taskid == 3:
 elif opt.taskid == 4:
     d = "HAR_2"
     m = "TBPTT"
-    optimizer = "Adam"
+    optimizer = "FGSM_Adam"
     opt.iterT = 1
+    total_batches = 2900
 elif opt.taskid == 5:
     d = "MNIST"
     m = "IndRNN"
@@ -145,8 +146,8 @@ def plot_training_loss():
 # Plot training loss by epoch
 # -----------------------------------------------------------------------------------------------
 def plot_training_loss_epoch():
-    total_epoch = 960
-    epoches = range(0, total_epoch, 10)
+    total_epoch = 49 #960
+    epoches = range(0, total_epoch, 1)
     train_losses = []
     T = opt.iterT
     for epoch in epoches:
@@ -162,9 +163,10 @@ def plot_training_loss_epoch():
     plt.ylabel("Training Loss")
     plt.title(f"{d} {m} {optimizer} niter={T}")
     # plt.title(f"{d} {m} {optimizer} niter={T}, max: %.2f"%max(test_acc))
-    plt.xticks(range(1, total_epoch+1, 100), range(0, total_epoch, 100), rotation="vertical")
+    plt.xticks(range(1, total_epoch+1, 10), range(0, total_epoch, 10), rotation="vertical")
     plt.xlim(xmin=0, xmax=total_epoch)
-    plt.ylim(ymin=0, ymax=1.2)
+    # plt.ylim(ymin=0, ymax=1.2)
+    plt.ylim(ymin=0, ymax=0.2)
     plt.plot(epoches, train_losses, color='r')
     # plt.plot(epoches, test_acc, linestyle='--', marker='o', color='b')
     # plt.text(total_epoch-200, 90, 'Max: %.2f'%max(test_acc), fontsize=15)
@@ -177,8 +179,9 @@ def plot_training_loss_epoch():
 # Plot accuracy change on testing data 
 # -----------------------------------------------------------------------------------------------
 def plot_test_acc():
-    total_epoch = 960
-    epoches = range(0, total_epoch, 10)
+    total_epoch = 49 #960
+    epoches = range(0, total_epoch, 1)
+    # epoches = range(0, total_epoch, 10)
     test_acc = []
     T = opt.iterT
     for epoch in epoches:
@@ -193,7 +196,8 @@ def plot_test_acc():
     plt.xlabel("# Epoches")
     plt.ylabel("Test Accuracy")
     plt.title(f"{d} {m} {optimizer} niter={T}, max: %.2f"%max(test_acc))
-    plt.xticks(range(1, total_epoch+1, 100), range(0, total_epoch, 100), rotation="vertical")
+    # plt.xticks(range(1, total_epoch+1, 100), range(0, total_epoch, 100), rotation="vertical")
+    plt.xticks(range(1, total_epoch+1, 10), range(0, total_epoch, 10), rotation="vertical")
     plt.xlim(xmin=0, xmax=total_epoch)
     plt.ylim(ymin=0, ymax=100)
     plt.plot(epoches, test_acc, color='b')
@@ -209,8 +213,8 @@ def plot_test_acc():
 # -----------------------------------------------------------------------------------------------
 def plot_training_loss_batch():
  
-    # batches = range(4, total_batches+1, 4)
-    batches = range(30, total_batches+1, 30)
+    batches = range(4, total_batches+1, 4)
+    # batches = range(30, total_batches+1, 30)
 
     nepoch = 100
     for T in [opt.iterT]:
@@ -250,7 +254,7 @@ def plot_training_loss_batch():
 
 
 
-plot_test_acc()
+# plot_test_acc()
 # plot_training_loss()
-# plot_training_loss_batch()
+plot_training_loss_batch()
 # plot_training_loss_epoch()

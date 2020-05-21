@@ -26,7 +26,8 @@ opt.device = torch.device(
 )
 opt.T_ = 4
 
-device = torch.device("cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu")
+# device = torch.device("cuda" if (torch.cuda.is_available() and opt.ngpu > 0) else "cpu")
+device = 'cpu'
 # -----------------------------------------------------
 # FGSM Optimizer
 # -----------------------------------------------------
@@ -56,8 +57,8 @@ def test_fgsm():
 
     model = simplelinear(inputDim, outputDim)
     ##### For GPU #######
-    if torch.cuda.is_available():
-        model.cuda()
+    # if torch.cuda.is_available():
+    #     model.cuda()
 
     criterion = torch.nn.MSELoss() 
     # optimizer = FGSM(model.parameters(), lr=lr, iterT=opt.T_)
@@ -71,12 +72,12 @@ def test_fgsm():
 
     for epoch in range(epochs):
         # Converting inputs and labels to Variable
-        if torch.cuda.is_available():
-            inputs = Variable(torch.from_numpy(x_train).cuda())
-            labels = Variable(torch.from_numpy(y_train).cuda())
-        else:
-            inputs = Variable(torch.from_numpy(x_train))
-            labels = Variable(torch.from_numpy(y_train))
+        # if torch.cuda.is_available():
+        #     inputs = Variable(torch.from_numpy(x_train).cuda())
+        #     labels = Variable(torch.from_numpy(y_train).cuda())
+        # else:
+        inputs = Variable(torch.from_numpy(x_train))
+        labels = Variable(torch.from_numpy(y_train))
 
         optimizer.zero_grad()
             
@@ -107,23 +108,23 @@ def test_fgsm():
         # print('epoch {}, loss {}'.format(epoch, loss.item()))
 
 
-# -----------------------------------------------------
-# VanillaRNN
-# -----------------------------------------------------
-# opt.feature_shape = 28
-# opt.n_class = 10
-opt.batch_size = 64
-def test_set_input():
-    """
-        Inut and label size feed into RNN
-    """
-    d = HAR_2(opt)
-    m = VanillaRNN(opt)
-    m.data = next(iter(d.dataloader))
-    m.set_input()
+# # -----------------------------------------------------
+# # VanillaRNN
+# # -----------------------------------------------------
+# # opt.feature_shape = 28
+# # opt.n_class = 10
+# opt.batch_size = 64
+# def test_set_input():
+#     """
+#         Inut and label size feed into RNN
+#     """
+#     d = HAR_2(opt)
+#     m = VanillaRNN(opt)
+#     m.data = next(iter(d.dataloader))
+#     m.set_input()
 
-    assert list(m.inputs.shape) == [64, 128, 9]
-    assert list(m.labels.shape) == [64]
+#     assert list(m.inputs.shape) == [64, 128, 9]
+#     assert list(m.labels.shape) == [64]
     
 # accuracy should be around 95%
 # opt.niter = 9

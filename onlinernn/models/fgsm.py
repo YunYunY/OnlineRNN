@@ -52,6 +52,8 @@ class FGSM(Optimizer):
         self.inside_loop = True # use inner loop or not, default True
         self.sign_vote = False # let all previous sign vote for the last iter of inner loop's update, default False
         self.fgsm_apply_sign = False # in FGSM method, apply sign or magnitude, default True  
+        self.coefficient = 't1' # 't2'
+        self.last_step_norm = False
     
 
     def __setstate__(self, state):
@@ -77,15 +79,15 @@ class FGSM(Optimizer):
             last_iter = (total_batches-1)%self.iterT == (self.iterT-1) # if this is the last step of inner loop
            
             t = (total_batches-1)%self.iterT + 1
+
             # --------------------for TBPTT---------------------------
             if not first_chunk and not last_chunk:
                 first_chunk = first_iter
                 last_chunk = last_iter
         else:
             first_iter = True 
-            last_iter = True 
             t = total_batches
-        
+    
      
         for group in self.param_groups:
 
@@ -124,10 +126,16 @@ class FGSM(Optimizer):
                         else: 
                             # -------------------FGSM with grad value ---------------------    
                             # id20 
-                            d_p = p.grad.data.clone()
+                            # d_p = p.grad.data.clone()
+                            d_p = p.grad.data
                             d_p_norm = torch.norm(d_p)
                             d_p.div_(d_p_norm)
-                            buf.mul_(1.-1./t).add_(-lr/t, d_p) # update Delta w_t 
+                         
+                         
+                            if self.coefficient == 't1':
+                                buf.mul_(1.-1./t).add_(-lr/t, d_p) # update Delta w_t 
+                            else:
+                                buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), d_p) # update Delta w_t 
 
                             # use grad only
                             # buf.mul_(1.-1./t).add_(-lr/t, p.grad) # update Delta w_t 
@@ -161,13 +169,15 @@ class FGSM(Optimizer):
                     # else:
                     #     p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
                     #     p.grad = buf.clone()
-                    
+                  
                     p.data.add_(buf) # update weights w_t = w_k + Delta w_(t-1)
                     p.grad = buf.clone()    
-
-
-                # -----------------------------last iterT update w-------------------------
+                 
+                
+                
+                # ------------------- ----------last iterT update w-------------------------
                 if self.inside_loop and last_chunk:
+                    
                     with torch.no_grad():
                         # recover w_k to original value before the last iterT of inner loop 
                         p.data = p.data_orig.clone()
@@ -181,7 +191,11 @@ class FGSM(Optimizer):
                             # sign of sum of sign
                             # p.grad = -param_state['sign_vote'].sign()
                         else:
-                            p.grad = buf.clone()/(-lr)
+                            p.grad.div_((-lr)) # rescale before feeding into Adam
+                            # p.grad = buf.clone()/(-lr)
+
+                            if self.last_step_norm:                                
+                                p.grad.div_(torch.norm(p.grad.data))
 
                         # set to True so that second optimizer can work
                         continue_Adam = True

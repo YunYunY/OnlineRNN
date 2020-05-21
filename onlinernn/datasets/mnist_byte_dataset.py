@@ -5,9 +5,6 @@ from torch.utils.data import Dataset, DataLoader
 from onlinernn.datasets.base_dataset import BaseDataset
 
 # -------------------------------------------------------
-# Custom HAR-2 data has 7352 training series (with 50% overlap between each serie), 2947 record in test. The first row is label. 
-# 128 timesteps per series, 9 input parameters per timestep, 1152 features
-# Ref: https://openreview.net/pdf?id=HylpqA4FwS
 # -------------------------------------------------------
 torch.set_printoptions(precision=8)
 

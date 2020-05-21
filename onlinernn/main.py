@@ -36,6 +36,31 @@ if not opt.istrain:
 # -----------------------------------------------------------------------------------------------
 # FGSM grad/2norm of grad, sum every sign, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
+if opt.taskid == 0:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adagrad"
+    opt.hidden_size = 80
+    opt.batch_size = 128
+    opt.lr = 1e-3
+    opt.iterT = 1
+    opt.endless_train = False
+    opt.niter = 199
+    d = HAR_2(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+# -----------------------------------------------------------------------------------------------
+# FGSM grad/2norm of grad, sum every sign, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
+
 if opt.taskid == 1:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "FGSM_Adam"
@@ -97,10 +122,10 @@ if opt.taskid == 3:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "FGSM_Adam"
     opt.subsequene = True
-    opt.subseq_size = 128
+    opt.subseq_size = 16
     opt.niter = 49
     opt.add_noise = True
-    opt.iterT = 4
+    opt.iterT = 1
     d = HAR_2(opt)
 
     # train and eval in every epoch 
@@ -119,14 +144,14 @@ if opt.taskid == 3:
 
 if opt.taskid == 4:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = 'Adam'
+    opt.optimizer = "FGSM_Adam"
     opt.subsequene = True
-    opt.subseq_size = 128
+    opt.subseq_size = 16
     opt.niter = 49
     opt.add_noise = True
-    opt.iterT = 4
-
+    opt.iterT = 1
     d = HAR_2(opt)
+
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
@@ -138,6 +163,8 @@ if opt.taskid == 4:
     m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
 
 # -----------------------------------------------------------------------------------------------
 # Repeat result of sequential MNIST publish on indRNN
@@ -869,7 +896,7 @@ if opt.taskid == 28:
     p.run()
 
 
-# tbptt with indRNN no BN layer same as 22
+# tbptt with indRNN no BN layer 
 if opt.taskid == 29:
     opt.optimizer = "FGSM_Adam" 
     opt.num_layers = 6
@@ -879,6 +906,211 @@ if opt.taskid == 29:
     opt.lr = 2e-4
     opt.iterT = 4
     opt.subsequene = True
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+# tbptt with indRNN no BN layer
+if opt.taskid == 30:
+    opt.optimizer = "Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 28
+    opt.subsequene = True
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+# tbptt with indRNN no BN layer 
+if opt.taskid == 31:
+    opt.optimizer = "FGSM_Adam" 
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 28
+    opt.subsequene = True
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+# tbptt with indRNN no BN layer 
+if opt.taskid == 32:
+    opt.optimizer = "FGSM_Adam" 
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 30
+    opt.subsequene = True
+    opt.subseq_size = 196
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+# tbptt with indRNN no BN layer 
+if opt.taskid == 33:
+    opt.optimizer = "FGSM_Adam" 
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 1
+    opt.subsequene = True
+    opt.subseq_size = 196
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 34:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam"
+    opt.subsequene = True
+    opt.subseq_size = 128
+    opt.niter = 49
+    opt.add_noise = True
+    opt.iterT = 1
+    d = HAR_2(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+
+# tbptt_first_iter = True
+# tbptt_last_iter = True
+if opt.taskid == 35:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam"
+    opt.subsequene = True
+    opt.subseq_size = 16
+    opt.niter = 49
+    opt.add_noise = True
+    opt.iterT = 1
+    d = HAR_2(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+  
+# -----------------------------------------------------------------------------------------------
+
+# tbptt with indRNN no BN layer 
+if opt.taskid == 36:
+    opt.optimizer = "FGSM_Adam" 
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 2e-4
+    opt.iterT = 1
+    opt.subsequene = True
+    opt.subseq_size = 196
     opt.mnist_standardize = "zeromean"
     opt.endless_train = True
     opt.niter = 10000000-1
