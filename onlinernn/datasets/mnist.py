@@ -30,10 +30,10 @@ class MNIST(BaseDataset):
         super(MNIST, self).__init__(opt)
         # ToTensor convert data from 0-255 to 0-1, then normalize with mean and std
  
-        if opt.mnist_standardize == "originalmean":
+        if opt.mnist_standardize == "zeromean":
             self.transform = transforms.Compose([transforms.ToTensor(),
                                             transforms.Normalize((0.1307,), (0.3081,))])
-        elif opt.mnist_standardize == "zeromean":
+        elif opt.mnist_standardize == "unitrange":
             self.transform = transforms.Compose([transforms.ToTensor(),
                                             transforms.Normalize((0.5,), (0.5,))])
         
@@ -44,6 +44,7 @@ class MNIST(BaseDataset):
         self.target_transform = transforms.Compose([])
         istrain = (opt.istrain or opt.continue_train)
         self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
+      
         print(f"Total datasize is {len(self.dataset)}")
 
     def __len__(self):
@@ -64,9 +65,9 @@ class MNISTPixel(BaseDataset):
         # ToTensor convert data from 0-255 to 0-1, then normalize with mean and std
         # self.transform = transforms.Compose([transforms.ToTensor()])
         mnist_transforms = [transforms.ToTensor()]
-        if opt.mnist_standardize == "originalmean":
+        if opt.mnist_standardize == "zeromean": #zeromean unit variance
             mnist_transforms.append(transforms.Normalize((0.1307,), (0.3081,)))
-        elif opt.mnist_standardize == "zeromean":
+        elif opt.mnist_standardize == "unitrange": #[-1, 1]
             mnist_transforms.append(transforms.Normalize((0.5,), (0.5,)))
         else:
             raise Exception('No vailid normalization method is given')
@@ -105,11 +106,11 @@ class MNISTPermute(BaseDataset):
 
         idx_permute = torch.Tensor(np.random.permutation(28).astype(np.float64)).long()
 
-        if opt.mnist_standardize == "originalmean":
+        if opt.mnist_standardize == "zeromean":
             self.transform = transforms.Compose([transforms.ToTensor(),
                                             transforms.Normalize((0.1307,), (0.3081,)), 
                                             transforms.Lambda(lambda x: x[:, idx_permute, :])])
-        elif opt.mnist_standardize == "zeromean":
+        elif opt.mnist_standardize == "unitrange":
             self.transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5,), (0.5,)),
               transforms.Lambda(lambda x: x[:, idx_permute, :] )])
 

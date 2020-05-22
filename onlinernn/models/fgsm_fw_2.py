@@ -6,7 +6,8 @@ import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 # --------------------------------------------------------
-# Frank-Wolfe algorithm 1
+# id2 Frank-Wolfe algorithm 2
+# task ids [37]
 # --------------------------------------------------------
 class MultipleOptimizer(object):
     def __init__(self, *op):
@@ -51,6 +52,8 @@ class FGSM(Optimizer):
         defaults = dict(lr=lr, mergeadam=mergeadam)
         super(FGSM, self).__init__(params, defaults)
         self.iterT = iterT
+        self.coefficient = 't1' # 't2'
+        self.last_step_norm = False
     
 
     def __setstate__(self, state):
@@ -79,6 +82,7 @@ class FGSM(Optimizer):
         for group in self.param_groups:
 
             lr = group['lr']
+            mergeadam = group['mergeadam']
 
             for p in group['params']:
               
@@ -87,12 +91,15 @@ class FGSM(Optimizer):
                 param_state = self.state[p]
 
                 #----------------------FGSM inner loop-----------------------------------------------
-                if first_chunk:
-                # if first_iter:
+                # if first_chunk:
+                if first_iter:
                     # initialize Delta g0 as 0, param_state['momentum_buffer'] will change according to buf
                     param_state['momentum_buffer'] = torch.zeros_like(p.data)
+                    # initialize Delta w0 as 0
+                    param_state['w_buffer'] = torch.zeros_like(p.data)
                   
                 buf = param_state['momentum_buffer']
+                buf_w = param_state['w_buffer']
              
                 # -------------------FGSM with grad value ---------------------    
                 
@@ -100,24 +107,37 @@ class FGSM(Optimizer):
                 d_p_norm = torch.norm(d_p)
                 d_p.div_(d_p_norm)
                 
-                buf.mul_(1.-1./t).add_(-lr/t, d_p) # update Delta g_k
-                # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), d_p) 
+                if self.coefficient == 't1':
+                    buf.mul_(1.-1./t).add_(-lr/t, d_p) # update Delta g_k
+                else:
+                    buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), d_p) 
                 
-                p.data.add_(buf) # update weights w_k = Delta w_k-1 + Delta g_k
-                p.grad = buf.clone()    
+                buf_w.add_(buf) # Delta w_k-1
+
+                p.data.add_(buf_w) # update weights w_k = Delta w_k-1 + Delta g_k
+                p.grad = buf_w.clone()    
                 
+               
                 # ------------------- ----------last iterT update w-------------------------
                 if last_chunk:
                     
                     with torch.no_grad():
                         # recover w_k to original value before the last iterT of inner loop 
                         p.data = p.data_orig.clone()
+                    if mergeadam:
                     
-                    p.grad.div_((-lr)) # rescale before feeding into Adam
+                        p.grad.div_((-lr)) # rescale before feeding into Adam
 
-                    # set to True so that second optimizer can work
-                    continue_Adam = True
-    
+                        if self.last_step_norm:                                
+                            p.grad.div_(torch.norm(p.grad.data))
+
+                        # set to True so that second optimizer can work
+                        continue_Adam = True
+                    # ----------------------------general FGSM-------------------------------
+                    else:
+                        # update w_k by adding Detal w_t 
+                        p.data.add_(buf.clone())
+
         return continue_Adam 
 
 

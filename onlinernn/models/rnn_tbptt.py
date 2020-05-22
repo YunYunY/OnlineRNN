@@ -42,7 +42,7 @@ class TBPTT(VanillaRNN):
         """
         losses = []
         nchunks = self.seq_len // self.opt.subseq_size
-       
+     
         for i in range(nchunks):
             sub_inputs, sub_labels = self.generate_subbatches(i, size=self.opt.subseq_size)
             self.optimizer.zero_grad()
@@ -79,7 +79,7 @@ class TBPTT(VanillaRNN):
 
         if self.last_iter:
             # After last iterT, track Delta w, loss and acc
-            self.track_grad_flow(self.rnn_model.named_parameters())
+            # self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss)
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
            

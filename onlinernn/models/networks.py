@@ -1,10 +1,12 @@
+import math
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 import copy
 from torch.autograd import Variable
 import torch.nn.functional as F
 from torch.optim import lr_scheduler
+
 
 # -------------------------------------------------------
 # Basic RNN structure
@@ -198,10 +200,117 @@ class TBPTTRNN(SimpleRNN):
 # -------------------------------------------------------
 # ERNN reference: https://openreview.net/pdf?id=HylpqA4FwS
 # -------------------------------------------------------
+
+
+class ERNNCell(nn.Module):
+
+    def __init__(self, device, hidden_size, n_features, n_timesteps, sigma, v_dim, alpha_val, K=1):
+        super(ERNNCell, self).__init__()
+        self._hidden_size = hidden_size
+        self.sigma = sigma
+        self.v_dim  = v_dim
+        self.t = 0
+        self.n_timesteps = n_timesteps
+        self.eye_h = torch.eye(self._hidden_size).to(device)
+        self.K = K#1
+        self.gamma = 1
+
+        model_size = self._hidden_size * (self.v_dim + 1 + self._hidden_size + n_features) 
+        model_size *= 4.0
+        model_size /= 1024.0
+        print("model size = ", model_size, "KB")
+        self.W = nn.Parameter(torch.Tensor(n_features, self._hidden_size))
+        self.H = nn.Parameter(torch.Tensor(self._hidden_size, self._hidden_size))
+        self.b = nn.Parameter(torch.Tensor(self._hidden_size))
+        self.V = nn.Parameter(torch.Tensor(self.v_dim, self._hidden_size))
+        self.V2 = nn.Parameter(torch.Tensor(self._hidden_size, self.v_dim))
+        
+        
+        alpha_init = 0.001
+        
+        if alpha_val is not None: alpha_init = alpha_val
+
+        self.alpha_init = alpha_init
+        beta_init = 1.0 - alpha_init
+        print('alpha_init = ', alpha_init)
+        print('beta_init = ', beta_init)
+
+        self.alpha = nn.Parameter(alpha_init * torch.ones((self.K, self.n_timesteps)))
+        self.beta  = nn.Parameter(beta_init  * torch.ones((self.K, self.n_timesteps)))
+        
+        stdv = 1.0 / math.sqrt(self._hidden_size)
+        for name,weight in self.named_parameters():
+            if 'alpha' not in name and 'beta' not in name:
+                nn.init.uniform_(weight, -stdv, stdv)
+        
+    @property
+    def state_size(self):
+        return self._hidden_size
+
+    @property
+    def output_size(self):
+        return self._hidden_size        
+
+    def NL(self, x):
+        if self.sigma == 'relu': return torch.relu(x)
+        elif self.sigma == 'tanh': return torch.tanh(x)
+        elif self.sigma == 'sigmoid': return torch.sigmoid(x)
+        raise Exception('Non-linearity not found..')
+
+    def forward(self, x, h):
+        
+        VV2 = torch.matmul(self.V2, self.V)
+        infite2 = VV2 + self.eye_h
+        
+        out_tensor = []
+        seq_len,batch_size, fea_len = x.shape
+        out_tensor.append(h)
+
+        for i in range(0,seq_len):
+            last_h = out_tensor[-1]
+            h = last_h
+            new_wx = torch.matmul(x[i], self.W)
+            P, U = infite2, infite2
+
+            new_uh = torch.matmul(h, U)
+            alpha = new_wx + self.b + new_uh
+            
+            oldh = h
+            for k in range(self.K):
+                at = self.alpha[k][self.t]
+                bt = (1-at)
+                h = at*(self.NL(torch.matmul(torch.matmul(h, U)+alpha,P)) - oldh) + bt * h 
+            new_h = h
+            out_tensor.append(new_h)
+        return new_h
+
+
+class IRNN_model(SimpleRNN):
+    def __init__(self, opt):
+        super(IRNN_model, self).__init__(opt)
+        
+        self.layers = nn.ModuleList([])
+
+        self.layers.append(ERNNCell(opt.device, self.hidden_size, self.input_size, opt.seq_len, sigma='relu', v_dim=20, alpha_val=0.001, K=3)) 
+        self.linear = nn.Linear(self.hidden_size, self.output_size)
+    
+    def forward(self, x):
+        inp = x
+        cnt = 0
+        for layer in self.layers:
+            h0 = torch.zeros(x.shape[1], self.hidden_size).to(self.opt.device)
+            y = layer(inp,h0)
+
+        y_final = self.linear(y)
+        #final = F.softmax(y_final,dim=1)
+        return y_final
+
+
+'''
 class ERNNCell(SimpleRNN):
-    '''
-    ERNN with K=1
-    '''
+     
+    # ERNN with K=1
+  
     def __init__(self, hidden_size, n_features, output_size, n_timesteps, device, sigma, v_dim, state_variant, alpha_val, K=1):
         super(ERNNCell, self).__init__(n_features, hidden_size, output_size)
         hiddenSize = hidden_size # set it to equal for now
@@ -247,7 +356,7 @@ class ERNNCell(SimpleRNN):
         y1 = self.l_out(h1)
         return y1, h1
 
-
+'''
 
 # -----------------------------------------------------
 # functions for learning rate schedule

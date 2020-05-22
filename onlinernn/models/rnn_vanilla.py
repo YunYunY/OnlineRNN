@@ -196,7 +196,7 @@ class VanillaRNN(BaseModel):
             self.optimizer.step(iter, sign_option=True)
 
         # After last iterT, track Delta w, loss and acc
-        self.track_grad_flow(self.rnn_model.named_parameters())
+        # self.track_grad_flow(self.rnn_model.named_parameters())
         self.losses.append(self.loss.detach().item())
         self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
@@ -228,16 +228,16 @@ class VanillaRNN(BaseModel):
         first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
         last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         if 'FGSM' in self.opt.optimizer:
-            if self.opt.iterB > 0:
-                self.optimizer.step(self.total_batches, sign_option=True)
-            else:
-                self.optimizer.step(self.total_batches)
+            # if self.opt.iterB > 0:
+            #     self.optimizer.step(self.total_batches, sign_option=True)
+            # else:
+            self.optimizer.step(self.total_batches)
         else:
             self.optimizer.step()
 
         if last_iter:
             # After last iterT, track Delta w, loss and acc
-            self.track_grad_flow(self.rnn_model.named_parameters())
+            # self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss.detach().item())
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
@@ -332,7 +332,6 @@ class VanillaRNN(BaseModel):
                 save_path = os.path.join(self.result_dir, save_filename)
                 torch.save(scheduler.state_dict(), save_path)
       
-    # ----------------------------------------------
  
     # ----------------------------------------------
     def test(self):

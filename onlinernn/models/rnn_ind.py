@@ -77,7 +77,6 @@ class IndRNN(VanillaRNN):
     
         nchunks = self.seq_len // self.opt.subseq_size
 
-        
         # for i in range(self.opt.iterT):
         for i in range(nchunks):
 
@@ -111,7 +110,7 @@ class IndRNN(VanillaRNN):
         self.rnn_model.zero_grad()
         if self.opt.constrain_U:
             clip_weight(self.rnn_model, self.U_bound)
-        self.outputs, hidden =self.rnn_model(self.inputs)
+        self.outputs =self.rnn_model(self.inputs)
 
     def backward_indrnn(self):
         self.loss = self.criterion(self.outputs, self.labels)
@@ -120,10 +119,10 @@ class IndRNN(VanillaRNN):
     
         clip_gradient(self.rnn_model, self.gradientclip_value)
         if 'FGSM' in self.opt.optimizer:
-            if self.opt.iterB > 0:
-                self.optimizer.step(self.total_batches, sign_option=True)
-            else:
-                self.optimizer.step(self.total_batches)
+            # if self.opt.iterB > 0:
+            #     self.optimizer.step(self.total_batches, sign_option=True)
+            # else:
+            self.optimizer.step(self.total_batches)
         else:
             self.optimizer.step()
 
@@ -145,7 +144,7 @@ class IndRNN(VanillaRNN):
        
         if self.last_iter:
             # after last iterT, track Delta w, loss and acc
-            self.track_grad_flow(self.rnn_model.named_parameters())
+            # self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss.detach().item())
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 

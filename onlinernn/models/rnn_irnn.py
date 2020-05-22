@@ -4,7 +4,7 @@ import torch.optim as optim
 import copy
 import numpy as np
 import os
-from onlinernn.models.networks import StepRNN, ERNNCell
+from onlinernn.models.networks import IRNN_model
 from onlinernn.models.rnn_vanilla import VanillaRNN
 
 # -------------------------------------------------------
@@ -25,8 +25,7 @@ class IRNN(VanillaRNN):
         It should be disabled during testing since you may want to use full model (no element is masked)
         
         """
-        self.rnn_model = ERNNCell(self.hidden_size, self.input_size, self.output_size, 
-                                self.seq_len, self.device, 'relu',32, 46, alpha_val=0.001, K=1).to(self.device)
+        self.rnn_model = IRNN_model(self.opt).to(self.device)
 
         # explicitly state the intent
         if self.istrain:
@@ -37,18 +36,50 @@ class IRNN(VanillaRNN):
             print('Run parallel')
             self.rnn_model = nn.DataParallel(self.rnn_model, list(range(self.opt.ngpu)))
 
-    def init_states(self):
-        # self.states = torch.zeros(self.num_layers, self.batch_size, self.hidden_size).to(self.device)
-        self.states = torch.zeros(self.batch_size, self.hidden_size).to(self.device)
-
     def set_input(self):
         self.inputs, self.labels = self.data
-        # sequence MNIST
-        # self.seq_len = self.seq_len * self.input_size # 784
-        # self.input_size = 1 # input 1 pixel each time
-        self.inputs = self.inputs.view(-1, self.input_size, self.seq_len).to(self.device)
-        self.labels = self.labels.to(self.device)
-        # if self.permute_row:
-            # self.inputs = self.inputs[:, :, self.permute_idx].to(self.device)
+        self.inputs = self.inputs.permute(1,0,2).to(self.device)
+
+        # self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
+      
+        self.labels = self.labels.view(-1).to(self.device)
+        if self.opt.predic_task == 'Binary':
+            self.labels = self.labels.float()
         # update batch 
         self.batch_size = self.labels.shape[0]
+
+    def forward(self):
+        """
+        Forward path 
+        """
+        self.optimizer.zero_grad()
+        outputs = self.rnn_model(self.inputs)
+        self.outputs = outputs.to(self.device)
+ 
+    def train(self):
+        """Calculate losses, gradients, and update network weights; called in every training iteration"""
+        self.forward()
+        self.backward()
+        first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
+        last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
+        if 'FGSM' in self.opt.optimizer:
+            # if self.opt.iterB > 0:
+            #     self.optimizer.step(self.total_batches, sign_option=True)
+            # else:
+            self.optimizer.step(self.total_batches)
+        else:
+            self.optimizer.step()
+
+        if last_iter:
+            # After last iterT, track Delta w, loss and acc
+            # self.track_grad_flow(self.rnn_model.named_parameters())
+            self.losses.append(self.loss.detach().item())
+            self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
+
+
+    # ----------------------------------------------
+    def test(self):
+        with torch.no_grad():
+            outputs = self.rnn_model(self.inputs)
+            outputs = outputs.to(self.device).detach()
+            self.test_acc.append(self.get_accuracy(outputs, self.labels, self.batch_size))

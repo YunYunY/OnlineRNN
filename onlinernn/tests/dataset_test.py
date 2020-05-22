@@ -36,17 +36,18 @@ def test_pixelmnist():
     """
     Test MNIST class
     """
-    opt.download_daa = False
+    opt.download_data = False
+    opt.mnist_standardize = "zeromean"
     d = MNISTPixel(opt)
     batch = next(iter(d.dataloader))
     assert list(batch[0][:64].shape) == [64, 784, 1]
     data = batch[0][:64]
     result_dir = "result/dataset_test/pixelMNIST"
     os.makedirs(result_dir, exist_ok=True)
-    print(data.shape)
     data = data.view(64, 1, 28, 28)
     show_shift(data, 8, result_dir, "pixelMNIST.png")
 
+'''
 def test_dsa19():
     d = DSA_19(opt)
     assert len(d) == 4560
@@ -54,7 +55,7 @@ def test_dsa19():
     assert list(batch[0][:64].shape) == [64, 125, 45]
     assert list(batch[1][:64].shape) == [64, 1]
 
-'''
+
 def test_har2():
     d = HAR_2(opt)
     if opt.istrain:
