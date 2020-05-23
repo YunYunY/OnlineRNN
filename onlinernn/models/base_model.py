@@ -1,7 +1,8 @@
 from abc import ABC
 import numpy as np
 import torch
-from onlinernn.models.fgsm import FGSM, MultipleOptimizer
+from onlinernn.models.fgsm_sign import FGSM, MultipleOptimizer
+# from onlinernn.models.fgsm import FGSM, MultipleOptimizer
 # from onlinernn.models.fgsm_fw_2 import FGSM, MultipleOptimizer
 
 from onlinernn.models.adam import Adam 

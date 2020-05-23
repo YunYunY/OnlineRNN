@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from exp.expConfig import ExpConfig
 from onlinernn.options.train_options import TrainOptions
-from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTShift
+from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTPixelPermute, MNISTShift
 from onlinernn.datasets.mnist_byte import MNIST_byte
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
@@ -254,6 +254,39 @@ if opt.taskid == 6:
     m = IRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 20:
+
+    opt.optimizer = "Adam"
+    opt.mnist_standardize = "zeromean"
+    opt.hidden_size = 128
+    opt.niter_decay = 200
+    opt.endless_train = True
+    opt.niter = 10000000-1
+    opt.epoch_count = 0
+    # opt.epoch = "2"
+    opt.predic_task = "Softmax"
+    opt.lrgamma = 0.5
+    opt.iterT = 1
+    opt.batch_size = 512
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt) 
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
 
 # -----------------------------------------------------------------------------------------------
 if opt.taskid == 100:

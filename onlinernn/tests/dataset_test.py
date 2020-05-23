@@ -2,7 +2,7 @@ import glob, os
 import torch
 import numpy as np
 from onlinernn.options.train_options import TrainOptions
-from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTShift, MNISTPermute
+from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTPixelPermute, MNISTShift, MNISTPermute
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
 from onlinernn.tests.test_utils import show_shift
@@ -32,6 +32,24 @@ opt.istrain = True
 #     data = data.view(64, 1, 28, 28)
 #     show_shift(data, 8, result_dir, "pixelMNIST_byte.png")
 
+
+def test_permutepixelmnist():
+    """
+    Test MNIST class
+    """
+    opt.download_data = False
+    opt.mnist_standardize = "zeromean"
+    d = MNISTPixelPermute(opt)
+    batch = next(iter(d.dataloader))
+    assert list(batch[0][:64].shape) == [64, 784, 1]
+    data = batch[0][:64]
+ 
+    result_dir = "result/dataset_test/permutepixelMNIST"
+    os.makedirs(result_dir, exist_ok=True)
+    data = data.view(64, 1, 28, 28)
+    show_shift(data, 8, result_dir, "permutepixelMNIST.png")
+
+'''
 def test_pixelmnist():
     """
     Test MNIST class
@@ -47,7 +65,7 @@ def test_pixelmnist():
     data = data.view(64, 1, 28, 28)
     show_shift(data, 8, result_dir, "pixelMNIST.png")
 
-'''
+
 def test_dsa19():
     d = DSA_19(opt)
     assert len(d) == 4560

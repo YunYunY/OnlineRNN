@@ -23,7 +23,7 @@ class BaseDataset(ABC):
 
     @property
     def name(self):
-        if self.class_name() in["MNISTPermute", "MNISTPixel", "MNIST_byte"]:
+        if self.class_name() in["MNISTPermute", "MNISTPixel", "MNISTPixelPermute", "MNIST_byte"]:
             return "MNIST"
         return self.class_name()
 

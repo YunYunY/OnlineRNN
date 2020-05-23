@@ -86,6 +86,48 @@ class MNISTPixel(BaseDataset):
     def __len__(self):
         return len(self.dataset)
 
+
+
+# -------------------------------------------------------
+# Permute Pixel MNIST  
+# -------------------------------------------------------
+
+class MNISTPixelPermute(BaseDataset):
+    def __init__(self, opt):
+        self.opt = opt
+        self.shuffle = opt.shuffle
+        opt.n_class = 10
+        opt.feature_shape = 1
+        opt.seq_len = 784
+        super(MNISTPixelPermute, self).__init__(opt)
+        
+        # ToTensor convert data from 0-255 to 0-1, then normalize with mean and std
+        # self.transform = transforms.Compose([transforms.ToTensor()])
+        mnist_transforms = [transforms.ToTensor()]
+        if opt.mnist_standardize == "zeromean": #zeromean unit variance
+            mnist_transforms.append(transforms.Normalize((0.1307,), (0.3081,)))
+        elif opt.mnist_standardize == "unitrange": #[-1, 1]
+            mnist_transforms.append(transforms.Normalize((0.5,), (0.5,)))
+        else:
+            raise Exception('No vailid normalization method is given')
+        mnist_transforms.append(ReshapeTransform((784, 1)))
+
+        np.random.seed(42)
+        idx_permute = torch.Tensor(np.random.permutation(784).astype(np.float64)).long()
+        mnist_transforms.append(transforms.Lambda(lambda x: x[idx_permute, :] ))
+        self.transform = transforms.Compose(mnist_transforms)
+        # one-hot encoding for target while read in data 
+        # self.target_transform = transforms.Compose(
+        #     [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
+        # )
+        self.target_transform = transforms.Compose([])
+        istrain = (opt.istrain or opt.continue_train)
+        self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
+        print(f"Total datasize is {len(self.dataset)}")
+
+    # ----------------------------------------------
+
+
 # -------------------------------------------------------
 # Permute MNIST  
 # Permuting rows but keep columns untouched, output size is not changing

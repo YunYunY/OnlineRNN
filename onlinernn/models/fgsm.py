@@ -75,6 +75,7 @@ class FGSM(Optimizer):
         if not first_chunk and not last_chunk:
             first_chunk = first_iter
             last_chunk = last_iter
+        
      
         for group in self.param_groups:
 
@@ -99,7 +100,8 @@ class FGSM(Optimizer):
                 d_p = p.grad.data
                 d_p_norm = torch.norm(d_p)
                 d_p.div_(d_p_norm)
-                
+          
+
                 buf.mul_(1.-1./t).add_(-lr/t, d_p) # update Delta g_k
                 # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), d_p) 
                 
@@ -117,7 +119,7 @@ class FGSM(Optimizer):
 
                     # set to True so that second optimizer can work
                     continue_Adam = True
-    
+
         return continue_Adam 
 
 

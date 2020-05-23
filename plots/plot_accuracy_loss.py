@@ -2,6 +2,7 @@ import os
 import numpy as np
 from onlinernn.options.train_options import TrainOptions
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter
 
 opt = TrainOptions().parse()
 
@@ -14,143 +15,131 @@ os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
 opt.taskid = 4
+d = "HAR_2"
+task_dic = {0: ["VanillaRNN", "Adam", 1],
+            1: ["TBPTT", "Adam", 1], 
+            2: ["VanillaRNN", "FGSM_Adam", 1], 
+            3: ["VanillaRNN", "FGSM_Adam", 30], 
+            4: ["VanillaRNN", "FGSM_Adam", 1],
+            5: ["VanillaRNN", "FGSM_Adam", 30], 
+            6: ["TBPTT", "FGSM_Adam", 1]}
 
-if opt.taskid == 0:
-    d = "MNIST"
-    # m = "StopBPRNN"
-    m = "TBPTT"
-elif opt.taskid == 1:
-    d = "HAR_2"
-    m = "VanillaRNN"
-    total_batches = 2900#11600
-elif opt.taskid == 2:
-    d = "DSA_19"
-    m = "VanillaRNN"
-    total_batches = 7200 
-elif opt.taskid == 3:
-    d = "HAR_2"
-    m = "TBPTT"
-    optimizer = "FGSM_Adam"
-    opt.iterT = 1
-elif opt.taskid == 4:
-    d = "HAR_2"
-    m = "TBPTT"
-    optimizer = "FGSM_Adam"
-    opt.iterT = 1
-    total_batches = 2900
-elif opt.taskid == 5:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 1
-    optimizer = "irnn_Adam"
-    total_batches = 20000
-elif opt.taskid == 6:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 1
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 7:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 4
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 9:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 10
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 9:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 10
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 9:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 10
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 10:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 20
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 11:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 20
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 12:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 30
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 13:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 40
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-elif opt.taskid == 14:
-    d = "MNIST"
-    m = "IndRNN"
-    opt.iterT = 50
-    optimizer = "FGSM_Adam"
-    total_batches = 20000
-# -----------------------------------------------------------------------------------------------
+# task_dic = {20: ["VanillaRNN", "Adam", 1],
+#             21: ["TBPTT", "Adam", 1], 
+#             22: ["VanillaRNN", "FGSM_Adam", 1], 
+#             23: ["VanillaRNN", "FGSM_Adam", 30], 
+#             24: ["VanillaRNN", "FGSM_Adam", 1],
+#             25: ["VanillaRNN", "FGSM_Adam", 30], 
+#             26: ["TBPTT", "FGSM_Adam", 1]}
+total_batches = 2900#11600
+total_epoch = 199
 
 # -----------------------------------------------------------------------------------------------
-# Plot loss change in training task0
+# Plot multiple training loss by epoch in one
 # -----------------------------------------------------------------------------------------------
-def plot_training_loss():
-    for T in opt.T:
-        opt.T_ = T
-        losses = []
-        reg1s = []
-        reg2s = []
-        for iepoch in range(nepoch):
-            loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/loss/" + str(iepoch) + "_losses.npz"
-            losses.append(np.load(loss_file)["losses"])
+case_dir = {"losses": "Training Loss", 
+            "test_acc": "Test Accuracy"}
+
+def plot_multi_epoch():
+    case = "losses" # "test_acc" # "losses"
+    taskids = [0, 1, 2, 3, 4, 5, 6]
+    # taskids = [20, 21, 22, 23, 24, 25, 26]
+
+    labels = ['SGD', 'TBPTT', 'Ours norm K=1', 'Ours norm K=30', 'Ours sign K=1', 'Ours sign K=30', 'TBPTT+Ours norm K=1']
+    colors = ['black', 'c', 'crimson', 'violet', 'mediumblue', 'lightsteelblue', 'darkorange']
+
+
+    epochs = range(0, total_epoch, 1)
+
+    str_ids = ''.join(map(str, taskids))
+    imgname = d + "_" + str_ids + "_"+ case +".pdf"
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
+    SIZE1 = 8
+    SIZE2 = 10
+    SIZE3 = 12
+    SIZE4 = 14
+
+    # plt.figure(figsize=(8, 8))
+    plt.xlabel("# Epochs", fontsize=SIZE4)
+    plt.ylabel(case_dir[case], fontsize=SIZE4)
+    plt.title(f"{d}", fontsize=SIZE4)
+    # plt.title(f"Noisy HAR-2")
+
+    plt.xticks(range(1, total_epoch+1, 10), range(0, total_epoch, 10), rotation="vertical", fontsize=SIZE3)
+    plt.yticks(fontsize=SIZE3)
+
+    plt.xlim(xmin=0, xmax=total_epoch)
+    plt.ylim(ymin=0., ymax=0.4)
+    # plt.ylim(ymin=0.1, ymax=0.3)
+    # plt.ylim(ymin=50, ymax=90)
+    # plt.subplots_adjust(top = 0.99, bottom = 0.9, right = 1, left = 0.9, 
+    #         hspace = 0., wspace = 0.)
+ 
+
+    for i, taskid in enumerate(taskids):
+        m = task_dic[taskid][0]
+        optimizer = task_dic[taskid][1]
+        T = task_dic[taskid][2]
             
-            if m == "StopBPRNN":
-                reg1s.append(np.load(loss_file)["reg1"])
-                reg2s.append(np.load(loss_file)["reg2"])
-        
-        imgname = "/test_epoch_" + str(epoch) +"_" + d + "_" + m + "_losses.png"
+        data = []
+        for epoch in epochs:
+            if case == "losses":
+                file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
+            elif case == "test_acc":
+                file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
+            one_data = np.load(file)[case]
 
-        plt.figure(figsize=(8, 8))
-        plt.xlabel("Epoch")
-        plt.ylabel("Losses")
-        plt.plot(range(nepoch), losses, linestyle='--', marker='o', color='r')
-        plt.savefig(img_dir + "/" + imgname)
+            data.append(one_data)
+        print(max(data))
+        plt.plot(epochs, data, color=colors[i], label=labels[i])
+    plt.legend(loc=2, prop={'size': SIZE3})
 
-        if m == "StopBPRNN":
-            imgname = "/test_epoch_" + str(epoch) +"_" + d + "_" + m + "_reglosses.png"
-            plt.figure(figsize=(8, 8))
-            plt.plot(reg1s, label="Wih")
-            plt.plot(reg2s, label="Whh")
-            plt.xlabel("Epoch")
-            plt.ylabel("Loss")
-            plt.legend()
-            plt.savefig(img_dir + "/" + imgname)
-        break
-            
+    plt.savefig(img_dir + "/" + imgname, bbox_inches='tight')
+    print(img_dir)
+    print(imgname)
+
+
+
 # -----------------------------------------------------------------------------------------------
-# Plot training loss by epoch
+# Plot accuracy change on testing data 
 # -----------------------------------------------------------------------------------------------
+def plot_multi_test_acc():
+    epochs = range(0, total_epoch, 1)
+    # epochs = range(0, total_epoch, 10)
+    test_acc = []
+    T = opt.iterT
+    for epoch in epochs:
+        # acc_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
+        acc_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(opt.taskid) + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
+        test_acc.append(acc)
+    print(max(test_acc))
+    imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + str(opt.taskid)+ "_testacc.png"
+
+    plt.figure(figsize=(8, 8))
+    plt.xlabel("# Epochs")
+    plt.ylabel("Test Accuracy")
+    plt.title(f"{d} {m} {optimizer} niter={T}, max: %.2f"%max(test_acc))
+    # plt.xticks(range(1, total_epoch+1, 100), range(0, total_epoch, 100), rotation="vertical")
+    plt.xticks(range(1, total_epoch+1, 10), range(0, total_epoch, 10), rotation="vertical")
+    plt.xlim(xmin=0, xmax=total_epoch)
+    plt.ylim(ymin=0, ymax=100)
+    plt.plot(epochs, test_acc, color='b')
+    # plt.plot(epochs, test_acc, linestyle='--', marker='o', color='b')
+    # plt.text(total_epoch-200, 90, 'Max: %.2f'%max(test_acc), fontsize=15)
+
+    plt.savefig(img_dir + "/" + imgname)
+    print(img_dir)
+    print(imgname)
+
+
 def plot_training_loss_epoch():
     total_epoch = 49 #960
-    epoches = range(0, total_epoch, 1)
+    epochs = range(0, total_epoch, 1)
     train_losses = []
     T = opt.iterT
-    for epoch in epoches:
+    for epoch in epochs:
         loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(opt.taskid) + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
         # loss_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
         train_loss = np.load(loss_file)["losses"]
@@ -159,7 +148,7 @@ def plot_training_loss_epoch():
     imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + str(opt.taskid)+ "_trainloss.png"
 
     plt.figure(figsize=(8, 8))
-    plt.xlabel("# Epoches")
+    plt.xlabel("# Epochs")
     plt.ylabel("Training Loss")
     plt.title(f"{d} {m} {optimizer} niter={T}")
     # plt.title(f"{d} {m} {optimizer} niter={T}, max: %.2f"%max(test_acc))
@@ -167,8 +156,8 @@ def plot_training_loss_epoch():
     plt.xlim(xmin=0, xmax=total_epoch)
     # plt.ylim(ymin=0, ymax=1.2)
     plt.ylim(ymin=0, ymax=0.2)
-    plt.plot(epoches, train_losses, color='r')
-    # plt.plot(epoches, test_acc, linestyle='--', marker='o', color='b')
+    plt.plot(epochs, train_losses, color='r')
+    # plt.plot(epochs, test_acc, linestyle='--', marker='o', color='b')
     # plt.text(total_epoch-200, 90, 'Max: %.2f'%max(test_acc), fontsize=15)
 
     plt.savefig(img_dir + "/" + imgname)
@@ -180,11 +169,11 @@ def plot_training_loss_epoch():
 # -----------------------------------------------------------------------------------------------
 def plot_test_acc():
     total_epoch = 49 #960
-    epoches = range(0, total_epoch, 1)
-    # epoches = range(0, total_epoch, 10)
+    epochs = range(0, total_epoch, 1)
+    # epochs = range(0, total_epoch, 10)
     test_acc = []
     T = opt.iterT
-    for epoch in epoches:
+    for epoch in epochs:
         # acc_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
         acc_file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(opt.taskid) + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
         acc = np.load(acc_file)["test_acc"]
@@ -193,15 +182,15 @@ def plot_test_acc():
     imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + str(opt.taskid)+ "_testacc.png"
 
     plt.figure(figsize=(8, 8))
-    plt.xlabel("# Epoches")
+    plt.xlabel("# Epochs")
     plt.ylabel("Test Accuracy")
     plt.title(f"{d} {m} {optimizer} niter={T}, max: %.2f"%max(test_acc))
     # plt.xticks(range(1, total_epoch+1, 100), range(0, total_epoch, 100), rotation="vertical")
     plt.xticks(range(1, total_epoch+1, 10), range(0, total_epoch, 10), rotation="vertical")
     plt.xlim(xmin=0, xmax=total_epoch)
     plt.ylim(ymin=0, ymax=100)
-    plt.plot(epoches, test_acc, color='b')
-    # plt.plot(epoches, test_acc, linestyle='--', marker='o', color='b')
+    plt.plot(epochs, test_acc, color='b')
+    # plt.plot(epochs, test_acc, linestyle='--', marker='o', color='b')
     # plt.text(total_epoch-200, 90, 'Max: %.2f'%max(test_acc), fontsize=15)
 
     plt.savefig(img_dir + "/" + imgname)
@@ -256,5 +245,6 @@ def plot_training_loss_batch():
 
 # plot_test_acc()
 # plot_training_loss()
-plot_training_loss_batch()
+# plot_training_loss_batch()
 # plot_training_loss_epoch()
+plot_multi_epoch()
