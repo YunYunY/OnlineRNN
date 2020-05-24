@@ -20,7 +20,7 @@ class SimpleRNN(nn.Module):
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
         self.basic_rnn = nn.RNN(self.input_size, self.hidden_size)
-        if opt.predic_task == 'Binary':
+        if opt.predic_task in ['Binary', 'Logits']:
             self.FC = nn.Linear(self.hidden_size, 1)
         else:
             self.FC = nn.Linear(self.hidden_size, self.output_size)
@@ -30,18 +30,20 @@ class SimpleRNN(nn.Module):
             # To make model structure identity with paper iRNN
             out = torch.sigmoid(self.FC(self.hidden_final))
             return out.view(-1), self.hidden_final
+        elif self.opt.predic_task == 'Logits':
+            out = torch.tanh(self.FC(self.out[-1]))
+            return out.view(-1), self.hidden_final
         else:
-            # out = torch.relu(self.FC(hidden_final))
-            # out = out[-1]
-            # out = torch.sigmoid(self.FC(out))
             out = self.out[-1]
             out = self.FC(out)
+            
             # out batch_size X n_output
             return out.view(-1, self.output_size), self.hidden_final
 
     def forward(self, X, hidden):
 
         # transforms X to dimensions: n_steps X batch_size X n_inputs
+      
         X = X.permute(1, 0, 2) 
         hidden = hidden.permute(1, 0, 2)
         # self.basic input:

@@ -63,6 +63,7 @@ class Setting:
         self.model = model
         # setup dataset
         self.dataset = dataset
+       
         self.dataset_test = dataset_test
         # setup model
         self.model.dataname = self.dataset.name
@@ -113,6 +114,7 @@ class RNN(Setting):
         total_iters = 0  # the total number of training iterations
         self.model.total_batches = 0 # the total number of batchs
         self.model.max_test_acc = 0
+        self.model.min_test_mse = float('inf')
 
      
 
@@ -143,6 +145,9 @@ class RNN(Setting):
                 if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
                     self.model.training_log(self.model.total_batches)
 
+                if self.opt.verbose_batch and (self.model.total_batches)%1 == 0 :
+                    print("Epoch %d | End of batch %d | Time Taken: %d sec | Loss: %.4f"
+                    % (epoch, self.model.total_batches, time.time() - epoch_start_time, self.model.loss.detach().item()))
             if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
                 print(
                     "saving the model at the end of epoch %d, iters %d"
@@ -151,16 +156,17 @@ class RNN(Setting):
 
             if epoch == self.opt.n_epochs:
                 self.model.save_networks("latest")
-
             # ----------------------------------------------
           
             self.model.save_losses(epoch)
-            print("End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
-                % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc))
+            if not self.opt.verbose_batch:
+                print("End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
+                    % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc))
             # ----------------------------------------------
             if self.opt.eval_freq != 0: # evaluate 
                 self.model.set_test_output()
                 for i, data in enumerate(self.dataset_test.dataloader):
+                    
                     self.model.data = data 
                     self.model.set_test_input()  # unpack data from data loader
                     self.model.test()  # run inference

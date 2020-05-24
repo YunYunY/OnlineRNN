@@ -1,8 +1,8 @@
 from abc import ABC
 import numpy as np
 import torch
-from onlinernn.models.fgsm_sign import FGSM, MultipleOptimizer
-# from onlinernn.models.fgsm import FGSM, MultipleOptimizer
+# from onlinernn.models.fgsm_sign import FGSM, MultipleOptimizer
+from onlinernn.models.fgsm import FGSM, MultipleOptimizer
 # from onlinernn.models.fgsm_fw_2 import FGSM, MultipleOptimizer
 
 from onlinernn.models.adam import Adam 
@@ -46,6 +46,8 @@ class BaseModel(ABC):
             self.optimizer = Adam(self.rnn_model.parameters(), lr=self.lr)
         elif self.opt.optimizer == 'SGD':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)
+        elif self.opt.optimizer == 'RMSprop':
+            self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr)
         elif self.opt.optimizer == 'SGD_Momentum':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr, momentum=0.9)
         elif self.opt.optimizer == 'irnn_Adam':

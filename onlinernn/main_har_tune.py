@@ -37,6 +37,7 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
+opt.iterT = 10
 
 if opt.taskid == 100:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
@@ -44,7 +45,6 @@ if opt.taskid == 100:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -68,7 +68,6 @@ if opt.taskid == 101:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -92,7 +91,6 @@ if opt.taskid == 102:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -116,7 +114,6 @@ if opt.taskid == 103:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -140,7 +137,6 @@ if opt.taskid == 104:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -166,7 +162,6 @@ if opt.taskid == 200:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -190,7 +185,6 @@ if opt.taskid == 201:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -214,7 +208,6 @@ if opt.taskid == 202:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -238,7 +231,6 @@ if opt.taskid == 203:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -262,7 +254,6 @@ if opt.taskid == 204:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -288,7 +279,6 @@ if opt.taskid == 300:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -312,7 +302,6 @@ if opt.taskid == 301:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -336,7 +325,6 @@ if opt.taskid == 302:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -360,7 +348,6 @@ if opt.taskid == 303:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -384,7 +371,6 @@ if opt.taskid == 304:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -411,7 +397,6 @@ if opt.taskid == 400:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -435,7 +420,6 @@ if opt.taskid == 401:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -459,7 +443,6 @@ if opt.taskid == 402:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -483,7 +466,6 @@ if opt.taskid == 403:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -507,7 +489,6 @@ if opt.taskid == 404:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -534,7 +515,6 @@ if opt.taskid == 500:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -558,7 +538,6 @@ if opt.taskid == 501:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -582,7 +561,6 @@ if opt.taskid == 502:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -606,7 +584,6 @@ if opt.taskid == 503:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -630,7 +607,6 @@ if opt.taskid == 504:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -657,7 +633,6 @@ if opt.taskid == 600:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -681,7 +656,6 @@ if opt.taskid == 601:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -705,7 +679,6 @@ if opt.taskid == 602:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -729,7 +702,6 @@ if opt.taskid == 603:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -753,7 +725,6 @@ if opt.taskid == 604:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 1e-3
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -779,7 +750,6 @@ if opt.taskid == 700:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -803,7 +773,6 @@ if opt.taskid == 701:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -827,7 +796,6 @@ if opt.taskid == 702:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -851,7 +819,6 @@ if opt.taskid == 703:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -875,7 +842,6 @@ if opt.taskid == 704:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -901,7 +867,6 @@ if opt.taskid == 800:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -925,7 +890,6 @@ if opt.taskid == 801:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -949,7 +913,6 @@ if opt.taskid == 802:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -973,7 +936,6 @@ if opt.taskid == 803:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -997,7 +959,6 @@ if opt.taskid == 804:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1024,7 +985,6 @@ if opt.taskid == 900:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1048,7 +1008,6 @@ if opt.taskid == 901:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1072,7 +1031,6 @@ if opt.taskid == 902:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1096,7 +1054,6 @@ if opt.taskid == 903:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1120,7 +1077,6 @@ if opt.taskid == 904:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1147,7 +1103,6 @@ if opt.taskid == 1000:
     opt.hidden_size = 80
     opt.batch_size = 32
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1171,7 +1126,6 @@ if opt.taskid == 1001:
     opt.hidden_size = 80
     opt.batch_size = 64
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1195,7 +1149,6 @@ if opt.taskid == 1002:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1219,7 +1172,6 @@ if opt.taskid == 1003:
     opt.hidden_size = 80
     opt.batch_size = 256
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -1243,7 +1195,6 @@ if opt.taskid == 1004:
     opt.hidden_size = 80
     opt.batch_size = 512
     opt.lr = 2e-2
-    opt.iterT = 1
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)

@@ -112,6 +112,12 @@ class BaseOptions:
         # -------------------------------------------------------
 
         parser.add_argument(
+            "--verbose_batch",
+            action="store_true",
+            help="if specified, print loss after every batch",
+        )
+
+        parser.add_argument(
             "--verbose",
             action="store_true",
             help="if specified, print more debugging information",

@@ -5,6 +5,7 @@ from onlinernn.options.train_options import TrainOptions
 from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTPixelPermute, MNISTShift, MNISTPermute
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
+from onlinernn.datasets.adding import ADDING
 from onlinernn.tests.test_utils import show_shift
 from onlinernn.datasets.data_utils import loop_queue
 from onlinernn.datasets.mnist_byte import MNIST_byte
@@ -32,7 +33,7 @@ opt.istrain = True
 #     data = data.view(64, 1, 28, 28)
 #     show_shift(data, 8, result_dir, "pixelMNIST_byte.png")
 
-
+'''
 def test_permutepixelmnist():
     """
     Test MNIST class
@@ -49,7 +50,7 @@ def test_permutepixelmnist():
     data = data.view(64, 1, 28, 28)
     show_shift(data, 8, result_dir, "permutepixelMNIST.png")
 
-'''
+
 def test_pixelmnist():
     """
     Test MNIST class
@@ -85,7 +86,21 @@ def test_har2():
     assert list(batch[0][:64].shape) == [64, 128, 9]
     assert list(batch[1][:64].shape) == [64, 1]
 
+'''
 
+
+def test_adding():
+    opt.adding_train = 500
+    opt.adding_test = 100
+    opt.seq_len = 30
+    d = ADDING(opt)
+    
+    batch = next(iter(d.dataloader))
+    # print(batch[0][:64].mean())
+    print(batch[1][:64].shape)
+    # assert list(batch[0][:64].shape) == [64, 128, 9]
+    # assert list(batch[1][:64].shape) == [64, 1]
+'''
 def test_mnist():
     """
     Test MNIST class

@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="",
     packages=setuptools.find_packages(),
-    install_requires=["torch==1.4.0", "torchvision==0.5.0"],
+    install_requires=["torch==1.4.0", "torchvision==0.5.0", "cupy-cuda101==7.4.0", "pynvrtc==9.2"],
     extras_require={
         "dev": [
             "nose==1.3.7", "matplotlib==3.2.1", "torchsummary==1.5.1"

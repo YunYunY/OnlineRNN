@@ -15,8 +15,10 @@ class VanillaRNN(BaseModel):
         # self.loss_method = "vanilla"
         self.model_names = ["rnn_model"]
         self.model_method = "Vanilla" # the way to construct model
-        if opt.predic_task == 'Binary':
+        if opt.predic_task in ['Binary', 'Logits']:
             self.loss_method = "MSE" # ["BCELogit" "CrossEntropy" "MSE"]
+            self.init_state_C = np.sqrt(3 / (2 * opt.hidden_size))
+          
         else:
             self.loss_method = "CrossEntropy" # ["BCELogit" "CrossEntropy" "MSE"]
   
@@ -144,10 +146,12 @@ class VanillaRNN(BaseModel):
 
     def set_input(self):
         self.inputs, self.labels = self.data
+        
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
+        
       
         self.labels = self.labels.view(-1).to(self.device)
-        if self.opt.predic_task == 'Binary':
+        if self.opt.predic_task in ['Binary', 'Logits']:
             self.labels = self.labels.float()
         # update batch 
         self.batch_size = self.labels.shape[0]
@@ -165,9 +169,12 @@ class VanillaRNN(BaseModel):
     # Initialize first hidden state      
 
     def init_states(self):
-        # self.states = torch.zeros(self.num_layers, self.batch_size, self.hidden_size).to(self.device)
-        self.states = torch.zeros((self.batch_size, self.num_layers, self.hidden_size)).to(self.device)
+        if self.opt.predic_task in ['Logits']:
+            self.states = torch.FloatTensor(self.batch_size, self.num_layers, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
+        else:
+            self.states = torch.zeros((self.batch_size, self.num_layers, self.hidden_size)).to(self.device)
 
+       
     def track_grad_flow(self, named_parameters):
         # Reference: https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/7
   
@@ -217,6 +224,7 @@ class VanillaRNN(BaseModel):
         """
         Backward path 
         """
+        
         self.loss = self.criterion(self.outputs, self.labels)      
         self.loss.backward()
         
@@ -272,6 +280,8 @@ class VanillaRNN(BaseModel):
             pred = logit >= 0.5
             truth = target >= 0.5
             accuracy = 100.* pred.eq(truth).sum()/batch_size
+        elif self.opt.predic_task == 'Logits':
+            accuracy = self.loss.detach()
         else:
             corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
             accuracy = 100.0 * corrects/batch_size
@@ -288,9 +298,12 @@ class VanillaRNN(BaseModel):
             losses = self.losses, train_acc = self.train_acc)
 
     def save_test_acc(self, epoch):
-
-        self.max_test_acc = max(self.max_test_acc, self.test_acc)
-        print(f"Maximum test acc is {self.max_test_acc}")
+        if self.opt.predic_task == 'Logits':
+            self.min_test_mse = min(self.min_test_mse, self.test_acc)
+            print(f"Min test MSE is {self.min_test_mse}")
+        else:
+            self.max_test_acc = max(self.max_test_acc, self.test_acc)
+            print(f"Maximum test acc is {self.max_test_acc}")
         np.savez(
         self.loss_dir + "/epoch_" + str(epoch) + "_test_acc.npz",
         test_acc = self.test_acc)
@@ -343,7 +356,9 @@ class VanillaRNN(BaseModel):
 
     # ----------------------------------------------
     def get_test_acc(self):        
+       
         self.test_acc = sum(self.test_acc)/len(self.test_acc) 
+        
         print(f"Test accuracy is {self.test_acc}")
         # self.save_result()
     # ----------------------------------------------

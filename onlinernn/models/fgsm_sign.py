@@ -113,6 +113,7 @@ class FGSM(Optimizer):
                 else: 
                     # -------------------FGSM with grad value ---------------------    
                     # use grad only
+               
                     buf.mul_(1.-1./t).add_(-lr/t, p.grad) # update Delta w_t 
                     # buf.mul_(1.-2./(t+2.)).add_(-2.*lr/(t+2.), p.grad) # update Delta w_t 
 
@@ -153,8 +154,10 @@ class FGSM(Optimizer):
                             p.grad.div_((-lr)) # rescale before feeding into Adam
                             # p.grad = buf.clone()/(-lr)
 
-                        if self.last_step_norm:                                
-                            p.grad.div_(torch.norm(p.grad.data))
+                        if self.last_step_norm:          
+                            p.grad.div_(torch.norm(p.grad.data, 1))
+
+                            # p.grad.div_(torch.norm(p.grad.data))
 
                         # set to True so that second optimizer can work
                         continue_Adam = True
