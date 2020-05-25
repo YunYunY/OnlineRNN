@@ -11,10 +11,9 @@ from onlinernn.datasets.adding_dataset import Adding_Dataset
 
 class ADDING(BaseDataset):
     def __init__(self, opt):
-        self.N_TRAIN = opt.adding_train#100000
-        self.N_TEST = opt.adding_test #1000
-        self.N_SAMPLES = self.N_TEST + self.N_TRAIN
-
+     
+        self.N_SAMPLES = opt.N_TRAIN + opt.N_TEST
+        self.N_TRAIN = opt.N_TRAIN 
         opt.n_class = 1
         opt.feature_shape = 2
         self.opt = opt

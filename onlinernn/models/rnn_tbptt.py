@@ -35,6 +35,17 @@ class TBPTT(VanillaRNN):
         self.old_weights_ih = copy.deepcopy(self.rnn_model.basic_rnn.weight_ih_l0.data) 
         self.old_weights_hh = copy.deepcopy(self.rnn_model.basic_rnn.weight_hh_l0.data)
 
+    def set_input(self):
+        self.inputs, self.labels = self.data
+       
+        self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
+        self.batch_size = self.labels.shape[0]  # update batch 
+        if self.opt.single_output:
+            self.labels = self.labels.view(-1).to(self.device)
+        else:
+            self.labels = self.labels.to(self.device)
+        if self.opt.predic_task in ['Binary', 'Logits']:
+            self.labels = self.labels.float()
 
     def train_subsequence(self):
         """
@@ -44,13 +55,17 @@ class TBPTT(VanillaRNN):
         nchunks = self.seq_len // self.opt.subseq_size
      
         for i in range(nchunks):
+            
             sub_inputs, sub_labels = self.generate_subbatches(i, size=self.opt.subseq_size)
+            if not self.opt.single_output:
+                sub_labels = sub_labels.reshape(-1)
             self.optimizer.zero_grad()
             self.states = self.states.detach()
-         
             outputs, self.states = self.rnn_model(sub_inputs, self.states)
+           
             self.states = self.states.view(-1, self.num_layers, self.hidden_size)
-
+           
+           
             loss = self.criterion(outputs, sub_labels)      
             loss.backward()
             losses.append(loss.detach().item())
@@ -65,7 +80,7 @@ class TBPTT(VanillaRNN):
                 self.optimizer.step()
         self.loss = sum(losses)/len(losses)
         self.outputs = outputs
-
+        
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
 
@@ -82,7 +97,6 @@ class TBPTT(VanillaRNN):
             # self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss)
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
-           
 
     # ----------------------------------------------
     def test(self):

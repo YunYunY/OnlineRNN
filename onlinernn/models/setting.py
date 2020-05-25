@@ -144,10 +144,18 @@ class RNN(Setting):
                 # Save gradients
                 if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
                     self.model.training_log(self.model.total_batches)
-
-                if self.opt.verbose_batch and (self.model.total_batches)%1 == 0 :
+                if self.opt.test_batch:
                     print("Epoch %d | End of batch %d | Time Taken: %d sec | Loss: %.4f"
-                    % (epoch, self.model.total_batches, time.time() - epoch_start_time, self.model.loss.detach().item()))
+                    % (epoch, self.model.total_batches, time.time() - epoch_start_time, self.model.loss))
+                    # self.model.set_test_output()
+                    # for i, data in enumerate(self.dataset_test.dataloader):
+                    #     self.model.data = data 
+                    #     self.model.set_test_input()  # unpack data from data loader
+                    #     self.model.test()  # run inference
+                    # self.model.get_test_acc() # calculate and save global acc
+                   
+                    # self.model.save_test_acc(self.model.total_batches)
+                    
             if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
                 print(
                     "saving the model at the end of epoch %d, iters %d"
@@ -159,19 +167,18 @@ class RNN(Setting):
             # ----------------------------------------------
           
             self.model.save_losses(epoch)
-            if not self.opt.verbose_batch:
+            if self.opt.verbose:
                 print("End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
                     % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc))
             # ----------------------------------------------
-            if self.opt.eval_freq != 0: # evaluate 
+            if not self.opt.test_batch and self.opt.eval_freq != 0: # evaluate 
                 self.model.set_test_output()
                 for i, data in enumerate(self.dataset_test.dataloader):
-                    
                     self.model.data = data 
                     self.model.set_test_input()  # unpack data from data loader
                     self.model.test()  # run inference
                 self.model.get_test_acc() # calculate and save global acc
-            self.model.save_test_acc(epoch)
+                self.model.save_test_acc(epoch)
             print(f'Total training time is {time.time() - global_start_time}')
             lr = self.model.update_learning_rate()  # update learning rates at the end of every epoch.
             print('learning rate = %.10f' % lr)

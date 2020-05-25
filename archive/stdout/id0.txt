@@ -1,0 +1,1033 @@
+----------------- Inside iteration T is 1 -----------------
+Total datasize is 7352
+Total datasize is 2947
+Number of available GPUs: 1
+Output folder result/VanillaRNN/HAR_2/T1/FGSM_Adagrad/0
+---------- Networks initialized -------------
+[Network rnn_model] Total number of parameters : 0.007 M
+-----------------------------------------------
+Start Training Loop...
+inner loop is True
+sign average is None
+End of epoch 0 / 199 | Time Taken: 1 sec | Loss: 0.1863 | Train Accuracy: 74.45
+Test accuracy is 72.96006965637207
+Maximum test acc is 72.96006965637207
+Total training time is 6.7401123046875
+learning rate = 0.0010000000
+End of epoch 1 / 199 | Time Taken: 1 sec | Loss: 0.1612 | Train Accuracy: 77.92
+Test accuracy is 74.62022590637207
+Maximum test acc is 74.62022590637207
+Total training time is 8.411460876464844
+learning rate = 0.0010000000
+End of epoch 2 / 199 | Time Taken: 1 sec | Loss: 0.1574 | Train Accuracy: 78.38
+Test accuracy is 75.27126757303874
+Maximum test acc is 75.27126757303874
+Total training time is 10.07275915145874
+learning rate = 0.0010000000
+End of epoch 3 / 199 | Time Taken: 1 sec | Loss: 0.1580 | Train Accuracy: 77.87
+Test accuracy is 75.29296875
+Maximum test acc is 75.29296875
+Total training time is 11.7433602809906
+learning rate = 0.0010000000
+End of epoch 4 / 199 | Time Taken: 1 sec | Loss: 0.1582 | Train Accuracy: 77.66
+Test accuracy is 72.5802952448527
+Maximum test acc is 75.29296875
+Total training time is 13.437121391296387
+learning rate = 0.0010000000
+End of epoch 5 / 199 | Time Taken: 1 sec | Loss: 0.1586 | Train Accuracy: 77.60
+Test accuracy is 75.26041666666667
+Maximum test acc is 75.29296875
+Total training time is 15.102435827255249
+learning rate = 0.0010000000
+End of epoch 6 / 199 | Time Taken: 1 sec | Loss: 0.1573 | Train Accuracy: 77.97
+Test accuracy is 74.29470507303874
+Maximum test acc is 75.29296875
+Total training time is 16.817395448684692
+learning rate = 0.0010000000
+End of epoch 7 / 199 | Time Taken: 1 sec | Loss: 0.1598 | Train Accuracy: 77.21
+Test accuracy is 76.49739583333333
+Maximum test acc is 76.49739583333333
+Total training time is 18.53373670578003
+learning rate = 0.0010000000
+End of epoch 8 / 199 | Time Taken: 1 sec | Loss: 0.1578 | Train Accuracy: 77.56
+Test accuracy is 74.07769107818604
+Maximum test acc is 76.49739583333333
+Total training time is 20.22794508934021
+learning rate = 0.0010000000
+saving the model at the end of epoch 9, iters 74240
+End of epoch 9 / 199 | Time Taken: 1 sec | Loss: 0.1569 | Train Accuracy: 77.84
+Test accuracy is 76.49739583333333
+Maximum test acc is 76.49739583333333
+Total training time is 21.928263425827026
+learning rate = 0.0010000000
+End of epoch 10 / 199 | Time Taken: 1 sec | Loss: 0.1591 | Train Accuracy: 77.37
+Test accuracy is 74.07769107818604
+Maximum test acc is 76.49739583333333
+Total training time is 23.564252853393555
+learning rate = 0.0010000000
+End of epoch 11 / 199 | Time Taken: 1 sec | Loss: 0.1640 | Train Accuracy: 77.73
+Test accuracy is 76.86631965637207
+Maximum test acc is 76.86631965637207
+Total training time is 25.31829833984375
+learning rate = 0.0010000000
+End of epoch 12 / 199 | Time Taken: 1 sec | Loss: 0.1660 | Train Accuracy: 77.90
+Test accuracy is 76.73611132303874
+Maximum test acc is 76.86631965637207
+Total training time is 26.977007389068604
+learning rate = 0.0010000000
+End of epoch 13 / 199 | Time Taken: 1 sec | Loss: 0.1673 | Train Accuracy: 77.78
+Test accuracy is 77.60416666666667
+Maximum test acc is 77.60416666666667
+Total training time is 28.687091827392578
+learning rate = 0.0010000000
+End of epoch 14 / 199 | Time Taken: 1 sec | Loss: 0.1675 | Train Accuracy: 77.76
+Test accuracy is 77.47395833333333
+Maximum test acc is 77.60416666666667
+Total training time is 30.370713233947754
+learning rate = 0.0010000000
+End of epoch 15 / 199 | Time Taken: 1 sec | Loss: 0.1708 | Train Accuracy: 77.29
+Test accuracy is 75.26041666666667
+Maximum test acc is 77.60416666666667
+Total training time is 31.980488777160645
+learning rate = 0.0010000000
+End of epoch 16 / 199 | Time Taken: 1 sec | Loss: 0.1669 | Train Accuracy: 77.59
+Test accuracy is 75.54253482818604
+Maximum test acc is 77.60416666666667
+Total training time is 33.62408900260925
+learning rate = 0.0010000000
+End of epoch 17 / 199 | Time Taken: 1 sec | Loss: 0.1628 | Train Accuracy: 77.39
+Test accuracy is 78.84114583333333
+Maximum test acc is 78.84114583333333
+Total training time is 35.308292627334595
+learning rate = 0.0010000000
+End of epoch 18 / 199 | Time Taken: 1 sec | Loss: 0.1625 | Train Accuracy: 77.71
+Test accuracy is 75.71614583333333
+Maximum test acc is 78.84114583333333
+Total training time is 37.02479529380798
+learning rate = 0.0010000000
+saving the model at the end of epoch 19, iters 148480
+End of epoch 19 / 199 | Time Taken: 1 sec | Loss: 0.1644 | Train Accuracy: 77.89
+Test accuracy is 75.7269967397054
+Maximum test acc is 78.84114583333333
+Total training time is 38.703938007354736
+learning rate = 0.0010000000
+End of epoch 20 / 199 | Time Taken: 1 sec | Loss: 0.1658 | Train Accuracy: 77.27
+Test accuracy is 76.72526041666667
+Maximum test acc is 78.84114583333333
+Total training time is 40.38254404067993
+learning rate = 0.0010000000
+End of epoch 21 / 199 | Time Taken: 1 sec | Loss: 0.1647 | Train Accuracy: 77.14
+Test accuracy is 73.7521702448527
+Maximum test acc is 78.84114583333333
+Total training time is 42.062450647354126
+learning rate = 0.0010000000
+End of epoch 22 / 199 | Time Taken: 1 sec | Loss: 0.1632 | Train Accuracy: 77.91
+Test accuracy is 71.57118066151936
+Maximum test acc is 78.84114583333333
+Total training time is 43.76648569107056
+learning rate = 0.0010000000
+End of epoch 23 / 199 | Time Taken: 1 sec | Loss: 0.1641 | Train Accuracy: 78.18
+Test accuracy is 72.76475715637207
+Maximum test acc is 78.84114583333333
+Total training time is 45.47029447555542
+learning rate = 0.0010000000
+End of epoch 24 / 199 | Time Taken: 1 sec | Loss: 0.1640 | Train Accuracy: 77.98
+Test accuracy is 73.95833333333333
+Maximum test acc is 78.84114583333333
+Total training time is 47.12770414352417
+learning rate = 0.0010000000
+End of epoch 25 / 199 | Time Taken: 1 sec | Loss: 0.1637 | Train Accuracy: 78.16
+Test accuracy is 73.6328125
+Maximum test acc is 78.84114583333333
+Total training time is 48.838183879852295
+learning rate = 0.0010000000
+End of epoch 26 / 199 | Time Taken: 1 sec | Loss: 0.1640 | Train Accuracy: 78.12
+Test accuracy is 72.14626757303874
+Maximum test acc is 78.84114583333333
+Total training time is 50.492738246917725
+learning rate = 0.0010000000
+End of epoch 27 / 199 | Time Taken: 1 sec | Loss: 0.1625 | Train Accuracy: 78.18
+Test accuracy is 73.50260416666667
+Maximum test acc is 78.84114583333333
+Total training time is 52.23643517494202
+learning rate = 0.0010000000
+End of epoch 28 / 199 | Time Taken: 1 sec | Loss: 0.1605 | Train Accuracy: 78.70
+Test accuracy is 71.73394107818604
+Maximum test acc is 78.84114583333333
+Total training time is 53.94546604156494
+learning rate = 0.0010000000
+saving the model at the end of epoch 29, iters 222720
+End of epoch 29 / 199 | Time Taken: 1 sec | Loss: 0.1607 | Train Accuracy: 78.61
+Test accuracy is 72.37413215637207
+Maximum test acc is 78.84114583333333
+Total training time is 55.64720129966736
+learning rate = 0.0010000000
+End of epoch 30 / 199 | Time Taken: 1 sec | Loss: 0.1604 | Train Accuracy: 78.59
+Test accuracy is 74.73958333333333
+Maximum test acc is 78.84114583333333
+Total training time is 57.38317894935608
+learning rate = 0.0010000000
+End of epoch 31 / 199 | Time Taken: 1 sec | Loss: 0.1591 | Train Accuracy: 78.67
+Test accuracy is 73.25303840637207
+Maximum test acc is 78.84114583333333
+Total training time is 59.137497901916504
+learning rate = 0.0010000000
+End of epoch 32 / 199 | Time Taken: 1 sec | Loss: 0.1588 | Train Accuracy: 78.76
+Test accuracy is 73.15538215637207
+Maximum test acc is 78.84114583333333
+Total training time is 60.87007975578308
+learning rate = 0.0010000000
+End of epoch 33 / 199 | Time Taken: 1 sec | Loss: 0.1590 | Train Accuracy: 78.81
+Test accuracy is 73.74131965637207
+Maximum test acc is 78.84114583333333
+Total training time is 62.57767105102539
+learning rate = 0.0010000000
+End of epoch 34 / 199 | Time Taken: 1 sec | Loss: 0.1580 | Train Accuracy: 79.01
+Test accuracy is 73.95833333333333
+Maximum test acc is 78.84114583333333
+Total training time is 64.36161637306213
+learning rate = 0.0010000000
+End of epoch 35 / 199 | Time Taken: 1 sec | Loss: 0.1566 | Train Accuracy: 79.23
+Test accuracy is 73.44835090637207
+Maximum test acc is 78.84114583333333
+Total training time is 66.27070951461792
+learning rate = 0.0010000000
+End of epoch 36 / 199 | Time Taken: 1 sec | Loss: 0.1561 | Train Accuracy: 79.17
+Test accuracy is 73.70876757303874
+Maximum test acc is 78.84114583333333
+Total training time is 67.97281312942505
+learning rate = 0.0010000000
+End of epoch 37 / 199 | Time Taken: 1 sec | Loss: 0.1559 | Train Accuracy: 79.33
+Test accuracy is 74.19704882303874
+Maximum test acc is 78.84114583333333
+Total training time is 69.69486165046692
+learning rate = 0.0010000000
+End of epoch 38 / 199 | Time Taken: 1 sec | Loss: 0.1549 | Train Accuracy: 79.29
+Test accuracy is 74.51171875
+Maximum test acc is 78.84114583333333
+Total training time is 71.38717484474182
+learning rate = 0.0010000000
+saving the model at the end of epoch 39, iters 296960
+End of epoch 39 / 199 | Time Taken: 1 sec | Loss: 0.1569 | Train Accuracy: 79.30
+Test accuracy is 75.09765625
+Maximum test acc is 78.84114583333333
+Total training time is 73.13510918617249
+learning rate = 0.0010000000
+End of epoch 40 / 199 | Time Taken: 1 sec | Loss: 0.1518 | Train Accuracy: 79.90
+Test accuracy is 74.62022590637207
+Maximum test acc is 78.84114583333333
+Total training time is 74.84207653999329
+learning rate = 0.0010000000
+End of epoch 41 / 199 | Time Taken: 1 sec | Loss: 0.1536 | Train Accuracy: 79.72
+Test accuracy is 73.70876757303874
+Maximum test acc is 78.84114583333333
+Total training time is 76.5734658241272
+learning rate = 0.0010000000
+End of epoch 42 / 199 | Time Taken: 1 sec | Loss: 0.1518 | Train Accuracy: 80.00
+Test accuracy is 73.3615452448527
+Maximum test acc is 78.84114583333333
+Total training time is 78.28574347496033
+learning rate = 0.0010000000
+End of epoch 43 / 199 | Time Taken: 1 sec | Loss: 0.1500 | Train Accuracy: 80.21
+Test accuracy is 73.58940982818604
+Maximum test acc is 78.84114583333333
+Total training time is 80.05214071273804
+learning rate = 0.0010000000
+End of epoch 44 / 199 | Time Taken: 1 sec | Loss: 0.1499 | Train Accuracy: 80.54
+Test accuracy is 74.3598092397054
+Maximum test acc is 78.84114583333333
+Total training time is 81.76929497718811
+learning rate = 0.0010000000
+End of epoch 45 / 199 | Time Taken: 1 sec | Loss: 0.1495 | Train Accuracy: 80.51
+Test accuracy is 74.1427952448527
+Maximum test acc is 78.84114583333333
+Total training time is 83.46259665489197
+learning rate = 0.0010000000
+End of epoch 46 / 199 | Time Taken: 1 sec | Loss: 0.1469 | Train Accuracy: 80.98
+Test accuracy is 75.0434029897054
+Maximum test acc is 78.84114583333333
+Total training time is 85.22577285766602
+learning rate = 0.0010000000
+End of epoch 47 / 199 | Time Taken: 1 sec | Loss: 0.1505 | Train Accuracy: 80.39
+Test accuracy is 75.20616340637207
+Maximum test acc is 78.84114583333333
+Total training time is 87.07425856590271
+learning rate = 0.0010000000
+End of epoch 48 / 199 | Time Taken: 1 sec | Loss: 0.1467 | Train Accuracy: 80.92
+Test accuracy is 76.15017382303874
+Maximum test acc is 78.84114583333333
+Total training time is 88.82005977630615
+learning rate = 0.0010000000
+saving the model at the end of epoch 49, iters 371200
+End of epoch 49 / 199 | Time Taken: 1 sec | Loss: 0.1456 | Train Accuracy: 81.13
+Test accuracy is 75.28211816151936
+Maximum test acc is 78.84114583333333
+Total training time is 90.53498387336731
+learning rate = 0.0010000000
+End of epoch 50 / 199 | Time Taken: 1 sec | Loss: 0.1454 | Train Accuracy: 81.23
+Test accuracy is 74.9240452448527
+Maximum test acc is 78.84114583333333
+Total training time is 92.25895285606384
+learning rate = 0.0010000000
+End of epoch 51 / 199 | Time Taken: 1 sec | Loss: 0.1442 | Train Accuracy: 81.35
+Test accuracy is 77.86458333333333
+Maximum test acc is 78.84114583333333
+Total training time is 93.9215350151062
+learning rate = 0.0010000000
+End of epoch 52 / 199 | Time Taken: 1 sec | Loss: 0.1451 | Train Accuracy: 81.24
+Test accuracy is 78.05989583333333
+Maximum test acc is 78.84114583333333
+Total training time is 95.5882933139801
+learning rate = 0.0010000000
+End of epoch 53 / 199 | Time Taken: 1 sec | Loss: 0.1434 | Train Accuracy: 81.40
+Test accuracy is 78.125
+Maximum test acc is 78.84114583333333
+Total training time is 97.25103068351746
+learning rate = 0.0010000000
+End of epoch 54 / 199 | Time Taken: 1 sec | Loss: 0.1423 | Train Accuracy: 81.68
+Test accuracy is 78.97135416666667
+Maximum test acc is 78.97135416666667
+Total training time is 98.89292907714844
+learning rate = 0.0010000000
+End of epoch 55 / 199 | Time Taken: 1 sec | Loss: 0.1413 | Train Accuracy: 81.67
+Test accuracy is 79.00390625
+Maximum test acc is 79.00390625
+Total training time is 100.58480906486511
+learning rate = 0.0010000000
+End of epoch 56 / 199 | Time Taken: 1 sec | Loss: 0.1369 | Train Accuracy: 82.20
+Test accuracy is 79.296875
+Maximum test acc is 79.296875
+Total training time is 102.24706435203552
+learning rate = 0.0010000000
+End of epoch 57 / 199 | Time Taken: 1 sec | Loss: 0.1382 | Train Accuracy: 82.24
+Test accuracy is 78.00564257303874
+Maximum test acc is 79.296875
+Total training time is 103.89318346977234
+learning rate = 0.0010000000
+End of epoch 58 / 199 | Time Taken: 1 sec | Loss: 0.1352 | Train Accuracy: 82.72
+Test accuracy is 79.07986132303874
+Maximum test acc is 79.296875
+Total training time is 105.61145329475403
+learning rate = 0.0010000000
+saving the model at the end of epoch 59, iters 445440
+End of epoch 59 / 199 | Time Taken: 1 sec | Loss: 0.1359 | Train Accuracy: 82.62
+Test accuracy is 79.03645833333333
+Maximum test acc is 79.296875
+Total training time is 107.26234149932861
+learning rate = 0.0010000000
+End of epoch 60 / 199 | Time Taken: 1 sec | Loss: 0.1367 | Train Accuracy: 82.42
+Test accuracy is 78.37456607818604
+Maximum test acc is 79.296875
+Total training time is 108.97906875610352
+learning rate = 0.0010000000
+End of epoch 61 / 199 | Time Taken: 1 sec | Loss: 0.1338 | Train Accuracy: 82.84
+Test accuracy is 80.17578125
+Maximum test acc is 80.17578125
+Total training time is 110.65120267868042
+learning rate = 0.0010000000
+End of epoch 62 / 199 | Time Taken: 1 sec | Loss: 0.1323 | Train Accuracy: 83.29
+Test accuracy is 79.72005208333333
+Maximum test acc is 80.17578125
+Total training time is 112.41940641403198
+learning rate = 0.0010000000
+End of epoch 63 / 199 | Time Taken: 1 sec | Loss: 0.1329 | Train Accuracy: 83.24
+Test accuracy is 77.94053840637207
+Maximum test acc is 80.17578125
+Total training time is 114.1711859703064
+learning rate = 0.0010000000
+End of epoch 64 / 199 | Time Taken: 1 sec | Loss: 0.1374 | Train Accuracy: 82.36
+Test accuracy is 77.91883691151936
+Maximum test acc is 80.17578125
+Total training time is 115.82407283782959
+learning rate = 0.0010000000
+End of epoch 65 / 199 | Time Taken: 1 sec | Loss: 0.1311 | Train Accuracy: 83.28
+Test accuracy is 79.40538215637207
+Maximum test acc is 80.17578125
+Total training time is 117.60908532142639
+learning rate = 0.0010000000
+End of epoch 66 / 199 | Time Taken: 1 sec | Loss: 0.1325 | Train Accuracy: 83.15
+Test accuracy is 78.78689257303874
+Maximum test acc is 80.17578125
+Total training time is 119.2703537940979
+learning rate = 0.0010000000
+End of epoch 67 / 199 | Time Taken: 1 sec | Loss: 0.1347 | Train Accuracy: 82.80
+Test accuracy is 80.20833333333333
+Maximum test acc is 80.20833333333333
+Total training time is 120.97683787345886
+learning rate = 0.0010000000
+End of epoch 68 / 199 | Time Taken: 1 sec | Loss: 0.1320 | Train Accuracy: 83.23
+Test accuracy is 79.0473092397054
+Maximum test acc is 80.20833333333333
+Total training time is 122.71853280067444
+learning rate = 0.0010000000
+saving the model at the end of epoch 69, iters 519680
+End of epoch 69 / 199 | Time Taken: 1 sec | Loss: 0.1319 | Train Accuracy: 83.24
+Test accuracy is 79.47048632303874
+Maximum test acc is 80.20833333333333
+Total training time is 124.4183840751648
+learning rate = 0.0010000000
+End of epoch 70 / 199 | Time Taken: 1 sec | Loss: 0.1297 | Train Accuracy: 83.49
+Test accuracy is 80.82682291666667
+Maximum test acc is 80.82682291666667
+Total training time is 126.15558242797852
+learning rate = 0.0010000000
+End of epoch 71 / 199 | Time Taken: 1 sec | Loss: 0.1290 | Train Accuracy: 83.56
+Test accuracy is 79.0473092397054
+Maximum test acc is 80.82682291666667
+Total training time is 127.8320004940033
+learning rate = 0.0010000000
+End of epoch 72 / 199 | Time Taken: 1 sec | Loss: 0.1314 | Train Accuracy: 83.19
+Test accuracy is 79.07986132303874
+Maximum test acc is 80.82682291666667
+Total training time is 129.5831995010376
+learning rate = 0.0010000000
+End of epoch 73 / 199 | Time Taken: 1 sec | Loss: 0.1286 | Train Accuracy: 83.50
+Test accuracy is 80.11067708333333
+Maximum test acc is 80.82682291666667
+Total training time is 131.25098657608032
+learning rate = 0.0010000000
+End of epoch 74 / 199 | Time Taken: 1 sec | Loss: 0.1279 | Train Accuracy: 83.77
+Test accuracy is 77.11588541666667
+Maximum test acc is 80.82682291666667
+Total training time is 132.91178727149963
+learning rate = 0.0010000000
+End of epoch 75 / 199 | Time Taken: 1 sec | Loss: 0.1293 | Train Accuracy: 83.44
+Test accuracy is 80.89192708333333
+Maximum test acc is 80.89192708333333
+Total training time is 134.62081861495972
+learning rate = 0.0010000000
+End of epoch 76 / 199 | Time Taken: 1 sec | Loss: 0.1294 | Train Accuracy: 83.33
+Test accuracy is 77.91883691151936
+Maximum test acc is 80.89192708333333
+Total training time is 136.37923192977905
+learning rate = 0.0010000000
+End of epoch 77 / 199 | Time Taken: 1 sec | Loss: 0.1340 | Train Accuracy: 82.62
+Test accuracy is 78.08159732818604
+Maximum test acc is 80.89192708333333
+Total training time is 138.09976530075073
+learning rate = 0.0010000000
+End of epoch 78 / 199 | Time Taken: 1 sec | Loss: 0.1284 | Train Accuracy: 83.45
+Test accuracy is 80.69661458333333
+Maximum test acc is 80.89192708333333
+Total training time is 139.7108509540558
+learning rate = 0.0010000000
+saving the model at the end of epoch 79, iters 593920
+End of epoch 79 / 199 | Time Taken: 1 sec | Loss: 0.1277 | Train Accuracy: 83.59
+Test accuracy is 81.15234375
+Maximum test acc is 81.15234375
+Total training time is 141.46338820457458
+learning rate = 0.0010000000
+End of epoch 80 / 199 | Time Taken: 1 sec | Loss: 0.1281 | Train Accuracy: 83.46
+Test accuracy is 81.08723958333333
+Maximum test acc is 81.15234375
+Total training time is 143.10151267051697
+learning rate = 0.0010000000
+End of epoch 81 / 199 | Time Taken: 1 sec | Loss: 0.1276 | Train Accuracy: 83.56
+Test accuracy is 79.76345507303874
+Maximum test acc is 81.15234375
+Total training time is 144.85721588134766
+learning rate = 0.0010000000
+End of epoch 82 / 199 | Time Taken: 1 sec | Loss: 0.1268 | Train Accuracy: 83.65
+Test accuracy is 77.39800357818604
+Maximum test acc is 81.15234375
+Total training time is 146.50034022331238
+learning rate = 0.0010000000
+End of epoch 83 / 199 | Time Taken: 1 sec | Loss: 0.1263 | Train Accuracy: 83.63
+Test accuracy is 78.5373264948527
+Maximum test acc is 81.15234375
+Total training time is 148.19523859024048
+learning rate = 0.0010000000
+End of epoch 84 / 199 | Time Taken: 1 sec | Loss: 0.1254 | Train Accuracy: 83.86
+Test accuracy is 79.1449654897054
+Maximum test acc is 81.15234375
+Total training time is 149.929856300354
+learning rate = 0.0010000000
+End of epoch 85 / 199 | Time Taken: 1 sec | Loss: 0.1287 | Train Accuracy: 83.32
+Test accuracy is 77.88628482818604
+Maximum test acc is 81.15234375
+Total training time is 151.56237626075745
+learning rate = 0.0010000000
+End of epoch 86 / 199 | Time Taken: 1 sec | Loss: 0.1266 | Train Accuracy: 83.54
+Test accuracy is 80.72916666666667
+Maximum test acc is 81.15234375
+Total training time is 153.27479338645935
+learning rate = 0.0010000000
+End of epoch 87 / 199 | Time Taken: 1 sec | Loss: 0.1297 | Train Accuracy: 83.01
+Test accuracy is 80.20833333333333
+Maximum test acc is 81.15234375
+Total training time is 155.01241779327393
+learning rate = 0.0010000000
+End of epoch 88 / 199 | Time Taken: 1 sec | Loss: 0.1277 | Train Accuracy: 83.21
+Test accuracy is 78.98220507303874
+Maximum test acc is 81.15234375
+Total training time is 156.6739559173584
+learning rate = 0.0010000000
+saving the model at the end of epoch 89, iters 668160
+End of epoch 89 / 199 | Time Taken: 1 sec | Loss: 0.1279 | Train Accuracy: 83.04
+Test accuracy is 81.08723958333333
+Maximum test acc is 81.15234375
+Total training time is 158.36754631996155
+learning rate = 0.0010000000
+End of epoch 90 / 199 | Time Taken: 1 sec | Loss: 0.1260 | Train Accuracy: 83.45
+Test accuracy is 79.56814257303874
+Maximum test acc is 81.15234375
+Total training time is 160.04758310317993
+learning rate = 0.0010000000
+End of epoch 91 / 199 | Time Taken: 1 sec | Loss: 0.1262 | Train Accuracy: 83.44
+Test accuracy is 80.95703125
+Maximum test acc is 81.15234375
+Total training time is 161.79762816429138
+learning rate = 0.0010000000
+End of epoch 92 / 199 | Time Taken: 1 sec | Loss: 0.1281 | Train Accuracy: 82.91
+Test accuracy is 80.6640625
+Maximum test acc is 81.15234375
+Total training time is 163.47511529922485
+learning rate = 0.0010000000
+End of epoch 93 / 199 | Time Taken: 1 sec | Loss: 0.1289 | Train Accuracy: 82.65
+Test accuracy is 80.859375
+Maximum test acc is 81.15234375
+Total training time is 165.14120864868164
+learning rate = 0.0010000000
+End of epoch 94 / 199 | Time Taken: 1 sec | Loss: 0.1278 | Train Accuracy: 82.82
+Test accuracy is 78.81944465637207
+Maximum test acc is 81.15234375
+Total training time is 166.79406023025513
+learning rate = 0.0010000000
+End of epoch 95 / 199 | Time Taken: 1 sec | Loss: 0.1282 | Train Accuracy: 82.62
+Test accuracy is 79.94791666666667
+Maximum test acc is 81.15234375
+Total training time is 168.54392981529236
+learning rate = 0.0010000000
+End of epoch 96 / 199 | Time Taken: 1 sec | Loss: 0.1284 | Train Accuracy: 82.53
+Test accuracy is 79.8828125
+Maximum test acc is 81.15234375
+Total training time is 170.23646116256714
+learning rate = 0.0010000000
+End of epoch 97 / 199 | Time Taken: 1 sec | Loss: 0.1273 | Train Accuracy: 82.83
+Test accuracy is 78.3637154897054
+Maximum test acc is 81.15234375
+Total training time is 171.89320421218872
+learning rate = 0.0010000000
+End of epoch 98 / 199 | Time Taken: 1 sec | Loss: 0.1289 | Train Accuracy: 82.41
+Test accuracy is 79.8828125
+Maximum test acc is 81.15234375
+Total training time is 173.52994298934937
+learning rate = 0.0010000000
+saving the model at the end of epoch 99, iters 742400
+End of epoch 99 / 199 | Time Taken: 1 sec | Loss: 0.1289 | Train Accuracy: 82.28
+Test accuracy is 78.23350715637207
+Maximum test acc is 81.15234375
+Total training time is 175.29326152801514
+learning rate = 0.0010000000
+End of epoch 100 / 199 | Time Taken: 1 sec | Loss: 0.1298 | Train Accuracy: 81.86
+Test accuracy is 78.87369791666667
+Maximum test acc is 81.15234375
+Total training time is 176.9835925102234
+learning rate = 0.0010000000
+End of epoch 101 / 199 | Time Taken: 1 sec | Loss: 0.1284 | Train Accuracy: 81.72
+Test accuracy is 77.7777779897054
+Maximum test acc is 81.15234375
+Total training time is 178.7577257156372
+learning rate = 0.0010000000
+End of epoch 102 / 199 | Time Taken: 1 sec | Loss: 0.1295 | Train Accuracy: 81.51
+Test accuracy is 75.55338541666667
+Maximum test acc is 81.15234375
+Total training time is 180.49581098556519
+learning rate = 0.0010000000
+End of epoch 103 / 199 | Time Taken: 1 sec | Loss: 0.1354 | Train Accuracy: 79.62
+Test accuracy is 76.93142382303874
+Maximum test acc is 81.15234375
+Total training time is 182.35092449188232
+learning rate = 0.0010000000
+End of epoch 104 / 199 | Time Taken: 1 sec | Loss: 0.1283 | Train Accuracy: 81.44
+Test accuracy is 79.65494791666667
+Maximum test acc is 81.15234375
+Total training time is 184.07411527633667
+learning rate = 0.0010000000
+End of epoch 105 / 199 | Time Taken: 1 sec | Loss: 0.1275 | Train Accuracy: 81.44
+Test accuracy is 78.7109375
+Maximum test acc is 81.15234375
+Total training time is 185.79833054542542
+learning rate = 0.0010000000
+End of epoch 106 / 199 | Time Taken: 1 sec | Loss: 0.1277 | Train Accuracy: 81.55
+Test accuracy is 74.7504342397054
+Maximum test acc is 81.15234375
+Total training time is 187.44060277938843
+learning rate = 0.0010000000
+End of epoch 107 / 199 | Time Taken: 1 sec | Loss: 0.1286 | Train Accuracy: 80.93
+Test accuracy is 75.4123264948527
+Maximum test acc is 81.15234375
+Total training time is 189.11106657981873
+learning rate = 0.0010000000
+End of epoch 108 / 199 | Time Taken: 1 sec | Loss: 0.1270 | Train Accuracy: 81.31
+Test accuracy is 77.64756965637207
+Maximum test acc is 81.15234375
+Total training time is 190.8208827972412
+learning rate = 0.0010000000
+saving the model at the end of epoch 109, iters 816640
+End of epoch 109 / 199 | Time Taken: 1 sec | Loss: 0.1309 | Train Accuracy: 80.37
+Test accuracy is 78.33116340637207
+Maximum test acc is 81.15234375
+Total training time is 192.52292609214783
+learning rate = 0.0010000000
+End of epoch 110 / 199 | Time Taken: 1 sec | Loss: 0.1275 | Train Accuracy: 81.01
+Test accuracy is 76.22612857818604
+Maximum test acc is 81.15234375
+Total training time is 194.2129364013672
+learning rate = 0.0010000000
+End of epoch 111 / 199 | Time Taken: 1 sec | Loss: 0.1320 | Train Accuracy: 79.81
+Test accuracy is 77.50651041666667
+Maximum test acc is 81.15234375
+Total training time is 195.84806728363037
+learning rate = 0.0010000000
+End of epoch 112 / 199 | Time Taken: 1 sec | Loss: 0.1314 | Train Accuracy: 80.01
+Test accuracy is 78.90625
+Maximum test acc is 81.15234375
+Total training time is 197.46244406700134
+learning rate = 0.0010000000
+End of epoch 113 / 199 | Time Taken: 1 sec | Loss: 0.1306 | Train Accuracy: 80.01
+Test accuracy is 78.87369791666667
+Maximum test acc is 81.15234375
+Total training time is 199.1564326286316
+learning rate = 0.0010000000
+End of epoch 114 / 199 | Time Taken: 1 sec | Loss: 0.1321 | Train Accuracy: 78.83
+Test accuracy is 77.0941842397054
+Maximum test acc is 81.15234375
+Total training time is 200.81826734542847
+learning rate = 0.0010000000
+End of epoch 115 / 199 | Time Taken: 1 sec | Loss: 0.1296 | Train Accuracy: 79.52
+Test accuracy is 77.35460090637207
+Maximum test acc is 81.15234375
+Total training time is 202.49213767051697
+learning rate = 0.0010000000
+End of epoch 116 / 199 | Time Taken: 1 sec | Loss: 0.1282 | Train Accuracy: 79.94
+Test accuracy is 75.7269967397054
+Maximum test acc is 81.15234375
+Total training time is 204.16260313987732
+learning rate = 0.0010000000
+End of epoch 117 / 199 | Time Taken: 1 sec | Loss: 0.1251 | Train Accuracy: 80.97
+Test accuracy is 75.8029514948527
+Maximum test acc is 81.15234375
+Total training time is 205.8099889755249
+learning rate = 0.0010000000
+End of epoch 118 / 199 | Time Taken: 1 sec | Loss: 0.1305 | Train Accuracy: 79.00
+Test accuracy is 78.515625
+Maximum test acc is 81.15234375
+Total training time is 207.50096535682678
+learning rate = 0.0010000000
+saving the model at the end of epoch 119, iters 890880
+End of epoch 119 / 199 | Time Taken: 1 sec | Loss: 0.1233 | Train Accuracy: 81.11
+Test accuracy is 77.1918404897054
+Maximum test acc is 81.15234375
+Total training time is 209.19352388381958
+learning rate = 0.0010000000
+End of epoch 120 / 199 | Time Taken: 1 sec | Loss: 0.1273 | Train Accuracy: 80.32
+Test accuracy is 78.64583333333333
+Maximum test acc is 81.15234375
+Total training time is 210.87029838562012
+learning rate = 0.0010000000
+End of epoch 121 / 199 | Time Taken: 1 sec | Loss: 0.1234 | Train Accuracy: 81.61
+Test accuracy is 75.59678840637207
+Maximum test acc is 81.15234375
+Total training time is 212.50031685829163
+learning rate = 0.0010000000
+End of epoch 122 / 199 | Time Taken: 1 sec | Loss: 0.1232 | Train Accuracy: 81.53
+Test accuracy is 78.28776041666667
+Maximum test acc is 81.15234375
+Total training time is 214.17267751693726
+learning rate = 0.0010000000
+End of epoch 123 / 199 | Time Taken: 1 sec | Loss: 0.1289 | Train Accuracy: 79.74
+Test accuracy is 77.4848092397054
+Maximum test acc is 81.15234375
+Total training time is 215.82255268096924
+learning rate = 0.0010000000
+End of epoch 124 / 199 | Time Taken: 1 sec | Loss: 0.1257 | Train Accuracy: 80.44
+Test accuracy is 74.88064257303874
+Maximum test acc is 81.15234375
+Total training time is 217.5582811832428
+learning rate = 0.0010000000
+End of epoch 125 / 199 | Time Taken: 1 sec | Loss: 0.1256 | Train Accuracy: 80.43
+Test accuracy is 79.45963541666667
+Maximum test acc is 81.15234375
+Total training time is 219.31153202056885
+learning rate = 0.0010000000
+End of epoch 126 / 199 | Time Taken: 1 sec | Loss: 0.1285 | Train Accuracy: 79.36
+Test accuracy is 76.3129342397054
+Maximum test acc is 81.15234375
+Total training time is 221.0793058872223
+learning rate = 0.0010000000
+End of epoch 127 / 199 | Time Taken: 1 sec | Loss: 0.1233 | Train Accuracy: 80.93
+Test accuracy is 76.73611132303874
+Maximum test acc is 81.15234375
+Total training time is 222.7775342464447
+learning rate = 0.0010000000
+End of epoch 128 / 199 | Time Taken: 1 sec | Loss: 0.1282 | Train Accuracy: 79.48
+Test accuracy is 77.50651041666667
+Maximum test acc is 81.15234375
+Total training time is 224.48909664154053
+learning rate = 0.0010000000
+saving the model at the end of epoch 129, iters 965120
+End of epoch 129 / 199 | Time Taken: 1 sec | Loss: 0.1264 | Train Accuracy: 79.97
+Test accuracy is 74.68533007303874
+Maximum test acc is 81.15234375
+Total training time is 226.1867446899414
+learning rate = 0.0010000000
+End of epoch 130 / 199 | Time Taken: 1 sec | Loss: 0.1254 | Train Accuracy: 80.28
+Test accuracy is 77.32204882303874
+Maximum test acc is 81.15234375
+Total training time is 227.8945837020874
+learning rate = 0.0010000000
+End of epoch 131 / 199 | Time Taken: 1 sec | Loss: 0.1236 | Train Accuracy: 80.81
+Test accuracy is 76.57335090637207
+Maximum test acc is 81.15234375
+Total training time is 229.55656170845032
+learning rate = 0.0010000000
+End of epoch 132 / 199 | Time Taken: 1 sec | Loss: 0.1252 | Train Accuracy: 80.16
+Test accuracy is 77.35460090637207
+Maximum test acc is 81.15234375
+Total training time is 231.25079607963562
+learning rate = 0.0010000000
+End of epoch 133 / 199 | Time Taken: 1 sec | Loss: 0.1237 | Train Accuracy: 81.14
+Test accuracy is 77.6801217397054
+Maximum test acc is 81.15234375
+Total training time is 232.91555428504944
+learning rate = 0.0010000000
+End of epoch 134 / 199 | Time Taken: 1 sec | Loss: 0.1229 | Train Accuracy: 80.91
+Test accuracy is 77.12673632303874
+Maximum test acc is 81.15234375
+Total training time is 234.62202882766724
+learning rate = 0.0010000000
+End of epoch 135 / 199 | Time Taken: 1 sec | Loss: 0.1245 | Train Accuracy: 80.57
+Test accuracy is 78.125
+Maximum test acc is 81.15234375
+Total training time is 236.22837471961975
+learning rate = 0.0010000000
+End of epoch 136 / 199 | Time Taken: 1 sec | Loss: 0.1235 | Train Accuracy: 80.45
+Test accuracy is 79.19921875
+Maximum test acc is 81.15234375
+Total training time is 237.93492078781128
+learning rate = 0.0010000000
+End of epoch 137 / 199 | Time Taken: 1 sec | Loss: 0.1212 | Train Accuracy: 81.26
+Test accuracy is 79.39453125
+Maximum test acc is 81.15234375
+Total training time is 239.61206555366516
+learning rate = 0.0010000000
+End of epoch 138 / 199 | Time Taken: 1 sec | Loss: 0.1213 | Train Accuracy: 81.68
+Test accuracy is 76.7035592397054
+Maximum test acc is 81.15234375
+Total training time is 241.3221914768219
+learning rate = 0.0010000000
+saving the model at the end of epoch 139, iters 1039360
+End of epoch 139 / 199 | Time Taken: 1 sec | Loss: 0.1235 | Train Accuracy: 80.33
+Test accuracy is 79.62239583333333
+Maximum test acc is 81.15234375
+Total training time is 243.00205159187317
+learning rate = 0.0010000000
+End of epoch 140 / 199 | Time Taken: 1 sec | Loss: 0.1195 | Train Accuracy: 81.29
+Test accuracy is 79.26432291666667
+Maximum test acc is 81.15234375
+Total training time is 244.7218201160431
+learning rate = 0.0010000000
+End of epoch 141 / 199 | Time Taken: 1 sec | Loss: 0.1200 | Train Accuracy: 81.73
+Test accuracy is 80.14322916666667
+Maximum test acc is 81.15234375
+Total training time is 246.43903064727783
+learning rate = 0.0010000000
+End of epoch 142 / 199 | Time Taken: 1 sec | Loss: 0.1197 | Train Accuracy: 81.87
+Test accuracy is 80.20833333333333
+Maximum test acc is 81.15234375
+Total training time is 248.1443634033203
+learning rate = 0.0010000000
+End of epoch 143 / 199 | Time Taken: 1 sec | Loss: 0.1198 | Train Accuracy: 82.79
+Test accuracy is 77.32204882303874
+Maximum test acc is 81.15234375
+Total training time is 249.82627153396606
+learning rate = 0.0010000000
+End of epoch 144 / 199 | Time Taken: 1 sec | Loss: 0.1212 | Train Accuracy: 82.01
+Test accuracy is 79.11241340637207
+Maximum test acc is 81.15234375
+Total training time is 251.52690076828003
+learning rate = 0.0010000000
+End of epoch 145 / 199 | Time Taken: 1 sec | Loss: 0.1213 | Train Accuracy: 82.17
+Test accuracy is 75.71614583333333
+Maximum test acc is 81.15234375
+Total training time is 253.24846935272217
+learning rate = 0.0010000000
+End of epoch 146 / 199 | Time Taken: 1 sec | Loss: 0.1245 | Train Accuracy: 80.40
+Test accuracy is 77.64756965637207
+Maximum test acc is 81.15234375
+Total training time is 254.97123908996582
+learning rate = 0.0010000000
+End of epoch 147 / 199 | Time Taken: 1 sec | Loss: 0.1193 | Train Accuracy: 81.89
+Test accuracy is 77.74522590637207
+Maximum test acc is 81.15234375
+Total training time is 256.7173361778259
+learning rate = 0.0010000000
+End of epoch 148 / 199 | Time Taken: 1 sec | Loss: 0.1220 | Train Accuracy: 81.11
+Test accuracy is 78.5590279897054
+Maximum test acc is 81.15234375
+Total training time is 258.43153643608093
+learning rate = 0.0010000000
+saving the model at the end of epoch 149, iters 1113600
+End of epoch 149 / 199 | Time Taken: 1 sec | Loss: 0.1199 | Train Accuracy: 81.86
+Test accuracy is 79.4921875
+Maximum test acc is 81.15234375
+Total training time is 260.0764594078064
+learning rate = 0.0010000000
+End of epoch 150 / 199 | Time Taken: 1 sec | Loss: 0.1162 | Train Accuracy: 83.26
+Test accuracy is 81.11979166666667
+Maximum test acc is 81.15234375
+Total training time is 261.73249983787537
+learning rate = 0.0010000000
+End of epoch 151 / 199 | Time Taken: 1 sec | Loss: 0.1187 | Train Accuracy: 82.26
+Test accuracy is 79.58984375
+Maximum test acc is 81.15234375
+Total training time is 263.4675736427307
+learning rate = 0.0010000000
+End of epoch 152 / 199 | Time Taken: 1 sec | Loss: 0.1146 | Train Accuracy: 83.04
+Test accuracy is 78.08159732818604
+Maximum test acc is 81.15234375
+Total training time is 265.14443016052246
+learning rate = 0.0010000000
+End of epoch 153 / 199 | Time Taken: 1 sec | Loss: 0.1145 | Train Accuracy: 83.52
+Test accuracy is 79.95876757303874
+Maximum test acc is 81.15234375
+Total training time is 266.8507556915283
+learning rate = 0.0010000000
+End of epoch 154 / 199 | Time Taken: 1 sec | Loss: 0.1174 | Train Accuracy: 82.74
+Test accuracy is 81.18489583333333
+Maximum test acc is 81.18489583333333
+Total training time is 268.58479833602905
+learning rate = 0.0010000000
+End of epoch 155 / 199 | Time Taken: 1 sec | Loss: 0.1163 | Train Accuracy: 82.78
+Test accuracy is 80.24088541666667
+Maximum test acc is 81.18489583333333
+Total training time is 270.3252487182617
+learning rate = 0.0010000000
+End of epoch 156 / 199 | Time Taken: 1 sec | Loss: 0.1151 | Train Accuracy: 83.10
+Test accuracy is 80.6640625
+Maximum test acc is 81.18489583333333
+Total training time is 272.0264232158661
+learning rate = 0.0010000000
+End of epoch 157 / 199 | Time Taken: 1 sec | Loss: 0.1122 | Train Accuracy: 83.98
+Test accuracy is 78.45052083333333
+Maximum test acc is 81.18489583333333
+Total training time is 273.8319947719574
+learning rate = 0.0010000000
+End of epoch 158 / 199 | Time Taken: 1 sec | Loss: 0.1139 | Train Accuracy: 84.03
+Test accuracy is 79.95876757303874
+Maximum test acc is 81.18489583333333
+Total training time is 275.6778109073639
+learning rate = 0.0010000000
+saving the model at the end of epoch 159, iters 1187840
+End of epoch 159 / 199 | Time Taken: 1 sec | Loss: 0.1192 | Train Accuracy: 81.69
+Test accuracy is 80.72916666666667
+Maximum test acc is 81.18489583333333
+Total training time is 277.5286874771118
+learning rate = 0.0010000000
+End of epoch 160 / 199 | Time Taken: 1 sec | Loss: 0.1163 | Train Accuracy: 82.40
+Test accuracy is 80.56640625
+Maximum test acc is 81.18489583333333
+Total training time is 279.4582371711731
+learning rate = 0.0010000000
+End of epoch 161 / 199 | Time Taken: 1 sec | Loss: 0.1112 | Train Accuracy: 84.19
+Test accuracy is 82.51953125
+Maximum test acc is 82.51953125
+Total training time is 281.23794984817505
+learning rate = 0.0010000000
+End of epoch 162 / 199 | Time Taken: 1 sec | Loss: 0.1113 | Train Accuracy: 84.02
+Test accuracy is 81.90104166666667
+Maximum test acc is 82.51953125
+Total training time is 283.02205419540405
+learning rate = 0.0010000000
+End of epoch 163 / 199 | Time Taken: 1 sec | Loss: 0.1147 | Train Accuracy: 83.82
+Test accuracy is 79.93706607818604
+Maximum test acc is 82.51953125
+Total training time is 284.85813307762146
+learning rate = 0.0010000000
+End of epoch 164 / 199 | Time Taken: 1 sec | Loss: 0.1124 | Train Accuracy: 84.33
+Test accuracy is 82.35677083333333
+Maximum test acc is 82.51953125
+Total training time is 286.648788690567
+learning rate = 0.0010000000
+End of epoch 165 / 199 | Time Taken: 1 sec | Loss: 0.1132 | Train Accuracy: 84.31
+Test accuracy is 80.15408007303874
+Maximum test acc is 82.51953125
+Total training time is 288.43682384490967
+learning rate = 0.0010000000
+End of epoch 166 / 199 | Time Taken: 1 sec | Loss: 0.1155 | Train Accuracy: 83.40
+Test accuracy is 81.0980904897054
+Maximum test acc is 82.51953125
+Total training time is 290.19013810157776
+learning rate = 0.0010000000
+End of epoch 167 / 199 | Time Taken: 1 sec | Loss: 0.1122 | Train Accuracy: 84.04
+Test accuracy is 81.0004342397054
+Maximum test acc is 82.51953125
+Total training time is 291.9770152568817
+learning rate = 0.0010000000
+End of epoch 168 / 199 | Time Taken: 1 sec | Loss: 0.1136 | Train Accuracy: 83.52
+Test accuracy is 80.77256965637207
+Maximum test acc is 82.51953125
+Total training time is 293.8286859989166
+learning rate = 0.0010000000
+saving the model at the end of epoch 169, iters 1262080
+End of epoch 169 / 199 | Time Taken: 1 sec | Loss: 0.1145 | Train Accuracy: 83.28
+Test accuracy is 81.4453125
+Maximum test acc is 82.51953125
+Total training time is 295.7218487262726
+learning rate = 0.0010000000
+End of epoch 170 / 199 | Time Taken: 1 sec | Loss: 0.1159 | Train Accuracy: 82.95
+Test accuracy is 78.81944465637207
+Maximum test acc is 82.51953125
+Total training time is 297.4571828842163
+learning rate = 0.0010000000
+End of epoch 171 / 199 | Time Taken: 1 sec | Loss: 0.1126 | Train Accuracy: 83.85
+Test accuracy is 79.95876757303874
+Maximum test acc is 82.51953125
+Total training time is 299.2372670173645
+learning rate = 0.0010000000
+End of epoch 172 / 199 | Time Taken: 1 sec | Loss: 0.1152 | Train Accuracy: 83.07
+Test accuracy is 81.41276041666667
+Maximum test acc is 82.51953125
+Total training time is 301.03457617759705
+learning rate = 0.0010000000
+End of epoch 173 / 199 | Time Taken: 1 sec | Loss: 0.1109 | Train Accuracy: 84.48
+Test accuracy is 79.3185764948527
+Maximum test acc is 82.51953125
+Total training time is 302.8049781322479
+learning rate = 0.0010000000
+End of epoch 174 / 199 | Time Taken: 1 sec | Loss: 0.1174 | Train Accuracy: 82.23
+Test accuracy is 80.25173632303874
+Maximum test acc is 82.51953125
+Total training time is 304.5535340309143
+learning rate = 0.0010000000
+End of epoch 175 / 199 | Time Taken: 1 sec | Loss: 0.1116 | Train Accuracy: 84.31
+Test accuracy is 82.19401041666667
+Maximum test acc is 82.51953125
+Total training time is 306.34098863601685
+learning rate = 0.0010000000
+End of epoch 176 / 199 | Time Taken: 1 sec | Loss: 0.1116 | Train Accuracy: 84.24
+Test accuracy is 81.0980904897054
+Maximum test acc is 82.51953125
+Total training time is 308.12028551101685
+learning rate = 0.0010000000
+End of epoch 177 / 199 | Time Taken: 1 sec | Loss: 0.1106 | Train Accuracy: 84.63
+Test accuracy is 82.03125
+Maximum test acc is 82.51953125
+Total training time is 309.92968368530273
+learning rate = 0.0010000000
+End of epoch 178 / 199 | Time Taken: 1 sec | Loss: 0.1096 | Train Accuracy: 84.86
+Test accuracy is 82.2265625
+Maximum test acc is 82.51953125
+Total training time is 311.7076098918915
+learning rate = 0.0010000000
+saving the model at the end of epoch 179, iters 1336320
+End of epoch 179 / 199 | Time Taken: 1 sec | Loss: 0.1113 | Train Accuracy: 83.93
+Test accuracy is 83.75651041666667
+Maximum test acc is 83.75651041666667
+Total training time is 313.35642409324646
+learning rate = 0.0010000000
+End of epoch 180 / 199 | Time Taken: 1 sec | Loss: 0.1100 | Train Accuracy: 84.46
+Test accuracy is 79.5138889948527
+Maximum test acc is 83.75651041666667
+Total training time is 315.1092963218689
+learning rate = 0.0010000000
+End of epoch 181 / 199 | Time Taken: 1 sec | Loss: 0.1110 | Train Accuracy: 84.60
+Test accuracy is 82.58463541666667
+Maximum test acc is 83.75651041666667
+Total training time is 316.8454146385193
+learning rate = 0.0010000000
+End of epoch 182 / 199 | Time Taken: 1 sec | Loss: 0.1085 | Train Accuracy: 84.72
+Test accuracy is 81.54296875
+Maximum test acc is 83.75651041666667
+Total training time is 318.5194275379181
+learning rate = 0.0010000000
+End of epoch 183 / 199 | Time Taken: 1 sec | Loss: 0.1099 | Train Accuracy: 84.68
+Test accuracy is 82.12890625
+Maximum test acc is 83.75651041666667
+Total training time is 320.20605421066284
+learning rate = 0.0010000000
+End of epoch 184 / 199 | Time Taken: 1 sec | Loss: 0.1085 | Train Accuracy: 85.08
+Test accuracy is 82.25911458333333
+Maximum test acc is 83.75651041666667
+Total training time is 321.98249769210815
+learning rate = 0.0010000000
+End of epoch 185 / 199 | Time Taken: 1 sec | Loss: 0.1081 | Train Accuracy: 85.40
+Test accuracy is 81.06553840637207
+Maximum test acc is 83.75651041666667
+Total training time is 323.69442439079285
+learning rate = 0.0010000000
+End of epoch 186 / 199 | Time Taken: 1 sec | Loss: 0.1083 | Train Accuracy: 85.30
+Test accuracy is 82.87760416666667
+Maximum test acc is 83.75651041666667
+Total training time is 325.3918180465698
+learning rate = 0.0010000000
+End of epoch 187 / 199 | Time Taken: 1 sec | Loss: 0.1087 | Train Accuracy: 84.99
+Test accuracy is 83.62630208333333
+Maximum test acc is 83.75651041666667
+Total training time is 327.12544894218445
+learning rate = 0.0010000000
+End of epoch 188 / 199 | Time Taken: 1 sec | Loss: 0.1073 | Train Accuracy: 85.64
+Test accuracy is 83.59375
+Maximum test acc is 83.75651041666667
+Total training time is 328.8119637966156
+learning rate = 0.0010000000
+saving the model at the end of epoch 189, iters 1410560
+End of epoch 189 / 199 | Time Taken: 1 sec | Loss: 0.1068 | Train Accuracy: 85.59
+Test accuracy is 82.59548632303874
+Maximum test acc is 83.75651041666667
+Total training time is 330.52720952033997
+learning rate = 0.0010000000
+End of epoch 190 / 199 | Time Taken: 1 sec | Loss: 0.1048 | Train Accuracy: 86.02
+Test accuracy is 80.55555566151936
+Maximum test acc is 83.75651041666667
+Total training time is 332.2628722190857
+learning rate = 0.0010000000
+End of epoch 191 / 199 | Time Taken: 1 sec | Loss: 0.1076 | Train Accuracy: 84.83
+Test accuracy is 84.14713541666667
+Maximum test acc is 84.14713541666667
+Total training time is 333.99226236343384
+learning rate = 0.0010000000
+End of epoch 192 / 199 | Time Taken: 1 sec | Loss: 0.1056 | Train Accuracy: 85.58
+Test accuracy is 83.52864583333333
+Maximum test acc is 84.14713541666667
+Total training time is 335.6544096469879
+learning rate = 0.0010000000
+End of epoch 193 / 199 | Time Taken: 1 sec | Loss: 0.1030 | Train Accuracy: 86.55
+Test accuracy is 83.75651041666667
+Maximum test acc is 84.14713541666667
+Total training time is 337.33270478248596
+learning rate = 0.0010000000
+End of epoch 194 / 199 | Time Taken: 1 sec | Loss: 0.1030 | Train Accuracy: 86.35
+Test accuracy is 82.69314257303874
+Maximum test acc is 84.14713541666667
+Total training time is 338.9807984828949
+learning rate = 0.0010000000
+End of epoch 195 / 199 | Time Taken: 1 sec | Loss: 0.1036 | Train Accuracy: 86.09
+Test accuracy is 84.40755208333333
+Maximum test acc is 84.40755208333333
+Total training time is 340.6576147079468
+learning rate = 0.0010000000
+End of epoch 196 / 199 | Time Taken: 1 sec | Loss: 0.1032 | Train Accuracy: 86.33
+Test accuracy is 82.0746529897054
+Maximum test acc is 84.40755208333333
+Total training time is 342.39223742485046
+learning rate = 0.0010000000
+End of epoch 197 / 199 | Time Taken: 1 sec | Loss: 0.1041 | Train Accuracy: 85.80
+Test accuracy is 84.63541666666667
+Maximum test acc is 84.63541666666667
+Total training time is 344.04523062705994
+learning rate = 0.0010000000
+End of epoch 198 / 199 | Time Taken: 1 sec | Loss: 0.1035 | Train Accuracy: 86.51
+Test accuracy is 83.37673632303874
+Maximum test acc is 84.63541666666667
+Total training time is 345.6966516971588
+learning rate = 0.0010000000
+saving the model at the end of epoch 199, iters 1484800
+End of epoch 199 / 199 | Time Taken: 1 sec | Loss: 0.1025 | Train Accuracy: 86.46
+Test accuracy is 83.27908007303874
+Maximum test acc is 84.63541666666667
+Total training time is 347.39761209487915
+learning rate = 0.0010000000
+Total batch is 11600
+Output folder result/VanillaRNN/HAR_2/T1/FGSM_Adagrad/0

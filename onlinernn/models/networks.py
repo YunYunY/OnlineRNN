@@ -19,11 +19,17 @@ class SimpleRNN(nn.Module):
         self.hidden_size = opt.hidden_size
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
+        self.seq_len = opt.seq_len
         self.basic_rnn = nn.RNN(self.input_size, self.hidden_size)
+        
+        # self.lstm = nn.LSTM(self.input_size, self.hidden_size)
+        
+
         if opt.predic_task in ['Binary', 'Logits']:
             self.FC = nn.Linear(self.hidden_size, 1)
         else:
             self.FC = nn.Linear(self.hidden_size, self.output_size)
+            
 
     def last_layer(self):
         if self.opt.predic_task == 'Binary':
@@ -31,28 +37,36 @@ class SimpleRNN(nn.Module):
             out = torch.sigmoid(self.FC(self.hidden_final))
             return out.view(-1), self.hidden_final
         elif self.opt.predic_task == 'Logits':
-            out = torch.tanh(self.FC(self.out[-1]))
+            out = self.FC(self.out[-1])
+            # out = torch.tanh(self.FC(self.out[-1]))
             return out.view(-1), self.hidden_final
         else:
-            out = self.out[-1]
-            out = self.FC(out)
-            
-            # out batch_size X n_output
-            return out.view(-1, self.output_size), self.hidden_final
+            if self.opt.single_output:
+                out = self.out[-1]
+                out = self.FC(out)
+                # out batch_size X n_output
+                return out.view(-1, self.output_size), self.hidden_final
+            else:
+                out = self.out.permute(1, 0, 2)
+                out = self.FC(out)
+               
+                return out.reshape(-1, self.output_size), self.hidden_final
+
 
     def forward(self, X, hidden):
-
         # transforms X to dimensions: n_steps X batch_size X n_inputs
-      
         X = X.permute(1, 0, 2) 
         hidden = hidden.permute(1, 0, 2)
+     
         # self.basic input:
         #     x: (seq_len, batch, input_size)
         #     state: (num_layers, batch, hidden_size)
         # self.basic output 
         #     output: (seq_len, batch, hidden_size)
         #     state: (num_layers, batch, hidden_size)
+        # self.out, self.hidden_final = self.lstm(X)  
         self.out, self.hidden_final = self.basic_rnn(X, hidden)  
+       
         return self.last_layer()
  
 

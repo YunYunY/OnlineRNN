@@ -1,0 +1,11 @@
+Total datasize is 60000
+Total datasize is 10000
+Number of available GPUs: 1
+Output folder result/IRNN/MNIST/T1/FGSM_Adam/6
+model size =  75.0 KB
+alpha_init =  0.001
+beta_init =  0.999
+---------- Networks initialized -------------
+[Network rnn_model] Total number of parameters : 0.046 M
+-----------------------------------------------
+Start Training Loop...

@@ -114,8 +114,9 @@ class FGSM(Optimizer):
                     with torch.no_grad():
                         # recover w_k to original value before the last iterT of inner loop 
                         p.data = p.data_orig.clone()
-                    
-                    p.grad.div_((-lr)) # rescale before feeding into Adam
+
+                    p.grad.div_((-1))
+                    # p.grad.div_((-lr)) # rescale before feeding into Adam
 
                     # set to True so that second optimizer can work
                     continue_Adam = True

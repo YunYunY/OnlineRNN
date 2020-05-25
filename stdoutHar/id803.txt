@@ -1,0 +1,25 @@
+----------------- Inside iteration T is 10 -----------------
+Total datasize is 7352
+Total datasize is 2947
+Number of available GPUs: 1
+Output folder result/VanillaRNN/HAR_2/T10/FGSM_Adam/803
+Traceback (most recent call last):
+  File "onlinernn/main_har_tune.py", line 953, in <module>
+    p.run()
+  File "/Dev/OnlineRNN/onlinernn/exp/expConfig.py", line 30, in run
+    self.setting.run()
+  File "/Dev/OnlineRNN/onlinernn/models/setting.py", line 103, in run
+    self.model.init_net()
+  File "/Dev/OnlineRNN/onlinernn/models/rnn_vanilla.py", line 33, in init_net
+    self.rnn_model = SimpleRNN(self.opt).to(self.device)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/module.py", line 425, in to
+    return self._apply(convert)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/module.py", line 201, in _apply
+    module._apply(fn)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/rnn.py", line 132, in _apply
+    ret = super(RNNBase, self)._apply(fn)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/module.py", line 223, in _apply
+    param_applied = fn(param)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/module.py", line 423, in convert
+    return t.to(device, dtype if t.is_floating_point() else None, non_blocking)
+RuntimeError: CUDA error: out of memory

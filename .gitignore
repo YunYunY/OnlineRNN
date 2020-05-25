@@ -1,10 +1,7 @@
 result
-stdout
-stdoutPixel
-stdoutHar
+stdout.*
 data
-archive
-achiveMNIST
+archive.*
 __pycache__
 *.png
 *.jpg

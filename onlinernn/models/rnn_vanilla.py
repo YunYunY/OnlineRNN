@@ -146,15 +146,12 @@ class VanillaRNN(BaseModel):
 
     def set_input(self):
         self.inputs, self.labels = self.data
-        
+       
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
-        
-      
+        self.batch_size = self.labels.shape[0]  # update batch 
         self.labels = self.labels.view(-1).to(self.device)
         if self.opt.predic_task in ['Binary', 'Logits']:
             self.labels = self.labels.float()
-        # update batch 
-        self.batch_size = self.labels.shape[0]
 
     def set_output(self):
         # initialize values at the beginning of each epoch
@@ -169,12 +166,13 @@ class VanillaRNN(BaseModel):
     # Initialize first hidden state      
 
     def init_states(self):
+      
+
         if self.opt.predic_task in ['Logits']:
             self.states = torch.FloatTensor(self.batch_size, self.num_layers, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
         else:
             self.states = torch.zeros((self.batch_size, self.num_layers, self.hidden_size)).to(self.device)
-
-       
+    
     def track_grad_flow(self, named_parameters):
         # Reference: https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/7
   
@@ -225,7 +223,8 @@ class VanillaRNN(BaseModel):
         Backward path 
         """
         
-        self.loss = self.criterion(self.outputs, self.labels)      
+        self.loss = self.criterion(self.outputs, self.labels)   
+
         self.loss.backward()
         
 
@@ -233,6 +232,7 @@ class VanillaRNN(BaseModel):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self.forward()
         self.backward()
+
         first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
         last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         if 'FGSM' in self.opt.optimizer:
@@ -280,8 +280,12 @@ class VanillaRNN(BaseModel):
             pred = logit >= 0.5
             truth = target >= 0.5
             accuracy = 100.* pred.eq(truth).sum()/batch_size
-        elif self.opt.predic_task == 'Logits':
-            accuracy = self.loss.detach()
+        elif self.opt.predic_task in['Logits', 'CM' ]:
+            try:
+                accuracy = self.loss.detach()
+            except:
+                accuracy = self.loss
+                return accuracy
         else:
             corrects = (torch.max(logit, 1)[1].view(target.size()).data == target.data).sum()
             accuracy = 100.0 * corrects/batch_size
@@ -301,12 +305,15 @@ class VanillaRNN(BaseModel):
         if self.opt.predic_task == 'Logits':
             self.min_test_mse = min(self.min_test_mse, self.test_acc)
             print(f"Min test MSE is {self.min_test_mse}")
+            np.savez(
+            self.loss_dir + "/batch_" + str(epoch) + "_test_acc.npz",
+            test_acc = self.test_acc)
         else:
             self.max_test_acc = max(self.max_test_acc, self.test_acc)
             print(f"Maximum test acc is {self.max_test_acc}")
-        np.savez(
-        self.loss_dir + "/epoch_" + str(epoch) + "_test_acc.npz",
-        test_acc = self.test_acc)
+            np.savez(
+            self.loss_dir + "/epoch_" + str(epoch) + "_test_acc.npz",
+            test_acc = self.test_acc)
 
 
 
@@ -360,7 +367,6 @@ class VanillaRNN(BaseModel):
         self.test_acc = sum(self.test_acc)/len(self.test_acc) 
         
         print(f"Test accuracy is {self.test_acc}")
-        # self.save_result()
     # ----------------------------------------------
 
     def save_result(self):

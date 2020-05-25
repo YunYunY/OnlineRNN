@@ -18,6 +18,10 @@ class BaseModel(ABC):
         self.opt = opt
         self.istrain = opt.istrain
         self.lr = opt.lr
+        try:
+            self.rad = opt.rad
+        except:
+            pass
         self.seq_len = opt.seq_len
         self.num_layers = opt.num_layers
         self.init_mode = opt.init_mode
@@ -57,14 +61,17 @@ class BaseModel(ABC):
                 ], lr=self.lr) 
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
+        elif self.opt.optimizer == 'FGSM_SGD':
+            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
+                        [torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)]    
         elif self.opt.optimizer == 'FGSM_Adam':
-            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
+            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
                         [Adam(self.rnn_model.parameters(), lr=self.lr)]     
         elif self.opt.optimizer == 'FGSM_RMSProp':  
-            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
+            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
                         [torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr)]
         elif self.opt.optimizer == 'FGSM_Adagrad':  
-            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
+            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
                         [torch.optim.Adagrad(self.rnn_model.parameters(), lr=self.lr)]
         
         if len(self.optimizers) == 0:
@@ -92,7 +99,10 @@ class BaseModel(ABC):
         """
         # for i in range(self.seq_len // size):
         #     yield self.inputs[:, i*size: (i+1)*size, :], self.labels
-        return self.inputs[:, i*size: (i+1)*size, :], self.labels
+        if self.opt.single_output:
+            return self.inputs[:, i*size: (i+1)*size, :], self.labels
+        else:
+            return self.inputs[:, i*size: (i+1)*size, :], self.labels[:, i*size: (i+1)*size, :]
 
     
 

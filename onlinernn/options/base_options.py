@@ -75,6 +75,10 @@ class BaseOptions:
         parser.add_argument(
             "--predic_task", type=str, default="Binary", help="prediction task, decide final layer in RNN"
         ) # ["Binary", "Softmax"]
+
+        parser.add_argument(
+            "--single_output", action="store_true", default=True, help="prediction single value RNN"
+        ) 
         parser.add_argument(
                     "--num_layers", type=int, default=1, help="number of layers in RNN"
                 )
@@ -112,9 +116,9 @@ class BaseOptions:
         # -------------------------------------------------------
 
         parser.add_argument(
-            "--verbose_batch",
+            "--test_batch",
             action="store_true",
-            help="if specified, print loss after every batch",
+            help="if specified, run test after every batch",
         )
 
         parser.add_argument(

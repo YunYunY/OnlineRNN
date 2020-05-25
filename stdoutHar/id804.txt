@@ -1,0 +1,29 @@
+----------------- Inside iteration T is 10 -----------------
+Total datasize is 7352
+Total datasize is 2947
+Number of available GPUs: 1
+Output folder result/VanillaRNN/HAR_2/T10/FGSM_Adam/804
+---------- Networks initialized -------------
+[Network rnn_model] Total number of parameters : 0.007 M
+-----------------------------------------------
+Start Training Loop...
+Traceback (most recent call last):
+  File "onlinernn/main_har_tune.py", line 976, in <module>
+    p.run()
+  File "/Dev/OnlineRNN/onlinernn/exp/expConfig.py", line 30, in run
+    self.setting.run()
+  File "/Dev/OnlineRNN/onlinernn/models/setting.py", line 141, in run
+    self.model.train() 
+  File "/Dev/OnlineRNN/onlinernn/models/rnn_vanilla.py", line 226, in train
+    self.forward()
+  File "/Dev/OnlineRNN/onlinernn/models/rnn_vanilla.py", line 210, in forward
+    outputs, _ = self.rnn_model(self.inputs, self.states)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/module.py", line 532, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/Dev/OnlineRNN/onlinernn/models/networks.py", line 53, in forward
+    self.out, self.hidden_final = self.basic_rnn(X, hidden)  
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/module.py", line 532, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/opt/conda/lib/python3.7/site-packages/torch/nn/modules/rnn.py", line 217, in forward
+    self.dropout, self.training, self.bidirectional, self.batch_first)
+RuntimeError: CUDA out of memory. Tried to allocate 20.00 MiB (GPU 0; 10.76 GiB total capacity; 47.06 MiB already allocated; 15.12 MiB free; 66.00 MiB reserved in total by PyTorch)

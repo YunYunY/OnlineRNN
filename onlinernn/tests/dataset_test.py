@@ -6,6 +6,7 @@ from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTPixelPermute, MNIST
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
 from onlinernn.datasets.adding import ADDING
+from onlinernn.datasets.copymemory import CopyMemory
 from onlinernn.tests.test_utils import show_shift
 from onlinernn.datasets.data_utils import loop_queue
 from onlinernn.datasets.mnist_byte import MNIST_byte
@@ -86,20 +87,28 @@ def test_har2():
     assert list(batch[0][:64].shape) == [64, 128, 9]
     assert list(batch[1][:64].shape) == [64, 1]
 
-'''
+
 
 
 def test_adding():
-    opt.adding_train = 500
-    opt.adding_test = 100
+    opt.N_TRAIN = 500
+    opt.N_TEST = 100
     opt.seq_len = 30
     d = ADDING(opt)
     
     batch = next(iter(d.dataloader))
-    # print(batch[0][:64].mean())
     print(batch[1][:64].shape)
-    # assert list(batch[0][:64].shape) == [64, 128, 9]
-    # assert list(batch[1][:64].shape) == [64, 1]
+'''
+
+def test_copymemory():
+    opt.N_TRAIN = 500
+    opt.N_TEST = 100
+    opt.seq_len = 30
+    d = CopyMemory(opt)
+    
+    batch = next(iter(d.dataloader))
+    print(batch[1][:64].shape)
+
 '''
 def test_mnist():
     """

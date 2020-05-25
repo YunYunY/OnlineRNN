@@ -31,25 +31,25 @@ if not opt.istrain:
 # self.ap_timesteps=[100, 200, 400, 750]
 # self.ap_samples=[30000, 50000, 40000, 100000]
 
-opt.adding_train = 30000
-opt.adding_test = 100
+opt.N_TRAIN  = 30000
+opt.N_TEST = 1000
 opt.seq_len = 100
-opt.iterT = 30
+opt.iterT = 1
 opt.predic_task = 'Logits'
-
-opt.verbose_batch = True
+opt.test_batch = True
 
 if opt.taskid == 100:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = "FGSM_Adam" # "RMSprop"
+    opt.optimizer = "Adam"
     opt.hidden_size = 128
     opt.batch_size = 50 # 50
-    opt.lr = 2e-4 #1e-3
-    opt.niter_decay = 1
+    opt.lr = 1e-3
+    opt.niter_decay = 0
     opt.lrgamma = 0.9
     opt.endless_train = False
     opt.niter = 9
-    opt.endless_train = True
+    opt.subsequene = True
+    opt.subseq_size = 10
     d = ADDING(opt)
 
     # train and eval in every epoch 
@@ -60,6 +60,38 @@ if opt.taskid == 100:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    # m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
+if opt.taskid == 200:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam" # "FGSM_SGD" # "RMSprop"
+    opt.hidden_size = 128
+    opt.batch_size = 50 # 50
+    opt.lr = 1e-3
+    opt.rad = 1e-2
+    opt.niter_decay = 0
+    opt.lrgamma = 0.9
+    opt.endless_train = False
+    opt.niter = 9
+    opt.subsequene = True
+    opt.subseq_size = 10
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    # m = VanillaRNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
