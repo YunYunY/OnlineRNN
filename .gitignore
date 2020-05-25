@@ -1,7 +1,7 @@
 result
-stdout.*
+stdout*
 data
-archive.*
+archive*
 __pycache__
 *.png
 *.jpg
