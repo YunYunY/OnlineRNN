@@ -179,8 +179,10 @@ class VanillaRNN(BaseModel):
         for n, p in named_parameters:
             if "weight_hh_l0" in n:
                 if p.requires_grad:
+
+                    self.trace_fgsm.append(p.dis.detach().item())
                     # self.weight_hh = p.buf.abs().mean()
-                    self.weight_hh = p.grad.abs().mean()
+                    # self.weight_hh = p.grad.abs().mean()
                     # self.weight_hh = torch.norm(p.grad)
                
     # -------------------------------------------------------
@@ -201,7 +203,7 @@ class VanillaRNN(BaseModel):
             self.optimizer.step(iter, sign_option=True)
 
         # After last iterT, track Delta w, loss and acc
-        # self.track_grad_flow(self.rnn_model.named_parameters())
+        self.track_grad_flow(self.rnn_model.named_parameters())
         self.losses.append(self.loss.detach().item())
         self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
@@ -245,7 +247,7 @@ class VanillaRNN(BaseModel):
 
         if last_iter:
             # After last iterT, track Delta w, loss and acc
-            # self.track_grad_flow(self.rnn_model.named_parameters())
+            self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss.detach().item())
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
@@ -293,13 +295,20 @@ class VanillaRNN(BaseModel):
         return accuracy.item()
 
     def save_losses(self, epoch):
-        # calculate average loss for each batch and save
-        self.losses = sum(self.losses) / len(self.losses)
-        self.train_acc = sum(self.train_acc) / len(self.train_acc)
+        try:
+            # calculate average loss for each batch and save
+            self.losses = sum(self.losses) / len(self.losses)
+            self.train_acc = sum(self.train_acc) / len(self.train_acc)
+        except:
+            # no losses calculated since iterT is bigger than the whole batch 
+            self.losses = self.loss.detach().item()
+            self.train_acc = self.get_accuracy(self.outputs, self.labels, self.batch_size)
         
         np.savez(
             self.loss_dir + "/epoch_" + str(epoch) + "_losses_train_acc.npz",
             losses = self.losses, train_acc = self.train_acc)
+  
+            
 
     def save_test_acc(self, epoch):
         if self.opt.predic_task == 'Logits':
@@ -373,11 +382,4 @@ class VanillaRNN(BaseModel):
         # Plot loss
         load_prefix = self.opt.load_iter if self.opt.load_iter > 0 else self.opt.epoch
         np.savez(self.result_dir + "/test_epoch_" + str(load_prefix) + "_T"+ str(self.T)+ ".npz", accuracy=self.test_acc)
-        # imshow(
-        #     torch.reshape(
-        #         self.test_fake, (self.plt_n * self.plt_n, 1, self.x_dim, self.x_dim)
-        #     ),
-        #     self.result_dir,
-        #     self.plt_n,
-        #     "Laststep_G.png",
-        # )
+   

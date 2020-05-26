@@ -42,7 +42,7 @@ class TrainOptions(BaseOptions):
         parser.add_argument(
             "--save_epoch_freq",
             type=int,
-            default=10,
+            default=50,
             help="frequency of saving checkpoints at the end of epochs",
         )
      

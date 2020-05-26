@@ -62,16 +62,16 @@ class BaseModel(ABC):
         elif self.opt.optimizer == 'FGSM':
             self.optimizer = FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T)
         elif self.opt.optimizer == 'FGSM_SGD':
-            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
+            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
                         [torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)]    
         elif self.opt.optimizer == 'FGSM_Adam':
-            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
+            self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
                         [Adam(self.rnn_model.parameters(), lr=self.lr)]     
         elif self.opt.optimizer == 'FGSM_RMSProp':  
-            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
+            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
                         [torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr)]
         elif self.opt.optimizer == 'FGSM_Adagrad':  
-            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.rad, iterT=self.T, mergeadam=True)] + \
+            self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
                         [torch.optim.Adagrad(self.rnn_model.parameters(), lr=self.lr)]
         
         if len(self.optimizers) == 0:

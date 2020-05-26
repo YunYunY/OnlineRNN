@@ -125,6 +125,10 @@ class MNISTPixelPermute(BaseDataset):
         self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
         print(f"Total datasize is {len(self.dataset)}")
 
+    def __len__(self):
+            return len(self.dataset)
+
+
     # ----------------------------------------------
 
 

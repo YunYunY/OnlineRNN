@@ -123,7 +123,7 @@ class BaseOptions:
 
         parser.add_argument(
             "--verbose",
-            action="store_true",
+            action="store_false",
             help="if specified, print more debugging information",
         )
 

@@ -85,6 +85,9 @@ class FGSM(Optimizer):
               
                 if first_chunk:
                     p.data_orig = p.data.clone() # keep original weights
+
+                    p.grad_initial = p.grad.data.clone()
+                  
                 param_state = self.state[p]
 
                 #----------------------FGSM inner loop-----------------------------------------------
@@ -115,12 +118,12 @@ class FGSM(Optimizer):
                         # recover w_k to original value before the last iterT of inner loop 
                         p.data = p.data_orig.clone()
 
-                    p.grad.div_((-1))
-                    # p.grad.div_((-lr)) # rescale before feeding into Adam
-
+                    # p.grad.div_((-1.))
+                    p.grad.div_((-lr)) # rescale before feeding into Adam
+                   
+                    p.dis = torch.sum(p.grad_initial * p.grad.data.clone())
                     # set to True so that second optimizer can work
                     continue_Adam = True
-
         return continue_Adam 
 
 

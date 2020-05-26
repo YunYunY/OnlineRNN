@@ -37,6 +37,8 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
+opt.iterT = 10
+opt.niter = 19
 
 # -----------------------------------------------------------------------------------------------
 if opt.taskid == 100:
@@ -45,12 +47,10 @@ if opt.taskid == 100:
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -74,12 +74,10 @@ if opt.taskid == 101:
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -103,12 +101,10 @@ if opt.taskid == 102:
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -131,12 +127,10 @@ if opt.taskid == 103:
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -158,12 +152,10 @@ if opt.taskid == 104:
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -186,12 +178,10 @@ if opt.taskid == 200:
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -215,12 +205,10 @@ if opt.taskid == 201:
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -244,12 +232,10 @@ if opt.taskid == 202:
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -272,12 +258,10 @@ if opt.taskid == 203:
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -299,12 +283,10 @@ if opt.taskid == 204:
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -328,12 +310,10 @@ if opt.taskid == 300:
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -357,12 +337,10 @@ if opt.taskid == 301:
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -386,12 +364,10 @@ if opt.taskid == 302:
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -414,12 +390,10 @@ if opt.taskid == 303:
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -441,12 +415,144 @@ if opt.taskid == 304:
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
-    opt.iterT = 1
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
-    opt.niter = 199
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+# -----------------------------------------------------------------------------------------------
+
+
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 400:
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-3
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    # opt.niter = 10000000-1
+    # opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 401:
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 128
+    opt.batch_size = 64
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-3
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    # opt.niter = 10000000-1
+    # opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 402:
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 128
+    opt.batch_size = 128
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-3
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    # opt.niter = 10000000-1
+    # opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 403:
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 128
+    opt.batch_size = 256
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-3
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    # opt.niter = 10000000-1
+    # opt.niter_decay = 320
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 404:
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 128
+    opt.batch_size = 512
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-3
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    # opt.niter = 10000000-1
+    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 

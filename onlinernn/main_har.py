@@ -37,7 +37,8 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
-
+opt.verbose = True
+opt.rad = 1e-3
 if opt.taskid == 0:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "Adam"
@@ -101,6 +102,7 @@ if opt.taskid == 2:
     opt.batch_size = 128
     opt.lr = 1e-3
     opt.iterT = 1
+
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -125,7 +127,7 @@ if opt.taskid == 3:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 1e-3
-    opt.iterT = 30
+    opt.iterT = 5
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -149,9 +151,10 @@ if opt.taskid == 4:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "FGSM_Adam"
     opt.hidden_size = 80
-    opt.batch_size = 128
-    opt.lr = 1e-3
-    opt.iterT = 1
+    opt.batch_size = 32
+    opt.lr = 6e-4
+    opt.rad = opt.lr
+    opt.iterT = 10
     opt.endless_train = False
     opt.niter = 199
     d = HAR_2(opt)
@@ -171,32 +174,6 @@ if opt.taskid == 4:
 # -----------------------------------------------------------------------------------------------
 
 if opt.taskid == 5:
-    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = "FGSM_Adam"
-    opt.hidden_size = 80
-    opt.batch_size = 128
-    opt.lr = 1e-3
-    opt.iterT = 30
-    opt.endless_train = False
-    opt.niter = 199
-    d = HAR_2(opt)
-
-    # train and eval in every epoch 
-    if opt.eval_freq > 0 and opt.istrain:
-        opt.istrain = False
-        d_test = HAR_2(opt)
-        opt.istrain = True
-    else:
-        d_test = None 
-    s = RNN(opt)
-    m = VanillaRNN(opt)
-    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
-    p.run()
-
-
-# -----------------------------------------------------------------------------------------------
-
-if opt.taskid == 6:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "FGSM_Adam"
     opt.hidden_size = 80
@@ -223,7 +200,61 @@ if opt.taskid == 6:
 
 
 
+# -----------------------------------------------------------------------------------------------
 
+if opt.taskid == 6:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 80
+    opt.batch_size = 64
+    opt.lr = 6e-4
+    opt.iterT = 10
+    opt.endless_train = False
+    opt.niter = 199
+    opt.add_noise = False
+
+    d = HAR_2(opt)
+    opt.subsequene = True
+    opt.subseq_size = 16
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 7:
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 80
+    opt.batch_size = 7352
+    opt.lr = 6e-4
+    opt.rad = opt.lr
+    opt.iterT = 10
+    opt.endless_train = False
+    opt.niter = 199 # 199
+    d = HAR_2(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
 
 # -----------------------------------------------------------------------------------------------
 
@@ -319,7 +350,7 @@ if opt.taskid == 23:
     opt.hidden_size = 80
     opt.batch_size = 128
     opt.lr = 1e-3
-    opt.iterT = 30
+    opt.iterT = 5
     opt.endless_train = False
     opt.niter = 199
     opt.add_noise = True
@@ -345,9 +376,9 @@ if opt.taskid == 24:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "FGSM_Adam"
     opt.hidden_size = 80
-    opt.batch_size = 128
-    opt.lr = 1e-3
-    opt.iterT = 1
+    opt.batch_size = 32
+    opt.lr = 6e-4
+    opt.iterT = 10
     opt.endless_train = False
     opt.niter = 199
     opt.add_noise = True
@@ -365,38 +396,11 @@ if opt.taskid == 24:
     m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
 
 # -----------------------------------------------------------------------------------------------
 
 if opt.taskid == 25:
-    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = "FGSM_Adam"
-    opt.hidden_size = 80
-    opt.batch_size = 128
-    opt.lr = 1e-3
-    opt.iterT = 30
-    opt.endless_train = False
-    opt.niter = 199
-    opt.add_noise = True
-
-    d = HAR_2(opt)
-
-    # train and eval in every epoch 
-    if opt.eval_freq > 0 and opt.istrain:
-        opt.istrain = False
-        d_test = HAR_2(opt)
-        opt.istrain = True
-    else:
-        d_test = None 
-    s = RNN(opt)
-    m = VanillaRNN(opt)
-    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
-    p.run()
-
-
-# -----------------------------------------------------------------------------------------------
-
-if opt.taskid == 26:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.optimizer = "FGSM_Adam"
     opt.hidden_size = 80
@@ -422,5 +426,35 @@ if opt.taskid == 26:
     m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+# -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 26:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.optimizer = "FGSM_Adam"
+    opt.hidden_size = 80
+    opt.batch_size = 32
+    opt.lr = 6e-4
+    opt.iterT = 10
+    opt.endless_train = False
+    opt.niter = 199
+    opt.add_noise = True
+
+    d = HAR_2(opt)
+    opt.subsequene = True
+    opt.subseq_size = 16
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = HAR_2(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = TBPTT(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
 
 

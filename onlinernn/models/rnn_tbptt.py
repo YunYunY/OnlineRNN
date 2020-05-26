@@ -65,7 +65,6 @@ class TBPTT(VanillaRNN):
            
             self.states = self.states.view(-1, self.num_layers, self.hidden_size)
            
-           
             loss = self.criterion(outputs, sub_labels)      
             loss.backward()
             losses.append(loss.detach().item())

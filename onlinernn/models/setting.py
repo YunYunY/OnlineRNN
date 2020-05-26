@@ -115,8 +115,8 @@ class RNN(Setting):
         self.model.total_batches = 0 # the total number of batchs
         self.model.max_test_acc = 0
         self.model.min_test_mse = float('inf')
+        self.model.trace_fgsm = []
 
-     
 
 #---------------------------------------------
         for epoch in range(
@@ -187,8 +187,12 @@ class RNN(Setting):
 
         print(f'Total batch is { self.model.total_batches}')
         print(f"Output folder {self.result_dir}")
+        self.save_temp()
+        
 
-
+    def save_temp(self):
+        print(self.model.trace_fgsm)
+        np.savez(self.loss_dir + "temp_dis.npz", dis = self.model.trace_fgsm)
 
     def test(self):
         """

@@ -73,13 +73,13 @@ if opt.taskid == 200:
     opt.hidden_size = 128
     opt.batch_size = 50 # 50
     opt.lr = 1e-3
-    opt.rad = 1e-2
+    opt.rad = 1e-5
     opt.niter_decay = 0
     opt.lrgamma = 0.9
     opt.endless_train = False
-    opt.niter = 9
+    opt.niter = 19
     opt.subsequene = True
-    opt.subseq_size = 10
+    opt.subseq_size = 30
     d = CM(opt)
 
     # train and eval in every epoch 
@@ -90,8 +90,8 @@ if opt.taskid == 200:
     else:
         d_test = None 
     s = RNN(opt)
-    # m = VanillaRNN(opt)
-    m = TBPTT(opt)
+    m = VanillaRNN(opt)
+    # m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
