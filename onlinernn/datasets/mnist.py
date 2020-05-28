@@ -3,10 +3,12 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from torchvision import datasets, transforms
 from PIL import Image
+import torchvision
 from onlinernn.datasets.base_dataset import BaseDataset
 from onlinernn.datasets.mnistshift_dataset import MNISTShifDataset
 from onlinernn.datasets.data_utils import ReshapeTransform
-
+from onlinernn.datasets.data_utils import ExtendAddNoise
+# from onlinernn.datasets.mnistpadnoise_dataset import MNIST_Pad_Noise_Dataset
 
 # -------------------------------------------------------
 # MNIST data
@@ -50,6 +52,75 @@ class MNIST(BaseDataset):
     def __len__(self):
         return len(self.dataset)
 
+# -------------------------------------------------------
+# Noise Padded MNIST  
+# Extend MNIST from 28*28 to 1000*28, the extra 972 time steps are standard Gaussian noise
+# -------------------------------------------------------
+
+class MNISTPadNoise(BaseDataset):
+    """
+        The MNIST database of handwritten digits has a training set of 60,000 examples,
+        and a test set of 10,000 examples. The digits have been size-normalized and centered in a fixed-size image.
+        The data range is [0, 255]
+        It is a good database for people who want to try learning techniques and pattern recognition methods on real-world data.
+        Reference: http://yann.lecun.com/exdb/mnist/
+    """
+
+    def __init__(self, opt):
+        self.opt = opt
+        self.shuffle = opt.shuffle
+        opt.n_class = 10
+        opt.feature_shape = 28
+        opt.seq_len = 1000
+        super(MNISTPadNoise, self).__init__(opt)
+        # ToTensor convert data from 0-255 to 0-1, then normalize with mean and std
+ 
+        mnist_transforms = [transforms.ToTensor()]
+        if opt.mnist_standardize == "zeromean": #zeromean unit variance
+            mnist_transforms.append(transforms.Normalize((0.1307,), (0.3081,)))
+        elif opt.mnist_standardize == "unitrange": #[-1, 1]
+            mnist_transforms.append(transforms.Normalize((0.5,), (0.5,)))
+        else:
+            raise Exception('No vailid normalization method is given')
+        mnist_transforms.append(ExtendAddNoise(opt.feature_shape, 0., 1.))
+        self.transform = transforms.Compose(mnist_transforms)
+        
+        # one-hot encoding for target while read in data 
+        # self.target_transform = transforms.Compose(
+        #     [transforms.Lambda(lambda target: torch.eye(self.n_class)[target])]
+        # )
+        self.target_transform = transforms.Compose([])
+        istrain = (opt.istrain or opt.continue_train)
+        self.dataset, self.dataloader = self.torch_loader(istrain=istrain)
+      
+        print(f"Total datasize is {len(self.dataset)}")
+
+    def __len__(self):
+        return len(self.dataset)
+
+
+    # # ----------------------------------------------
+    # def torch_loader(self, istrain):
+    #     """
+    #         Fetch data by torch.utils.data.Dataset
+    #         Create dataloader
+    #         Args:
+    #             istrain: flag condition for getting training or test data
+    #     """
+
+        
+    #     dataset = MNIST_Pad_Noise_Dataset(self.path, istrain, None)
+
+
+    #     dataloader = torch.utils.data.DataLoader(
+    #             dataset,
+    #             batch_size=self.batch_size,
+    #             shuffle=self.shuffle,
+    #             num_workers=self.num_threads,
+    #         )
+     
+
+    #     return dataset, dataloader
 # -------------------------------------------------------
 # Pixel MNIST  
 # Extend every MNIST to long vector 

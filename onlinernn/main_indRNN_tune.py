@@ -37,20 +37,20 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
-opt.iterT = 30
+opt.iterT = 10
 opt.niter = 19
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 100:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer ="FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -61,23 +61,23 @@ if opt.taskid == 100:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 101:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -88,23 +88,23 @@ if opt.taskid == 101:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 102:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -115,22 +115,22 @@ if opt.taskid == 102:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 103:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -141,21 +141,22 @@ if opt.taskid == 103:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 104:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -166,22 +167,22 @@ if opt.taskid == 104:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
-# -----------------------------------------------------------------------------------------------
+
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 200:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer ="FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -192,23 +193,23 @@ if opt.taskid == 200:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 201:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -219,23 +220,23 @@ if opt.taskid == 201:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 202:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -246,22 +247,22 @@ if opt.taskid == 202:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 203:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -272,21 +273,22 @@ if opt.taskid == 203:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 204:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -297,23 +299,22 @@ if opt.taskid == 204:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
-# -----------------------------------------------------------------------------------------------
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 300:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer ="FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -324,23 +325,23 @@ if opt.taskid == 300:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 301:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -351,23 +352,23 @@ if opt.taskid == 301:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 302:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -378,22 +379,22 @@ if opt.taskid == 302:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 303:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -404,21 +405,22 @@ if opt.taskid == 303:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 304:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -429,25 +431,23 @@ if opt.taskid == 304:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
+
 # -----------------------------------------------------------------------------------------------
 
-
-
-
-# -----------------------------------------------------------------------------------------------
 if opt.taskid == 400:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer ="FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 32
     opt.predic_task = "Softmax"
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -458,23 +458,23 @@ if opt.taskid == 400:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 401:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -485,23 +485,23 @@ if opt.taskid == 401:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 402:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 128
     opt.predic_task = "Softmax"
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -512,22 +512,22 @@ if opt.taskid == 402:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 403:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 256
     opt.predic_task = "Softmax"
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -538,21 +538,22 @@ if opt.taskid == 403:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
 # -----------------------------------------------------------------------------------------------
+
 if opt.taskid == 404:
-    opt.optimizer = "FGSM_Adam"
+    opt.optimizer = "FGSM_Adam" #"FGSM_Adam"
+    opt.num_layers = 6
     opt.hidden_size = 128
     opt.batch_size = 512
     opt.predic_task = "Softmax"
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    # opt.niter = 10000000-1
-    # opt.niter_decay = 320
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 
@@ -563,7 +564,40 @@ if opt.taskid == 404:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
+
+
+
 # -----------------------------------------------------------------------------------------------
+
+if opt.taskid == 500:
+    opt.optimizer ="FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 8e-4
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    d = MNISTPixel(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixel(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+
+

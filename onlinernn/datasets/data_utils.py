@@ -55,3 +55,22 @@ class ReshapeTransform:
 
     def __call__(self, img):
         return torch.reshape(img, self.new_size)
+
+# ----------------------------------------------
+
+class ExtendAddNoise(object):
+    def __init__(self,  noise_index, mean=0., std=1.):
+        self.std = std
+        self.mean = mean
+        self.noise_index = noise_index
+        
+    def __call__(self, tensor):
+        np.random.seed(42)
+        # extend data dimension and pad with random noise
+        noise = torch.randn((tensor.shape[0], 1000, tensor.shape[2])) * self.std + self.mean
+        noise[:, 0:self.noise_index, :] =  tensor
+        
+        return torch.Tensor(noise)
+      
+    def __repr__(self):
+        return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)

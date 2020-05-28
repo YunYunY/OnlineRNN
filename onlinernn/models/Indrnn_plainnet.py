@@ -27,11 +27,11 @@ class IndRNNwithBN(nn.Sequential):
             self.add_module('norm1', BN(hidden_size, args.seq_len))
         self.add_module('indrnn1', IndRNN(hidden_size))      
 
-        # if bn_location=="bn_after":   
-        #     self.add_module('norm1', BN(hidden_size, args.seq_len))
-        # if (bn_location!='bn_before') and (bn_location!='bn_after'):
-        #     print('Please select a batch normalization mode.')
-        #     assert 2==3
+        if bn_location=="bn_after":   
+            self.add_module('norm1', BN(hidden_size, args.seq_len))
+        if (bn_location!='bn_before') and (bn_location!='bn_after'):
+            print('Please select a batch normalization mode.')
+            assert 2==3
 
 class stackedIndRNN_encoder(nn.Module):
     """

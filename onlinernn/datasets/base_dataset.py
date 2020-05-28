@@ -23,8 +23,14 @@ class BaseDataset(ABC):
 
     @property
     def name(self):
-        if self.class_name() in["MNISTPermute", "MNISTPixel", "MNISTPixelPermute", "MNIST_byte"]:
+        if self.class_name() in ["MNISTPadNoise", "MNISTPermute", "MNISTPixel", "MNISTPixelPermute", "MNIST_byte"]:
             return "MNIST"
+        if self.class_name() == "CIFARNoise":
+            return "CIFAR10"
+        return self.class_name()
+
+    @property
+    def classname(self):
         return self.class_name()
 
     @property
@@ -45,6 +51,7 @@ class BaseDataset(ABC):
             Input:
                 istrain: flag condition for download training or test data
         """
+        print(self.name)
         dataset_class = getattr(torchvision.datasets, self.name)
         dataset = dataset_class(
             root="data",

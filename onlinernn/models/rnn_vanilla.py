@@ -247,7 +247,7 @@ class VanillaRNN(BaseModel):
 
         if last_iter:
             # After last iterT, track Delta w, loss and acc
-            self.track_grad_flow(self.rnn_model.named_parameters())
+            # self.track_grad_flow(self.rnn_model.named_parameters())
             self.losses.append(self.loss.detach().item())
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 

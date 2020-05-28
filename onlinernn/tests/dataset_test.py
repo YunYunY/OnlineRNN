@@ -2,11 +2,12 @@ import glob, os
 import torch
 import numpy as np
 from onlinernn.options.train_options import TrainOptions
-from onlinernn.datasets.mnist import MNIST, MNISTPixel, MNISTPixelPermute, MNISTShift, MNISTPermute
+from onlinernn.datasets.mnist import MNIST, MNISTPadNoise, MNISTPixel, MNISTPixelPermute, MNISTShift, MNISTPermute
+from onlinernn.datasets.cifar import CIFARNoise
 from onlinernn.datasets.har import HAR_2
 from onlinernn.datasets.dsa import DSA_19
 from onlinernn.datasets.adding import ADDING
-from onlinernn.datasets.copymemory import CopyMemory
+from onlinernn.datasets.cm import CM
 from onlinernn.tests.test_utils import show_shift
 from onlinernn.datasets.data_utils import loop_queue
 from onlinernn.datasets.mnist_byte import MNIST_byte
@@ -98,7 +99,7 @@ def test_adding():
     
     batch = next(iter(d.dataloader))
     print(batch[1][:64].shape)
-'''
+
 
 def test_copymemory():
     opt.N_TRAIN = 500
@@ -108,13 +109,50 @@ def test_copymemory():
     
     batch = next(iter(d.dataloader))
     print(batch[1][:64].shape)
+'''
+def test_cifar():
+    opt.istrain = True
+    opt.batch_size = 512
+
+    d = CIFARNoise(opt)
+    batch = next(iter(d.dataloader))
+    # print(d.dataset.data.min())
+    print(batch[0][:][:, :, :, 0].mean())
+    # print(batch[0][:][:, :, :, 1].std())
+    # print(batch[0][:][:, :, :, 2].std())
+    # for i in range(3):
+    #     print(d.dataset.data[:, :, :, i].mean()/255)
+    #     print(d.dataset.data[:, :, :, i].std()/255)
+
+    data = batch[0][:64, :, 0:40, :]
+    result_dir = "result/dataset_test/CIFARNoise"
+    os.makedirs(result_dir, exist_ok=True)
+    # visually check image after shifting
+    show_shift(data, 8, result_dir, "CIFARNoise.png")
+
+
+
+
+
+def test_mnistpadnoise():
+    d = MNISTPadNoise(opt)
+    batch = next(iter(d.dataloader))
+    print(batch[0][:64].mean())
+    print(batch[0][:64].std())
+    data = batch[0][:64, :, 0:30, :]
+    print(data.shape)
+    result_dir = "result/dataset_test/MNISTNoise"
+    os.makedirs(result_dir, exist_ok=True)
+    # visually check image after shifting
+    show_shift(data, 8, result_dir, "MNISTNoise.png")
 
 '''
+
 def test_mnist():
     """
     Test MNIST class
     """
-    opt.download_daa = False
+    opt.download_data = False
     d = MNIST(opt)
     assert opt.feature_shape == 28
     assert opt.n_class == 10
@@ -123,11 +161,15 @@ def test_mnist():
     assert os.path.exists("data/MNIST/raw/")
     assert os.path.isfile("data/MNIST/processed/training.pt")
     assert os.path.isfile("data/MNIST/processed/test.pt")
+    
+
     # calculate mean and std of the whole dataset https://discuss.pytorch.org/t/normalization-in-the-mnist-example/457/5
+
     # print(d.dataset.data.float().mean()/255)
     # print(d.dataset.data.float().std()/255)
 
     batch = next(iter(d.dataloader))
+    
     assert list(batch[0][:64].shape) == [64, 1, 28, 28]
     assert list(batch[1][:64].shape) == [64]
     # test loop_queue 

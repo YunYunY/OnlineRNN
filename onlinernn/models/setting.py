@@ -38,7 +38,7 @@ class Setting:
             Check if the results folder exists
             If not, create the directory
         """
-        
+        # self.result_dir = os.path.join("result", self.model.name, self.dataset.classname, "T"+str(self.model.T), self.opt.optimizer, str(self.opt.taskid))
         self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer, str(self.opt.taskid))
         os.makedirs(self.result_dir, exist_ok=True)
         # if os.path.exists(self.result_dir):
@@ -187,7 +187,7 @@ class RNN(Setting):
 
         print(f'Total batch is { self.model.total_batches}')
         print(f"Output folder {self.result_dir}")
-        self.save_temp()
+        # self.save_temp()
         
 
     def save_temp(self):
