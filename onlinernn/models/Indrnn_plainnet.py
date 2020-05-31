@@ -60,6 +60,7 @@ class stackedIndRNN_encoder(nn.Module):
             self.RNNs.append(rnn)         
             
         self.classifier = nn.Linear(hidden_size, outputclass, bias=True)
+
         self.init_weights()
 
     def init_weights(self):
@@ -117,6 +118,7 @@ class stackedIndRNN_encoder(nn.Module):
             # [seq_len, 32, 128] -> [32, 128]
             temp=rnnoutputs['outlayer%d'%(len(self.RNNs)-1)][-1]
             output = self.classifier(temp)
+
             # hidden = rnnoutputs['outlayer%d'%(len(self.RNNs)-1)]
 
             return output                

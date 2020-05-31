@@ -184,6 +184,8 @@ class MNISTPixelPermute(BaseDataset):
         mnist_transforms.append(ReshapeTransform((784, 1)))
 
         np.random.seed(42)
+        # np.random.seed(1024)
+
         idx_permute = torch.Tensor(np.random.permutation(784).astype(np.float64)).long()
         mnist_transforms.append(transforms.Lambda(lambda x: x[idx_permute, :] ))
         self.transform = transforms.Compose(mnist_transforms)

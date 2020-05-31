@@ -16,43 +16,26 @@ os.makedirs(img_dir, exist_ok=True)
 # -----------------------------------------------------------------------------------------------
 d = "MNIST"
 dname = "PermuteMNIST"
-# dname = "MNIST"
+dname = "MNIST"
+
 
 
 if dname == "PermuteMNIST":
-    task_dic = {10: ["VanillaRNN", "Adam", 1],
-                611: ["VanillaRNN", "Adam", 1],
-                612: ["VanillaRNN", "Adam", 1],
-                613: ["VanillaRNN", "Adam", 1],
-                11: ["TBPTT", "Adam", 1],
-                13: ["VanillaRNN", "FGSM_Adam", 1],
-                430: ["VanillaRNN", "FGSM_Adam", 1],
-                113: ["TBPTT", "FGSM_Adam", 1],
-                114: ["TBPTT", "FGSM_Adam", 1],
-                115: ["TBPTT", "FGSM_Adam", 1],
-                212: ["VanillaRNN", "FGSM_Adam", 5],
-                1212: ["VanillaRNN", "FGSM_Adam", 5],
-                1213: ["TBPTT", "FGSM_Adam", 5]}
-
+    task_dic = {325: ["IndRNN", "irnn_Adam", 1],
+                326: ["IndRNN", "FGSM_Adam", 1], 
+                328: ["IndRNN", "FGSM_Adam", 5],
+                410: ["IndRNN", "FGSM_Adam", 10],
+                510: ["IndRNN", "FGSM_Adam", 30]}
 else:
-    task_dic = {0: ["VanillaRNN", "Adam", 1],
-                15: ["TBPTT", "Adam", 1],
-                2: ["VanillaRNN", "FGSM_Adam", 1],
-                3: ["VanillaRNN", "FGSM_Adam", 1],
-                1002: ["VanillaRNN", "FGSM_Adam", 1],
-                2021: ["TBPTT", "FGSM_Adam", 1],
-                2022: ["TBPTT", "FGSM_Adam", 1],
-                202: ["VanillaRNN", "FGSM_Adam", 5],
-                205: ["VanillaRNN", "FGSM_Adam", 5],
-                204: ["VanillaRNN", "FGSM_Adam", 5],
-                1202: ["VanillaRNN", "FGSM_Adam", 5],
-                2014: ["TBPTT", "FGSM_Adam", 5],
-                2015: ["TBPTT", "FGSM_Adam", 5]}
+    task_dic = {25: ["IndRNN", "irnn_Adam", 1],
+                29: ["IndRNN", "FGSM_Adam", 1], 
+                30: ["IndRNN", "FGSM_Adam", 5],
+                27: ["IndRNN", "FGSM_Adam", 10],
+                28: ["IndRNN", "FGSM_Adam", 30]}
 
-# total_batches = 12000
-# total_epoch = 12000
-
-total_epoch = 240 # 188 # 479
+total_batches = 500000 #12000
+# total_epoch = 500000 # 399
+total_epoch = 399
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -61,26 +44,17 @@ case_dir = {"losses": "Training Loss",
             "test_acc": "Test Accuracy"}
 
 def plot_multi_epoch():
-    case = "losses" # "test_acc" # "losses"
-   
+    case = "test_acc" # "test_acc" # "losses"
     if dname == "PermuteMNIST":
-        # taskids = [613, 11, 430, 115, 212]
-        taskids = [613, 11, 430, 113, 212, 1213]
-
-
+        taskids = [325, 326, 328, 410, 510]
     else:
-        # taskids = [0, 15, 1002, 2021, 1202, 2014]
-        # taskids = [0, 15, 2, 2021, 202, 2014]
-        taskids = [0, 15, 3, 2022, 204, 2015]
+        taskids = [25, 29, 30, 27, 28]
 
     # labels = ['TBPTT', 'Ours K=1', 'TBPTT+Ours K=1', 'Ours K=5', 'TBPTT+Ours K=5']
-    # colors = ['c', 'crimson', 'darkorange', 'mediumblue', 'springgreen']
-    if dname == "PermuteMNIST":
-        labels = ['SGD', 'TBPTT', 'Ours K=1', 'TBPTT+Ours K=1', 'Ours K=5', 'TBPTT+Ours K=5']
-    else:
-        labels = ['SGD', 'TBPTT', 'Ours K=1', 'TBPTT+Ours K=1', 'Ours K=5', 'TBPTT+Ours K=5']
+    # colors = ['c', 'lightsteelblue', 'darkorange', 'mediumblue', 'springgreen']
 
-    colors = ['black', 'c', 'crimson', 'darkorange', 'mediumblue', 'springgreen']
+    labels = ['SGD', 'Ours K=1', 'Ours K=5', 'Ours K=10', 'Ours K=30']
+    colors = ['black', 'violet', 'crimson', 'darkorange', 'springgreen']
 
     # colors = ['black', 'c', 'crimson', 'violet', 'mediumblue', 'lightsteelblue', 'darkorange', 'springgreen]
 
@@ -94,10 +68,10 @@ def plot_multi_epoch():
 
     SIZE1 = 8
     SIZE2 = 10
-    SIZE3 = 16
-    SIZE4 = 18
+    SIZE3 = 18
+    SIZE4 = 20
     if case == "losses":
-        # plt.xlabel(r"# Training steps ($1\times{10^3}$)", fontsize=SIZE4)
+        # plt.xlabel(r"# Training steps ($5\times{10^4}$)", fontsize=SIZE4)
         plt.xlabel("# Epochs", fontsize=SIZE4)
     else:
         plt.xlabel("# Epochs", fontsize=SIZE4)
@@ -110,24 +84,22 @@ def plot_multi_epoch():
     # plt.title("Noisy HAR-2 L=128", fontsize=SIZE4)
 
     if case == "losses":
-        # plt.xticks(range(1, total_epoch+1, 1000), range(0, int(total_epoch/1000), 1), rotation="vertical", fontsize=SIZE3)
-        plt.xticks(range(1, total_epoch+1, 20), range(0, total_epoch, 20), rotation="vertical", fontsize=SIZE3)
+        # plt.xticks(range(1, total_epoch+1, 50000), range(0, int(total_epoch/50000), 1), rotation="vertical", fontsize=SIZE3)
+        plt.xticks(range(1, total_epoch+1, 40), range(0, total_epoch, 40), rotation="vertical", fontsize=SIZE3)
 
     else:
-        plt.xticks(range(1, total_epoch+1, 20), range(0, total_epoch, 20), rotation="vertical", fontsize=SIZE3)
+        plt.xticks(range(1, total_epoch+1, 40), range(0, total_epoch, 40), rotation="vertical", fontsize=SIZE3)
 
     plt.yticks(fontsize=SIZE3)
 
     plt.xlim(xmin=0, xmax=total_epoch)
     if case == "losses":
-        # plt.ylim(ymin=1.5, ymax=3)
-        plt.ylim(ymin=0., ymax=2.5)
-
+        plt.ylim(ymin=0, ymax=1)
     else:
         if dname == "PermuteMNIST":
-            plt.ylim(ymin=20, ymax=90)
+            plt.ylim(ymin=80, ymax=94)
         else:
-            plt.ylim(ymin=0, ymax=100)
+            plt.ylim(ymin=90, ymax=100)
 
     # plt.subplots_adjust(top = 0.99, bottom = 0.9, right = 1, left = 0.9, 
     #         hspace = 0., wspace = 0.)
@@ -139,7 +111,7 @@ def plot_multi_epoch():
         optimizer = task_dic[taskid][1]
         T = task_dic[taskid][2]
   
-        # scale = 100
+        # scale = 2000
         # if case == "losses":
         #     epoch = T
         #     epochs = []
@@ -165,16 +137,14 @@ def plot_multi_epoch():
         if case == "losses":
             # plt.plot(xrange, data, color=colors[i], label=labels[i], linewidth=2)
             plt.plot(epochs, data, color=colors[i], label=labels[i], linewidth=2)
+
         else:
             plt.plot(epochs, data, color=colors[i], label=labels[i], linewidth=2)
 
     if case == "losses":
-        plt.legend(loc=3, prop={'size': SIZE3})
+        plt.legend(loc=1, prop={'size': SIZE3})
     else:
-        if dname == "PermuteMNIST":
-            plt.legend(loc=4, prop={'size': SIZE3})
-        else:
-            plt.legend(loc=2, prop={'size': SIZE3})
+        plt.legend(loc=4, prop={'size': SIZE3})
 
 
     plt.savefig(img_dir + "/" + imgname, bbox_inches='tight')

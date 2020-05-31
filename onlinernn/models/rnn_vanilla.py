@@ -146,7 +146,6 @@ class VanillaRNN(BaseModel):
 
     def set_input(self):
         self.inputs, self.labels = self.data
-       
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
         self.batch_size = self.labels.shape[0]  # update batch 
         self.labels = self.labels.view(-1).to(self.device)

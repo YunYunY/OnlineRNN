@@ -37,9 +37,10 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
-opt.iterT = 1
+opt.iterT = 10
 opt.niter = 19
-
+opt.subsequene = True
+opt.subseq_size = 200
 # -----------------------------------------------------------------------------------------------
 if opt.taskid == 100:
     opt.optimizer = "FGSM_Adam"
@@ -51,6 +52,7 @@ if opt.taskid == 100:
     opt.endless_train = False
     # opt.niter = 10000000-1
     # opt.niter_decay = 320
+
     d = MNISTPadNoise(opt)
 
     # train and eval in every epoch 
@@ -61,7 +63,7 @@ if opt.taskid == 100:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -88,7 +90,7 @@ if opt.taskid == 101:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -115,7 +117,7 @@ if opt.taskid == 102:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -141,7 +143,7 @@ if opt.taskid == 103:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -166,7 +168,7 @@ if opt.taskid == 104:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 # -----------------------------------------------------------------------------------------------
@@ -192,7 +194,7 @@ if opt.taskid == 200:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -219,7 +221,7 @@ if opt.taskid == 201:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -246,7 +248,7 @@ if opt.taskid == 202:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -272,7 +274,7 @@ if opt.taskid == 203:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -297,7 +299,7 @@ if opt.taskid == 204:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 # -----------------------------------------------------------------------------------------------
@@ -324,7 +326,7 @@ if opt.taskid == 300:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -351,7 +353,7 @@ if opt.taskid == 301:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -378,7 +380,7 @@ if opt.taskid == 302:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -404,7 +406,7 @@ if opt.taskid == 303:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -429,7 +431,7 @@ if opt.taskid == 304:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 # -----------------------------------------------------------------------------------------------
@@ -458,7 +460,7 @@ if opt.taskid == 400:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -485,7 +487,7 @@ if opt.taskid == 401:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -512,7 +514,7 @@ if opt.taskid == 402:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -538,7 +540,7 @@ if opt.taskid == 403:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -563,7 +565,7 @@ if opt.taskid == 404:
     else:
         d_test = None 
     s = RNN(opt)
-    m = VanillaRNN(opt)
+    m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 # -----------------------------------------------------------------------------------------------

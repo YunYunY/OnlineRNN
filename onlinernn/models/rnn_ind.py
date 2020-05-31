@@ -32,7 +32,9 @@ class IndRNN(VanillaRNN):
         It should be disabled during testing since you may want to use full model (no element is masked)
         
         """
-
+        if self.dataname in ['ADDING']:
+            print('here')
+            exit(0)
         self.rnn_model = stackedIndRNN_encoder(self.opt, self.input_size, self.output_size, self.U_bound)  
         self.rnn_model.cuda()
         #use_weightdecay_nohiddenW:

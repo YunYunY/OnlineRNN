@@ -37,7 +37,7 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
-opt.iterT = 10
+opt.iterT = 5
 opt.niter = 19
 
 # -----------------------------------------------------------------------------------------------
@@ -51,12 +51,12 @@ if opt.taskid == 100:
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -78,12 +78,12 @@ if opt.taskid == 101:
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -105,12 +105,12 @@ if opt.taskid == 102:
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -131,12 +131,12 @@ if opt.taskid == 103:
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -157,12 +157,12 @@ if opt.taskid == 104:
     opt.lr = 2e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -183,12 +183,12 @@ if opt.taskid == 200:
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -210,12 +210,12 @@ if opt.taskid == 201:
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -237,12 +237,12 @@ if opt.taskid == 202:
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -263,12 +263,12 @@ if opt.taskid == 203:
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -289,12 +289,12 @@ if opt.taskid == 204:
     opt.lr = 2e-5
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -315,12 +315,12 @@ if opt.taskid == 300:
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -342,12 +342,12 @@ if opt.taskid == 301:
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -369,12 +369,12 @@ if opt.taskid == 302:
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -395,12 +395,12 @@ if opt.taskid == 303:
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -421,12 +421,12 @@ if opt.taskid == 304:
     opt.lr = 6e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -448,12 +448,12 @@ if opt.taskid == 400:
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -475,12 +475,12 @@ if opt.taskid == 401:
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -502,12 +502,12 @@ if opt.taskid == 402:
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -528,12 +528,12 @@ if opt.taskid == 403:
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -554,12 +554,12 @@ if opt.taskid == 404:
     opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -583,12 +583,12 @@ if opt.taskid == 500:
     opt.lr = 8e-4
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    d = MNISTPixel(opt)
+    d = MNISTPixelPermute(opt)
 
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
-        d_test = MNISTPixel(opt)
+        d_test = MNISTPixelPermute(opt)
         opt.istrain = True
     else:
         d_test = None 
@@ -596,6 +596,33 @@ if opt.taskid == 500:
     m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
+
+if opt.taskid == 600:
+    opt.optimizer ="FGSM_Adam"
+    opt.num_layers = 6
+    opt.hidden_size = 128
+    opt.batch_size = 32
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-2
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    d = MNISTPixelPermute(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = MNISTPixelPermute(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = IndRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
 
 
 

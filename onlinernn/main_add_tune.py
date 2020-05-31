@@ -15,8 +15,11 @@ from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.models.rnn_ind import IndRNN
 from onlinernn.models.setting import RNN
 
-torch.manual_seed(42)
-np.random.seed(42)
+# torch.manual_seed(42)
+# np.random.seed(42)
+
+torch.manual_seed(1024)
+np.random.seed(1024)
 torch.set_printoptions(precision=8)
 
 # -----------------------------------------------------------------------------------------------
@@ -31,8 +34,8 @@ if not opt.istrain:
 # self.ap_timesteps=[100, 200, 400, 750]
 # self.ap_samples=[30000, 50000, 40000, 100000]
 
-opt.N_TRAIN  = 30000
-opt.N_TEST = 1000
+opt.N_TRAIN  = 18000
+opt.N_TEST = 2000
 opt.seq_len = 100
 opt.iterT = 1
 opt.predic_task = 'Logits'
@@ -40,16 +43,18 @@ opt.test_batch = True
 
 if opt.taskid == 100:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = "Adam"
+
+    opt.U_bound = 1.00695
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 2
     opt.hidden_size = 128
-    opt.batch_size = 50 # 50
-    opt.lr = 1e-3
+    opt.batch_size = 50
+    input_size = 1
+    opt.lr = 2e-4
     opt.niter_decay = 0
-    opt.lrgamma = 0.9
+    opt.lrgamma = 0.1
     opt.endless_train = False
-    opt.niter = 9
-    opt.subsequene = True
-    opt.subseq_size = 10
+    opt.niter = 26
     d = ADDING(opt)
 
     # train and eval in every epoch 
@@ -61,7 +66,7 @@ if opt.taskid == 100:
         d_test = None 
     s = RNN(opt)
     # m = VanillaRNN(opt)
-    m = TBPTT(opt)
+    m = IndRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
