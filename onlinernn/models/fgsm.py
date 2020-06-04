@@ -82,7 +82,8 @@ class FGSM(Optimizer):
             lr = group['lr']
 
             for p in group['params']:
-              
+                if p.grad is None:
+                    continue
                 if first_chunk:
                     p.data_orig = p.data.clone() # keep original weights
 

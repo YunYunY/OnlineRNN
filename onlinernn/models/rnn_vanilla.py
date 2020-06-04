@@ -7,6 +7,7 @@ import functools
 import random
 from onlinernn.models.networks import SimpleRNN, StepRNN, get_scheduler
 from onlinernn.models.base_model import BaseModel
+from onlinernn.models.indrnn_utils import clip_gradient
 
 class VanillaRNN(BaseModel):
     def __init__(self, opt):
@@ -242,6 +243,9 @@ class VanillaRNN(BaseModel):
             # else:
             self.optimizer.step(self.total_batches)
         else:
+            if self.opt.clip_grad:
+                clip_gradient(self.rnn_model, self.gradientclip_value) 
+          
             self.optimizer.step()
 
         if last_iter:
@@ -281,6 +285,8 @@ class VanillaRNN(BaseModel):
             pred = logit >= 0.5
             truth = target >= 0.5
             accuracy = 100.* pred.eq(truth).sum()/batch_size
+            
+            
         elif self.opt.predic_task in['Logits', 'CM' ]:
             try:
                 accuracy = self.loss.detach()

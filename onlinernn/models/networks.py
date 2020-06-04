@@ -20,10 +20,12 @@ class SimpleRNN(nn.Module):
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
         self.seq_len = opt.seq_len
-        self.basic_rnn = nn.RNN(self.input_size, self.hidden_size)
-        
-        # self.lstm = nn.LSTM(self.input_size, self.hidden_size)
-        
+        if self.opt.LSTM: 
+            self.basic_rnn = nn.LSTM(self.input_size, self.hidden_size)
+        else:
+            self.basic_rnn = nn.RNN(self.input_size, self.hidden_size)
+
+        self.bn = nn.BatchNorm1d(self.hidden_size)
 
         if opt.predic_task in ['Binary', 'Logits']:
             self.FC = nn.Linear(self.hidden_size, 1)
@@ -34,8 +36,17 @@ class SimpleRNN(nn.Module):
     def last_layer(self):
         if self.opt.predic_task == 'Binary':
             # To make model structure identity with paper iRNN
+            #     output: (seq_len, batch, hidden_size)
+            #     state: (num_layers, batch, hidden_size)
+         
+            # BN layer
+            # self.hidden_final = self.hidden_final.permute(1, 2, 0)          
+            # self.hidden_final = self.bn(self.hidden_final)
+            # self.hidden_final = self.hidden_final.permute(2, 0, 1)
+
             out = torch.sigmoid(self.FC(self.hidden_final))
             return out.view(-1), self.hidden_final
+            
         elif self.opt.predic_task == 'Logits':
             out = self.FC(self.out[-1])
             # out = torch.tanh(self.FC(self.out[-1]))
@@ -65,7 +76,10 @@ class SimpleRNN(nn.Module):
         #     output: (seq_len, batch, hidden_size)
         #     state: (num_layers, batch, hidden_size)
         # self.out, self.hidden_final = self.lstm(X)  
-        self.out, self.hidden_final = self.basic_rnn(X, hidden)  
+        if self.opt.LSTM: 
+            self.out, (self.hidden_final, _) = self.basic_rnn(X)
+        else:
+            self.out, self.hidden_final = self.basic_rnn(X, hidden)  
        
         return self.last_layer()
  

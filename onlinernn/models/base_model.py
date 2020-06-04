@@ -29,6 +29,7 @@ class BaseModel(ABC):
         self.input_size = opt.feature_shape
         self.output_size = opt.n_class
         self.T = opt.iterT
+        self.gradientclip_value = opt.gradclipvalue
         self.device = opt.device
     # ----------------------------------------------
     @classmethod
@@ -37,6 +38,8 @@ class BaseModel(ABC):
 
     @property
     def name(self):
+        if self.opt.LSTM:
+            return 'LSTM'
         return self.class_name()
 
     # ----------------------------------------------

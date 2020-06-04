@@ -58,8 +58,10 @@ class stackedIndRNN_encoder(nn.Module):
         for x in range(args.num_layers):
             rnn = IndRNNwithBN(args, hidden_size=hidden_size, seq_len=args.seq_len,bn_location=args.bn_location) #IndRNN
             self.RNNs.append(rnn)         
-            
-        self.classifier = nn.Linear(hidden_size, outputclass, bias=True)
+        if self.args.predic_task in ['Binary']:
+            self.classifier = nn.Linear(hidden_size, 1, bias=True)
+        else:
+            self.classifier = nn.Linear(hidden_size, outputclass, bias=True)
 
         self.init_weights()
 
@@ -103,7 +105,6 @@ class stackedIndRNN_encoder(nn.Module):
             # [seq_len, 32, 128] -> [32, 128]
             temp=rnnoutputs['outlayer%d'%(len(self.RNNs)-1)][-1]
             output = self.classifier(temp)
-
             return output, nextstates     
      
        
@@ -117,9 +118,13 @@ class stackedIndRNN_encoder(nn.Module):
                     rnnoutputs['outlayer%d'%x]= dropout_overtime(rnnoutputs['outlayer%d'%x],self.args.dropout,self.training) 
             # [seq_len, 32, 128] -> [32, 128]
             temp=rnnoutputs['outlayer%d'%(len(self.RNNs)-1)][-1]
-            output = self.classifier(temp)
 
-            # hidden = rnnoutputs['outlayer%d'%(len(self.RNNs)-1)]
+            if self.args.predic_task in ['Binary']:
+                output = torch.sigmoid(self.classifier(temp)).view(-1)
+
+            else:
+                output = self.classifier(temp)
+                # hidden = rnnoutputs['outlayer%d'%(len(self.RNNs)-1)]
 
             return output                
         

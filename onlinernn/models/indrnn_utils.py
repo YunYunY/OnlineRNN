@@ -32,7 +32,9 @@ def clip_weight(RNNmodel, clip):
             param.data.clamp_(-clip,clip)
     
 def clip_gradient(model, clip):
-    for p in model.parameters():    
+    for p in model.parameters():   
+        if p.grad is None:
+            continue 
         p.grad.data.clamp_(-clip,clip)
   
  

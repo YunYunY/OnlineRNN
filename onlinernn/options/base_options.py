@@ -88,7 +88,16 @@ class BaseOptions:
         parser.add_argument(
             "--init_mode", type=str, default="Zeros", help="method to initialize first hidden state"
         ) #["Zeros",  "Random"]
-        
+
+        parser.add_argument(
+            "--LSTM",
+            action="store_true",
+            default=False,
+            help="use LSTM cell or not",
+        )
+
+        parser.add_argument('--clip_grad', action='store_true', default=False)
+
         # FGSM
         parser.add_argument('--iterT', type=int, default=1, help='iterT for FGSM optimizer')
         parser.add_argument('--iterB', type=int, default=0, help='inside sample batches for FGSM') # run exp 10
@@ -101,6 +110,7 @@ class BaseOptions:
         parser.add_argument('--MAG', type=float, default=5.0)
         parser.add_argument('--u_lastlayer_ini', action='store_true', default=True)
         parser.add_argument('--constrain_U', action='store_true', default=True)
+        parser.add_argument('--constrain_grad', action='store_true', default=True)
         parser.add_argument('--model', type=str, default='plainIndRNN')
         parser.add_argument('--bn_location', type=str, default='bn_after')
         parser.add_argument('--dropout', type=float, default=0.1)

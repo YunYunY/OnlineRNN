@@ -32,9 +32,7 @@ class IndRNN(VanillaRNN):
         It should be disabled during testing since you may want to use full model (no element is masked)
         
         """
-        if self.dataname in ['ADDING']:
-            print('here')
-            exit(0)
+      
         self.rnn_model = stackedIndRNN_encoder(self.opt, self.input_size, self.output_size, self.U_bound)  
         self.rnn_model.cuda()
         #use_weightdecay_nohiddenW:
@@ -61,6 +59,7 @@ class IndRNN(VanillaRNN):
 
     def set_input(self):
         self.inputs, self.labels = self.data
+       
         self.inputs = self.inputs.permute(1, 0, 2).to(self.device)
    
         self.labels = self.labels.view(-1).to(self.device)
@@ -89,11 +88,12 @@ class IndRNN(VanillaRNN):
             if self.opt.constrain_U:
                 clip_weight(self.rnn_model, self.U_bound)
             self.outputs, self.states =self.rnn_model(sub_inputs, self.states)
+
         
             self.loss = self.criterion(self.outputs, self.labels)
             self.loss.backward()
-
-            clip_gradient(self.rnn_model, self.gradientclip_value)
+            if self.opt.constrain_grad:
+                clip_gradient(self.rnn_model, self.gradientclip_value)
 
             if 'FGSM' in self.opt.optimizer:
 
@@ -115,15 +115,15 @@ class IndRNN(VanillaRNN):
         self.outputs =self.rnn_model(self.inputs)
 
     def backward_indrnn(self):
+      
         self.loss = self.criterion(self.outputs, self.labels)
-    
+
         self.loss.backward()
-    
-        clip_gradient(self.rnn_model, self.gradientclip_value)
+
+        if self.opt.constrain_grad:
+            clip_gradient(self.rnn_model, self.gradientclip_value)
         if 'FGSM' in self.opt.optimizer:
-            # if self.opt.iterB > 0:
-            #     self.optimizer.step(self.total_batches, sign_option=True)
-            # else:
+         
             self.optimizer.step(self.total_batches)
         else:
             self.optimizer.step()
@@ -135,11 +135,8 @@ class IndRNN(VanillaRNN):
         self.last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         
         if self.opt.subsequene:
-            # tbptt train, tbptt segments and iterT is same. 
             self.train_subsequence()     
-            # self.track_grad_flow(self.rnn_model.named_parameters())
-            # self.losses.append(self.loss.detach().item())
-            # self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))         
+               
         else:
             self.forward_indrnn()
             self.backward_indrnn()
@@ -147,6 +144,7 @@ class IndRNN(VanillaRNN):
         if self.last_iter:
             # after last iterT, track Delta w, loss and acc
             # self.track_grad_flow(self.rnn_model.named_parameters())
+           
             self.losses.append(self.loss.detach().item())
             self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
@@ -155,8 +153,8 @@ class IndRNN(VanillaRNN):
         with torch.no_grad():
             if self.opt.subsequene:
                 self.init_states()
-
                 outputs, _ =self.rnn_model(self.inputs, self.states)
+
             else:
                 outputs =self.rnn_model(self.inputs)
 

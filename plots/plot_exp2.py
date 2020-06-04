@@ -16,7 +16,7 @@ os.makedirs(img_dir, exist_ok=True)
 # -----------------------------------------------------------------------------------------------
 d = "MNIST"
 dname = "PermuteMNIST"
-dname = "MNIST"
+# dname = "MNIST"
 
 
 
@@ -44,7 +44,7 @@ case_dir = {"losses": "Training Loss",
             "test_acc": "Test Accuracy"}
 
 def plot_multi_epoch():
-    case = "test_acc" # "test_acc" # "losses"
+    case = "losses" # "test_acc" # "losses"
     if dname == "PermuteMNIST":
         taskids = [325, 326, 328, 410, 510]
     else:
@@ -63,7 +63,7 @@ def plot_multi_epoch():
 
     str_ids = ''.join(map(str, taskids))
     imgname = "P1_" + d + "_" + str_ids + "_"+ case +".pdf"
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(8, 6))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     SIZE1 = 8
@@ -78,9 +78,9 @@ def plot_multi_epoch():
     plt.ylabel(case_dir[case], fontsize=SIZE4)
     # plt.title(f"{d}", fontsize=SIZE4)
     if dname == "PermuteMNIST":
-        plt.title("Permute-MNIST L=784", fontsize=SIZE4)
+        plt.title("IndRNN, Permute-MNIST L=784", fontsize=SIZE4)
     else:
-        plt.title("Pixel-MNIST L=784", fontsize=SIZE4)
+        plt.title("IndRNN, Pixel-MNIST, L=784", fontsize=SIZE4)
     # plt.title("Noisy HAR-2 L=128", fontsize=SIZE4)
 
     if case == "losses":

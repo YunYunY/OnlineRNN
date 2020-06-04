@@ -155,7 +155,6 @@ class RNN(Setting):
                     # self.model.get_test_acc() # calculate and save global acc
                    
                     # self.model.save_test_acc(self.model.total_batches)
-                    
             if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
                 print(
                     "saving the model at the end of epoch %d, iters %d"
@@ -165,7 +164,6 @@ class RNN(Setting):
             if epoch == self.opt.n_epochs:
                 self.model.save_networks("latest")
             # ----------------------------------------------
-          
             self.model.save_losses(epoch)
             if self.opt.verbose:
                 print("End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"

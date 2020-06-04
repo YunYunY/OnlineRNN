@@ -16,20 +16,20 @@ os.makedirs(img_dir, exist_ok=True)
 # -----------------------------------------------------------------------------------------------
 opt.taskid = 4
 d = "HAR_2"
-task_dic = {0: ["VanillaRNN", "Adam", 1],
-            1: ["TBPTT", "Adam", 1], 
-            2: ["VanillaRNN", "FGSM_Adam", 1], 
-            3: ["VanillaRNN", "FGSM_Adam", 5], 
-            4: ["VanillaRNN", "FGSM_Adam", 10],
-            5: ["TBPTT", "FGSM_Adam", 1]}
+# task_dic = {0: ["VanillaRNN", "Adam", 1],
+#             1: ["TBPTT", "Adam", 1], 
+#             2: ["VanillaRNN", "FGSM_Adam", 1], 
+#             3: ["VanillaRNN", "FGSM_Adam", 5], 
+#             4: ["VanillaRNN", "FGSM_Adam", 10],
+#             5: ["TBPTT", "FGSM_Adam", 1]}
 
-# task_dic = {20: ["VanillaRNN", "Adam", 1],
-#             21: ["TBPTT", "Adam", 1], 
-#             22: ["VanillaRNN", "FGSM_Adam", 1], 
-#             23: ["VanillaRNN", "FGSM_Adam", 5], 
-#             24: ["VanillaRNN", "FGSM_Adam", 10],
-#             25: ["TBPTT", "FGSM_Adam", 1],
-#             26: ["TBPTT", "FGSM_Adam", 10]}
+task_dic = {20: ["VanillaRNN", "Adam", 1],
+            21: ["TBPTT", "Adam", 1], 
+            22: ["VanillaRNN", "FGSM_Adam", 1], 
+            23: ["VanillaRNN", "FGSM_Adam", 5], 
+            24: ["VanillaRNN", "FGSM_Adam", 10],
+            25: ["TBPTT", "FGSM_Adam", 1],
+            26: ["TBPTT", "FGSM_Adam", 10]}
 
 total_batches = 2900#11600
 total_epoch = 199
@@ -41,9 +41,9 @@ case_dir = {"losses": "Training Loss",
             "test_acc": "Test Accuracy"}
 
 def plot_multi_epoch():
-    case = "test_acc" # "test_acc" # "losses"
-    taskids = [0, 1, 2, 3, 4, 5]
-    # taskids = [20, 21, 22, 23, 24, 26]
+    case = "losses" # "test_acc" # "losses"
+    # taskids = [0, 1, 2, 3, 4, 5]
+    taskids = [20, 21, 22, 23, 24, 26]
 
     labels = ['SGD', 'TBPTT', 'Ours K=1', 'Ours K=5', 'Ours K=10', 'TBPTT+Ours']
     colors = ['black', 'c', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
@@ -55,19 +55,19 @@ def plot_multi_epoch():
 
     str_ids = ''.join(map(str, taskids))
     imgname = d + "_" + str_ids + "_"+ case +".pdf"
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(8, 6))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     SIZE1 = 8
     SIZE2 = 10
-    SIZE3 = 16
-    SIZE4 = 18
+    SIZE3 = 18
+    SIZE4 = 20
 
     plt.xlabel("# Epochs", fontsize=SIZE4)
     plt.ylabel(case_dir[case], fontsize=SIZE4)
     # plt.title(f"{d}", fontsize=SIZE4)
-    plt.title("HAR-2 L=128", fontsize=SIZE4)
-    # plt.title("Noisy HAR-2 L=128", fontsize=SIZE4)
+    # plt.title("Vanilla RNN, HAR-2, L=128", fontsize=SIZE4)
+    plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 
 
     plt.xticks(range(1, total_epoch+1, 20), range(0, total_epoch, 20), rotation="vertical", fontsize=SIZE3)
@@ -75,9 +75,9 @@ def plot_multi_epoch():
 
     plt.xlim(xmin=0, xmax=total_epoch)
     # plt.ylim(ymin=0., ymax=0.4)
-    # plt.ylim(ymin=0.05, ymax=0.35)
+    plt.ylim(ymin=0.05, ymax=0.35)
     # plt.ylim(ymin=50, ymax=90)
-    plt.ylim(ymin=50, ymax=95)
+    # plt.ylim(ymin=50, ymax=95)
 
     # plt.subplots_adjust(top = 0.99, bottom = 0.9, right = 1, left = 0.9, 
     #         hspace = 0., wspace = 0.)

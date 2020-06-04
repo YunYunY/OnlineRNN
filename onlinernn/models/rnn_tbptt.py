@@ -77,7 +77,9 @@ class TBPTT(VanillaRNN):
                 self.optimizer.step(self.total_batches, tbptt_first_iter, tbptt_last_iter)
             else:
                 self.optimizer.step()
-        self.loss = sum(losses)/len(losses)
+        # self.loss = sum(losses)/len(losses)
+        self.loss = loss.detach().item()
+
         self.outputs = outputs
         
     def train(self):
