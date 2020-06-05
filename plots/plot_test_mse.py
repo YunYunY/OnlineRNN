@@ -15,20 +15,19 @@ os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
 d = "ADDING"
-# m = "VanillaRNN"
-# m = "TBPTT"
 
-task_dic = {0: [100, "Adam", 1, "VanillaRNN"],
-            1: [100, "Adam", 1, "TBPTT"],
-            2: [200, "FGSM_Adam", 1, "TBPTT"]}
-# task_dic = {0: [100, "Adam", 1],
-#             1: [200, "FGSM_Adam", 1], 
-#             2: [200, "FGSM_Adam", 5], 
-#             3: [200, "FGSM_Adam", 10],
-#             4: [200, "FGSM_Adam", 30]}
+taskids = [402, 606]
+
+task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
+            201: ["Adam", 1, "LSTM"],
+            904: ["FGSM_Adam", 1, "TBPTT"],
+            905: ["FGSM_Adam", 1, "VanillaRNN"],
+            606: ["FGSM_Adam", 1, "TBPTT"],
+            402: ["Adam", 1, "TBPTT"]}
 
 
-total_batch = 600
+
+total_batch = 18000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -36,29 +35,30 @@ total_batch = 600
 case_dir = {"losses": "Training Loss", 
             "test_acc": "Test Accuracy"}
 
+
 def plot_multi_batch():
 
-    labels = ['Adam RNN', 'TBPTT', 'TBPTT Ours norm K=1', 'Ours norm K=5', 'Ours norm K=10', 'Ours norm K=30']
-    colors = ['black', 'c', 'crimson', 'violet', 'mediumblue', 'lightsteelblue', 'darkorange']
+    labels = ['SGD' , 'Ours', 'Ours norm K=10', 'Ours norm K=30']
+    colors = ['black', 'crimson', 'c', 'violet', 'mediumblue', 'lightsteelblue', 'darkorange']
 
 
-    batches = range(0, total_batch, 1)
+    batches = range(0, total_batch, 100)
+    
 
-    imgname = d + "_test_acc.png"
-    fig, ax = plt.subplots(figsize=(8, 8))
+    imgname = d + "train_loss.png"
+    fig, ax = plt.subplots(figsize=(8, 6))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     SIZE1 = 8
     SIZE2 = 10
-    SIZE3 = 12
-    SIZE4 = 14
+    SIZE3 = 18
+    SIZE4 = 20
 
     plt.xlabel("# Batches", fontsize=SIZE4)
-    plt.ylabel("Test MSE", fontsize=SIZE4)
-    plt.title(f"{d}", fontsize=SIZE4)
-    # plt.title(f"Noisy HAR-2")
+    plt.ylabel("Training MSE", fontsize=SIZE4)
+    plt.title(f"Adding Task")
 
-    plt.xticks(range(1, total_batch+1, 100), range(0, total_batch, 100), rotation="vertical", fontsize=SIZE3)
+    plt.xticks(range(1, total_batch+1, 1000), range(0, total_batch, 1000), rotation="vertical", fontsize=SIZE3)
     plt.yticks(fontsize=SIZE3)
 
     plt.xlim(xmin=0, xmax=total_batch)
@@ -69,17 +69,18 @@ def plot_multi_batch():
     #         hspace = 0., wspace = 0.)
  
 
-    for i, task in task_dic.items():
-        print(i)
-        taskid = task[0]
-        optimizer = task[1]
-        T = task[2]
-        m = task[3]
+    for i, taskid in enumerate(taskids):
+        task = task_dic[taskid]
+        optimizer = task[0]
+        T = task[1]
+        m = task[2]
             
         data = []
         for batch in batches:
-            file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/batch_" + str(batch+1) + "_test_acc.npz"
-            one_data = np.load(file)["test_acc"]
+            print(batch)
+            # file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/batch_" + str(batch+1) + "_test_acc.npz"
+            file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/batch_" + str(batch+1) + "_losses.npz"
+            one_data = np.load(file)["loss"]
 
             data.append(one_data)
         print(max(data))

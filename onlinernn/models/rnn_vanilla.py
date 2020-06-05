@@ -5,6 +5,7 @@ import numpy as np
 import os
 import functools 
 import random
+import copy
 from onlinernn.models.networks import SimpleRNN, StepRNN, get_scheduler
 from onlinernn.models.base_model import BaseModel
 from onlinernn.models.indrnn_utils import clip_gradient
@@ -36,6 +37,9 @@ class VanillaRNN(BaseModel):
             self.rnn_model = SimpleRNN(self.opt).to(self.device)
         elif self.model_method == "StepRNN":
             self.rnn_model = StepRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+
+        if self.opt.optimizer == 'SVRG':
+            self.model_snapshot = copy.deepcopy(self.rnn_model)
 
         # explicitly state the intent
         if self.istrain:
@@ -219,7 +223,7 @@ class VanillaRNN(BaseModel):
         elif self.model_method == "StepRNN":
             outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
             self.outputs, self.state_start, self.state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
-  
+        
     def backward(self):
         """
         Backward path 
@@ -237,6 +241,17 @@ class VanillaRNN(BaseModel):
 
         first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
         last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
+        
+        '''
+        if self.opt.global_u:
+            #Backward
+            for param1, param2, param3 in zip(self.rnn_model.parameters(), self.previous_net_sgd.parameters(), \
+            self.previous_net_grad.parameters()): 
+                if param1.grad is None:
+                    continue 
+                param1.data -= (self.lr) * (param1.grad.data - param2.grad.data + (1./self.batch_size) * param3.grad.data)
+        '''
+        
         if 'FGSM' in self.opt.optimizer:
             # if self.opt.iterB > 0:
             #     self.optimizer.step(self.total_batches, sign_option=True)
@@ -245,7 +260,7 @@ class VanillaRNN(BaseModel):
         else:
             if self.opt.clip_grad:
                 clip_gradient(self.rnn_model, self.gradientclip_value) 
-          
+        
             self.optimizer.step()
 
         if last_iter:

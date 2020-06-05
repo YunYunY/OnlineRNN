@@ -15,9 +15,8 @@ os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
 d = "MNIST"
-dname = "PermuteMNIST"
-# dname = "MNIST"
-
+# dname = "PermuteMNIST"
+dname = "MNIST"
 
 
 if dname == "PermuteMNIST":
@@ -25,13 +24,24 @@ if dname == "PermuteMNIST":
                 326: ["IndRNN", "FGSM_Adam", 1], 
                 328: ["IndRNN", "FGSM_Adam", 5],
                 410: ["IndRNN", "FGSM_Adam", 10],
-                510: ["IndRNN", "FGSM_Adam", 30]}
+                510: ["IndRNN", "FGSM_Adam", 30],
+                32500: ["IndRNN", "irnn_Adam", 1],
+                32600: ["IndRNN", "FGSM_Adam", 1], 
+                32800: ["IndRNN", "FGSM_Adam", 5],
+                41000: ["IndRNN", "FGSM_Adam", 10],
+                51000: ["IndRNN", "FGSM_Adam", 30]}
 else:
     task_dic = {25: ["IndRNN", "irnn_Adam", 1],
                 29: ["IndRNN", "FGSM_Adam", 1], 
                 30: ["IndRNN", "FGSM_Adam", 5],
                 27: ["IndRNN", "FGSM_Adam", 10],
-                28: ["IndRNN", "FGSM_Adam", 30]}
+                28: ["IndRNN", "FGSM_Adam", 30],
+                2500: ["IndRNN", "irnn_Adam", 1],
+                2900: ["IndRNN", "FGSM_Adam", 1], 
+                3000: ["IndRNN", "FGSM_Adam", 5],
+                3100: ["IndRNN", "FGSM_Adam", 10],
+                2800: ["IndRNN", "FGSM_Adam", 30]
+                }
 
 total_batches = 500000 #12000
 # total_epoch = 500000 # 399
@@ -46,9 +56,17 @@ case_dir = {"losses": "Training Loss",
 def plot_multi_epoch():
     case = "losses" # "test_acc" # "losses"
     if dname == "PermuteMNIST":
-        taskids = [325, 326, 328, 410, 510]
+        # taskids = [325, 326, 328, 410, 510]
+        # taskids = [32500, 32600, 32800, 41000, 51000]
+        taskids = [32500, 32600, 32800]
+
+
     else:
-        taskids = [25, 29, 30, 27, 28]
+        # taskids = [25, 29, 30, 27, 28]
+        # taskids = [2500, 2900, 3000, 3100, 2800]
+        taskids = [2500, 2900, 3000]
+
+
 
     # labels = ['TBPTT', 'Ours K=1', 'TBPTT+Ours K=1', 'Ours K=5', 'TBPTT+Ours K=5']
     # colors = ['c', 'lightsteelblue', 'darkorange', 'mediumblue', 'springgreen']

@@ -77,6 +77,8 @@ class Setting:
         self.model.result_dir = self.result_dir
         self.model.loss_dir = self.loss_dir
 
+
+
     # ----------------------------------------------
     @abstractmethod
     def run(self):
@@ -97,6 +99,38 @@ class RNN(Setting):
     def __init__(self, opt):
         super(RNN, self).__init__(opt)
 
+
+    def train_svrg(self):
+        self.model.global_train()
+
+
+    def train_sgd(self):
+        for i, data in enumerate(self.dataset.dataloader):
+            self.total_iters += self.opt.batch_size
+            self.model.total_batches += 1
+            self.model.data = data 
+            self.model.set_input()
+
+            # ---------------------------------------------------
+
+            # Forward, backward, update network weights
+            self.model.train() 
+            # Save gradients
+            if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
+                self.model.training_log(self.model.total_batches)
+            if self.opt.test_batch:
+                print("Epoch %d | End of batch %d | Time Taken: %d sec | Loss: %.4f"
+                % (self.epoch, self.model.total_batches, time.time() - self.epoch_start_time, self.model.loss))
+                # self.model.set_test_output()
+                # for i, data in enumerate(self.dataset_test.dataloader):
+                #     self.model.data = data 
+                #     self.model.set_test_input()  # unpack data from data loader
+                #     self.model.test()  # run inference
+                # self.model.get_test_acc() # calculate and save global acc
+                
+                # self.model.save_test_acc(self.model.total_batches)
+
+
     def run(self):
         global_start_time = time.time()  # timer for entire epoch
 
@@ -111,54 +145,29 @@ class RNN(Setting):
         self.model.setup()
   
         print("Start Training Loop...")
-        total_iters = 0  # the total number of training iterations
+        self.total_iters = 0  # the total number of training iterations
         self.model.total_batches = 0 # the total number of batchs
         self.model.max_test_acc = 0
         self.model.min_test_mse = float('inf')
         self.model.trace_fgsm = []
 
-
 #---------------------------------------------
         for epoch in range(
             self.opt.epoch_count, self.opt.n_epochs + 1):
 
-            epoch_start_time = time.time()  # timer for entire epoch
+            self.epoch = epoch
+            self.epoch_start_time = time.time()  # timer for entire epoch
             self.model.set_output()
-            for i, data in enumerate(self.dataset.dataloader):
-                total_iters += self.opt.batch_size
-                self.model.total_batches += 1
 
-                # if self.opt.iterB > 0: # sample batches and train multiple times 
-                    # if i % self.opt.iterT != 0:
-                    #     continue 
-                    # else:
-                    #     self.model.inner_sample_train()
-                # else:
-                # Setup input
-                self.model.data = data 
-                self.model.set_input()
-                # ---------------------------------------------------
-
-                # Forward, backward, update network weights
-                self.model.train() 
-                # Save gradients
-                if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
-                    self.model.training_log(self.model.total_batches)
-                if self.opt.test_batch:
-                    print("Epoch %d | End of batch %d | Time Taken: %d sec | Loss: %.4f"
-                    % (epoch, self.model.total_batches, time.time() - epoch_start_time, self.model.loss))
-                    # self.model.set_test_output()
-                    # for i, data in enumerate(self.dataset_test.dataloader):
-                    #     self.model.data = data 
-                    #     self.model.set_test_input()  # unpack data from data loader
-                    #     self.model.test()  # run inference
-                    # self.model.get_test_acc() # calculate and save global acc
-                   
-                    # self.model.save_test_acc(self.model.total_batches)
+            if self.opt.optimizer == "SVRG":
+                self.train_svrg()
+            else:
+                self.train_sgd()
+         
             if (epoch + 1) % self.opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
                 print(
                     "saving the model at the end of epoch %d, iters %d"
-                    % (epoch, total_iters))
+                    % (epoch, self.total_iters))
                 self.model.save_networks(epoch)
 
             if epoch == self.opt.n_epochs:
@@ -167,7 +176,7 @@ class RNN(Setting):
             self.model.save_losses(epoch)
             if self.opt.verbose:
                 print("End of epoch %d / %d | Time Taken: %d sec | Loss: %.4f | Train Accuracy: %.2f"
-                    % (epoch, self.opt.n_epochs, time.time() - epoch_start_time, self.model.losses, self.model.train_acc))
+                    % (epoch, self.opt.n_epochs, time.time() - self.epoch_start_time, self.model.losses, self.model.train_acc))
             # ----------------------------------------------
             if not self.opt.test_batch and self.opt.eval_freq != 0: # evaluate 
                 self.model.set_test_output()

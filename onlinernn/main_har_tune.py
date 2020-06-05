@@ -37,13 +37,13 @@ if not opt.istrain:
 # FGSM grad/2norm of grad, final update with Adam(Deltaw), 1/t coefficient, iterT=1, lr=2e-4
 
 # -----------------------------------------------------------------------------------------------
-opt.iterT = 10
+opt.iterT = 1
 opt.log = False
 opt.LSTM = False
-opt.add_noise = True
+opt.add_noise = False
 opt.constrain_grad = False
 opt.constrain_U = False
-opt.num_layers = 6
+# opt.num_layers = 6
 
 if opt.taskid == 100:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
@@ -55,15 +55,17 @@ if opt.taskid == 100:
     opt.niter = 19
     d = HAR_2(opt)
 
+
     # train and eval in every epoch 
     if opt.eval_freq > 0 and opt.istrain:
         opt.istrain = False
         d_test = HAR_2(opt)
+
         opt.istrain = True
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -86,7 +88,7 @@ if opt.taskid == 101:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -109,7 +111,7 @@ if opt.taskid == 102:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -132,7 +134,7 @@ if opt.taskid == 103:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -155,7 +157,7 @@ if opt.taskid == 104:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -180,7 +182,7 @@ if opt.taskid == 200:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -203,7 +205,7 @@ if opt.taskid == 201:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -226,7 +228,7 @@ if opt.taskid == 202:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -249,7 +251,7 @@ if opt.taskid == 203:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -272,7 +274,7 @@ if opt.taskid == 204:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -297,7 +299,7 @@ if opt.taskid == 300:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -320,7 +322,7 @@ if opt.taskid == 301:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -343,7 +345,7 @@ if opt.taskid == 302:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -366,7 +368,7 @@ if opt.taskid == 303:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -389,7 +391,7 @@ if opt.taskid == 304:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -415,7 +417,7 @@ if opt.taskid == 400:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -438,7 +440,7 @@ if opt.taskid == 401:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -461,7 +463,7 @@ if opt.taskid == 402:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -484,7 +486,7 @@ if opt.taskid == 403:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -507,7 +509,7 @@ if opt.taskid == 404:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -533,7 +535,7 @@ if opt.taskid == 500:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -556,7 +558,7 @@ if opt.taskid == 501:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -579,7 +581,7 @@ if opt.taskid == 502:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -602,7 +604,7 @@ if opt.taskid == 503:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -625,7 +627,7 @@ if opt.taskid == 504:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -651,7 +653,7 @@ if opt.taskid == 600:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -674,7 +676,7 @@ if opt.taskid == 601:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -697,7 +699,7 @@ if opt.taskid == 602:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -720,7 +722,7 @@ if opt.taskid == 603:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -743,7 +745,7 @@ if opt.taskid == 604:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -768,7 +770,7 @@ if opt.taskid == 700:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -791,7 +793,7 @@ if opt.taskid == 701:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -814,7 +816,7 @@ if opt.taskid == 702:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -837,7 +839,7 @@ if opt.taskid == 703:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -860,7 +862,7 @@ if opt.taskid == 704:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -885,7 +887,7 @@ if opt.taskid == 800:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -908,7 +910,7 @@ if opt.taskid == 801:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -931,7 +933,7 @@ if opt.taskid == 802:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -954,7 +956,7 @@ if opt.taskid == 803:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -977,7 +979,7 @@ if opt.taskid == 804:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1003,7 +1005,7 @@ if opt.taskid == 900:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1026,7 +1028,7 @@ if opt.taskid == 901:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1049,7 +1051,7 @@ if opt.taskid == 902:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1072,7 +1074,7 @@ if opt.taskid == 903:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1095,7 +1097,7 @@ if opt.taskid == 904:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1121,7 +1123,7 @@ if opt.taskid == 1000:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1144,7 +1146,7 @@ if opt.taskid == 1001:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1167,7 +1169,7 @@ if opt.taskid == 1002:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1190,7 +1192,7 @@ if opt.taskid == 1003:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
@@ -1213,6 +1215,6 @@ if opt.taskid == 1004:
     else:
         d_test = None 
     s = RNN(opt)
-    m = IndRNN(opt)
+    m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()

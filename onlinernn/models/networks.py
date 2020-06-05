@@ -25,7 +25,7 @@ class SimpleRNN(nn.Module):
         else:
             self.basic_rnn = nn.RNN(self.input_size, self.hidden_size)
 
-        self.bn = nn.BatchNorm1d(self.hidden_size)
+        # self.bn = nn.BatchNorm1d(self.hidden_size)
 
         if opt.predic_task in ['Binary', 'Logits']:
             self.FC = nn.Linear(self.hidden_size, 1)

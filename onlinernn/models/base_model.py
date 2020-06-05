@@ -1,10 +1,11 @@
 from abc import ABC
 import numpy as np
 import torch
+import copy
 # from onlinernn.models.fgsm_sign import FGSM, MultipleOptimizer
 from onlinernn.models.fgsm import FGSM, MultipleOptimizer
 # from onlinernn.models.fgsm_fw_2 import FGSM, MultipleOptimizer
-
+from onlinernn.models.svrg import SVRG_k, SVRG_Snapshot
 from onlinernn.models.adam import Adam 
 # ----------------------------------------------
 """
@@ -48,8 +49,10 @@ class BaseModel(ABC):
         Setup optimizers
         """
         self.optimizers = []
-        # self.optimizer = torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr, alpha=0.99)
-        if self.opt.optimizer == 'Adam':
+        if self.opt.optimizer == "SVRG":
+            self.optimizer = SVRG_k(self.rnn_model.parameters(), lr=self.lr, weight_decay=0)
+            self.optimizer_snapshot = SVRG_Snapshot(self.model_snapshot.parameters())
+        elif self.opt.optimizer == 'Adam':
             self.optimizer = Adam(self.rnn_model.parameters(), lr=self.lr)
         elif self.opt.optimizer == 'SGD':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)
@@ -69,7 +72,7 @@ class BaseModel(ABC):
                         [torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)]    
         elif self.opt.optimizer == 'FGSM_Adam':
             self.optimizers = [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
-                        [Adam(self.rnn_model.parameters(), lr=self.lr)]     
+                        [Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=self.opt.weight_decay)]     
         elif self.opt.optimizer == 'FGSM_RMSProp':  
             self.optimizers =  [FGSM(self.rnn_model.parameters(), lr=self.lr, iterT=self.T, mergeadam=True)] + \
                         [torch.optim.RMSprop(self.rnn_model.parameters(), lr=self.lr)]
@@ -107,7 +110,103 @@ class BaseModel(ABC):
         else:
             return self.inputs[:, i*size: (i+1)*size, :], self.labels[:, i*size: (i+1)*size, :]
 
+    def global_train(self):
+        self.optimizer_snapshot.zero_grad()  # zero_grad outside for loop, accumulate gradient inside
+        for i, data in enumerate(self.dataset.dataloader):
+            self.data = data 
+            self.set_input()
+            self.init_states()
+            outputs, _ = self.model_snapshot(self.inputs, self.states)
+            self.outputs = outputs.to(self.device)     
+            snapshot_loss = self.criterion(self.outputs, self.labels) 
+            snapshot_loss.backward()
+        
+        # pass the current paramesters of optimizer_0 to optimizer_k 
+        u = self.optimizer_snapshot.get_param_groups()
+        self.optimizer.set_u(u)
     
+        for i, data in enumerate(self.dataset.dataloader):
+            self.data = data 
+            self.set_input()
+            self.optimizer.zero_grad()
+            self.init_states()
+            outputs, _ = self.rnn_model(self.inputs, self.states)
+            self.outputs = outputs.to(self.device)
+            self.loss = self.criterion(self.outputs, self.labels)   
+            self.loss.backward()
+
+        #     # optimization 
+        #     loss_iter.backward()    
+
+        #     yhat2 = model_snapshot(images)
+        #     loss2 = loss_fn(yhat2, labels)
+
+        #     optimizer_snapshot.zero_grad()
+        #     loss2.backward()
+
+        #     optimizer_k.step(optimizer_snapshot.get_param_groups())
+
+        #     # logging 
+        #     acc_iter = accuracy(yhat, labels)
+        #     loss.update(loss_iter.data.item())
+        #     acc.update(acc_iter)
+        
+        # # update the snapshot 
+        # optimizer_snapshot.set_param_groups(optimizer_k.get_param_groups())
+        
+        # return loss.avg, acc.avg
+   
 
 
+
+    
+    def partial_grad(self, model):
+        """
+        Function to compute the grad
+        args : data, target, loss_function
+        return loss
+        """
+        outputs, _ = model(self.inputs, self.states)
+        self.outputs = outputs.to(self.device)        
+        loss = self.criterion(self.outputs, self.labels) 
+        loss.backward()
+        return loss
+    '''
+    # ----------------------------------------------
+    def calculate_loss_grad(self):
+        """
+        Function to compute the full loss and the full gradient
+        args : dataset, loss function and number of samples
+        return : total loss and full grad norm
+        """
+        total_loss = 0.0
+        full_grad = 0.0
+        for i_grad, data_grad in enumerate(self.dataset.dataloader):
+            self.data = data_grad 
+            self.set_input()
+            self.init_states()
+            total_loss += (1./self.batch_size ) * self.partial_grad(self.previous_net_grad)
+        
+        for para in self.previous_net_grad.parameters():
+            if para.grad is None:
+                continue 
+            full_grad += para.grad.data.norm(2)**2
+        return total_loss, (1./self.batch_size) * torch.sqrt(full_grad)
+
+    # ----------------------------------------------
+    def calculate_global_grad(self):
+
+        self.previous_net_sgd = copy.deepcopy(self.rnn_model) #update previous_net_sgd
+        self.previous_net_grad = copy.deepcopy(self.rnn_model) #update previous_net_grad
+        self.previous_net_grad.zero_grad() # grad = 0
+
+        self.total_loss_epoch, self.grad_norm_epoch = self.calculate_loss_grad()
+
+
+    def calculate_previous_grad(self):
+        #Compute prev stoc grad
+        self.previous_net_sgd.zero_grad() #grad = 0
+        prev_loss = self.partial_grad(self.previous_net_sgd)
+
+    '''
  

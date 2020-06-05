@@ -47,8 +47,10 @@ class FGSM(Optimizer):
         https://medium.com/the-artificial-impostor/sgd-implementation-in-pytorch-4115bcb9f02c
         https://github.com/facebookarchive/adversarial_image_defenses/blob/master/adversarial/lib/adversary.py
     """
-    def __init__(self, params, lr=required, iterT=required, mergeadam=False):
-        defaults = dict(lr=lr, mergeadam=mergeadam)
+    def __init__(self, params, lr=required, iterT=required, mergeadam=False, weight_decay=0):
+        if weight_decay < 0.0:
+            raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
+        defaults = dict(lr=lr, mergeadam=mergeadam, weight_decay=weight_decay)
         super(FGSM, self).__init__(params, defaults)
         self.iterT = iterT
     
@@ -78,7 +80,7 @@ class FGSM(Optimizer):
         
      
         for group in self.param_groups:
-
+            weight_decay = group['weight_decay']
             lr = group['lr']
 
             for p in group['params']:
