@@ -40,6 +40,7 @@ class Setting:
         """
         # self.result_dir = os.path.join("result", self.model.name, self.dataset.classname, "T"+str(self.model.T), self.opt.optimizer, str(self.opt.taskid))
         self.result_dir = os.path.join("result", self.model.name, self.dataset.name, "T"+str(self.model.T), self.opt.optimizer, str(self.opt.taskid))
+
         os.makedirs(self.result_dir, exist_ok=True)
         # if os.path.exists(self.result_dir):
         #     shutil.rmtree(self.result_dir)

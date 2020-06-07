@@ -5,6 +5,7 @@ import copy
 import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
+
 # --------------------------------------------------------
 # Frank-Wolfe algorithm 1
 # --------------------------------------------------------
@@ -20,11 +21,7 @@ class MultipleOptimizer(object):
         continue_Adam = self.optimizers[0].step(total_batches, first_chunk, last_chunk)
         if continue_Adam:
             self.optimizers[1].step()
-        # for op in self.optimizers:
-        #     try:
-        #         op.step(total_batches, first_chunk, last_chunk, sign_option)
-        #     except:
-        #         op.step()
+
 
  
 
@@ -35,10 +32,11 @@ class FGSM(Optimizer):
             parameter groups
         lr (float): learning rate (required)
         iterT (positive int): inner iteration
-        mergeadam (boolean, optional): whether to merge FGSM with Adam (default: False)
+        mergeadam (boolean, optional): whether to merge with Adam (default: False)
+        weight_decay (float optional): weight_decay coefficient
     Example:
         >>> from FGSM import *
-        >>> optimizer = FGSM(model.parameters(), lr=0.1, iter=3)
+        >>> optimizer = FGSM(model.parameters(), lr=0.1, iterT=1)
         >>> optimizer.step(total_batches)
  
     Reference: 
@@ -64,8 +62,9 @@ class FGSM(Optimizer):
         Arguments:
             total_batches: total batch number 
             first_chunk: is first_iter when not in tbptt, otherwise it's first chunk in inner iteration 
-            last_chunk: similar to first_chunk, for stand for last one
+            last_chunk: similar to first_chunk, stand for last one
         """
+      
         # Adam update only works in the last step after inner iteration
         continue_Adam = False
 

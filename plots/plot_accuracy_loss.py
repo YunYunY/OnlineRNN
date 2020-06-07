@@ -16,23 +16,33 @@ os.makedirs(img_dir, exist_ok=True)
 # -----------------------------------------------------------------------------------------------
 opt.taskid = 4
 d = "HAR_2"
-# task_dic = {0: ["VanillaRNN", "Adam", 1],
-#             1: ["TBPTT", "Adam", 1], 
-#             2: ["VanillaRNN", "FGSM_Adam", 1], 
-#             3: ["VanillaRNN", "FGSM_Adam", 5], 
-#             4: ["VanillaRNN", "FGSM_Adam", 10],
-#             5: ["TBPTT", "FGSM_Adam", 1]}
+# dname = "HAR_2"
+dname = "NoisyHAR_2"
 
-task_dic = {20: ["VanillaRNN", "Adam", 1],
-            21: ["TBPTT", "Adam", 1], 
-            22: ["VanillaRNN", "FGSM_Adam", 1], 
-            23: ["VanillaRNN", "FGSM_Adam", 5], 
-            24: ["VanillaRNN", "FGSM_Adam", 10],
-            25: ["TBPTT", "FGSM_Adam", 1],
-            26: ["TBPTT", "FGSM_Adam", 10]}
+if dname == "HAR_2":
+    task_dic = {0: ["VanillaRNN", "Adam", 1],
+                1: ["TBPTT", "Adam", 1], 
+                2: ["VanillaRNN", "FGSM_Adam", 1], 
+                3: ["VanillaRNN", "FGSM_Adam", 5], 
+                4: ["VanillaRNN", "FGSM_Adam", 10],
+                5: ["TBPTT", "FGSM_Adam", 1]}
+else:
+    task_dic = {20: ["VanillaRNN", "Adam", 1],
+                21: ["TBPTT", "Adam", 1], 
+                22: ["VanillaRNN", "FGSM_Adam", 1], 
+                23: ["VanillaRNN", "FGSM_Adam", 5], 
+                24: ["VanillaRNN", "FGSM_Adam", 10],
+                25: ["TBPTT", "FGSM_Adam", 1],
+                26: ["TBPTT", "FGSM_Adam", 10]}
 
-total_batches = 2900#11600
-total_epoch = 199
+plot_by = "batch"
+if plot_by == "batch":
+    total_batches = 11430 #11600
+    n_update_ = 1143-1
+    scale = 10 # every scale update read one data 
+    n_update = int(n_update_/scale)
+else:
+    total_epoch = 199
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -42,16 +52,18 @@ case_dir = {"losses": "Training Loss",
 
 def plot_multi_epoch():
     case = "losses" # "test_acc" # "losses"
-    # taskids = [0, 1, 2, 3, 4, 5]
-    taskids = [20, 21, 22, 23, 24, 26]
+    if dname == "HAR_2":
+        taskids = [0, 1, 2, 3, 4, 5]
+    else:
+        taskids = [20, 21, 22, 23, 24, 26]
 
     labels = ['SGD', 'TBPTT', 'Ours K=1', 'Ours K=5', 'Ours K=10', 'TBPTT+Ours']
-    colors = ['black', 'c', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
+    colors = ['black', 'deepskyblue', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
 
-    # colors = ['black', 'c', 'crimson', 'violet', 'mediumblue', 'lightsteelblue', 'darkorange']
+    # colors = ['black', 'c', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
 
-
-    epochs = range(0, total_epoch, 1)
+    if plot_by != "batch":
+        epochs = range(0, total_epoch, 1)
 
     str_ids = ''.join(map(str, taskids))
     imgname = d + "_" + str_ids + "_"+ case +".pdf"
@@ -62,45 +74,78 @@ def plot_multi_epoch():
     SIZE2 = 10
     SIZE3 = 18
     SIZE4 = 20
-
-    plt.xlabel("# Epochs", fontsize=SIZE4)
+    if plot_by == "batch":
+        # after times same as scale
+        plt.xlabel(r"# Updates ($1\times{10^1}$)", fontsize=SIZE4)
+    else:
+        plt.xlabel("# Epochs", fontsize=SIZE4)
     plt.ylabel(case_dir[case], fontsize=SIZE4)
-    # plt.title(f"{d}", fontsize=SIZE4)
-    # plt.title("Vanilla RNN, HAR-2, L=128", fontsize=SIZE4)
-    plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 
+    if dname == "HAR_2":
+        plt.title("Vanilla RNN, HAR-2, L=128", fontsize=SIZE4)
+    else:
+        plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 
-    plt.xticks(range(1, total_epoch+1, 20), range(0, total_epoch, 20), rotation="vertical", fontsize=SIZE3)
+    if plot_by == "batch":
+        plt.xticks(range(1, int(n_update_+1), 10), range(0, int(n_update_), 10), rotation="vertical", fontsize=SIZE3)
+    else:
+        plt.xticks(range(1, total_epoch+1, 20), range(0, total_epoch, 20), rotation="vertical", fontsize=SIZE3)
     plt.yticks(fontsize=SIZE3)
 
-    plt.xlim(xmin=0, xmax=total_epoch)
-    # plt.ylim(ymin=0., ymax=0.4)
-    plt.ylim(ymin=0.05, ymax=0.35)
+    if plot_by == "batch":
+        plt.xlim(xmin=0, xmax=n_update)
+    else:
+        plt.xlim(xmin=0, xmax=total_epoch)
+
+    if dname == "HAR_2":
+        plt.ylim(ymin=0., ymax=0.4)
+    else:
+        plt.ylim(ymin=0.05, ymax=0.4)
     # plt.ylim(ymin=50, ymax=90)
     # plt.ylim(ymin=50, ymax=95)
 
-    # plt.subplots_adjust(top = 0.99, bottom = 0.9, right = 1, left = 0.9, 
-    #         hspace = 0., wspace = 0.)
- 
+  
 
     for i, taskid in enumerate(taskids):
         m = task_dic[taskid][0]
         optimizer = task_dic[taskid][1]
         T = task_dic[taskid][2]
-            
+
+              
+        if plot_by == "batch":
+            if case == "losses":
+                epoch = T
+                epochs = []
+                while epoch < total_batches:
+                    epochs.append(epoch)
+                    epoch += scale* T
+
         data = []
         for epoch in epochs:
             if case == "losses":
-                file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
+                if plot_by == "batch":
+                    file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/batch_" + str(epoch) + "_losses.npz"
+                    one_data = np.load(file)["loss"]
+                else:
+                    file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
+                    one_data = np.load(file)[case]
             elif case == "test_acc":
                 file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
-            one_data = np.load(file)[case]
+                one_data = np.load(file)[case]
 
             data.append(one_data)
         print(max(data))
-        plt.plot(epochs, data, color=colors[i], label=labels[i], linewidth=2)
+        if plot_by == "batch":
+            xrange = [x for x in range(0, n_update, 1)]
+            plt.plot(xrange, data[0:n_update], color=colors[i], label=labels[i], linewidth=2)
+        else:
+            plt.plot(epochs, data, color=colors[i], label=labels[i], linewidth=2)
+
     if case == "losses":
-        plt.legend(loc=2, prop={'size': SIZE3})
+        if plot_by == "batch":
+            plt.legend(loc=1, prop={'size': SIZE3})
+        else:
+            plt.legend(loc=2, prop={'size': SIZE3})
     else:
         plt.legend(loc=4, prop={'size': SIZE3})
 

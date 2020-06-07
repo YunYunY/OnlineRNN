@@ -84,7 +84,8 @@ class TBPTT(VanillaRNN):
         
     def train(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
-
+        if self.total_batches >= 15000:
+            self.T = 5
         self.first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
         self.last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
         self.init_states() 
