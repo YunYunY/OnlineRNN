@@ -20,7 +20,7 @@ from onlinernn.models.setting import RNN
 
 torch.manual_seed(1024)
 np.random.seed(1024)
-torch.set_printoptions(precision=8)
+# torch.set_printoptions(precision=8)
 
 # -----------------------------------------------------------------------------------------------
 # Get training options
@@ -36,54 +36,24 @@ if not opt.istrain:
 
 opt.N_TRAIN  = 50000
 opt.N_TEST = 2000
-opt.seq_len = 100
-opt.iterT = 1
+opt.seq_len = 200
+opt.iterT = 10
 opt.predic_task = 'Logits'
 opt.test_batch = True
 
-if opt.taskid == 100:
+
+if opt.taskid == 0:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
 
-    opt.U_bound = 1.00695
     opt.optimizer = "Adam" #"FGSM_Adam"
-    opt.num_layers = 2
+    opt.num_layers = 1
     opt.hidden_size = 128
     opt.batch_size = 50
-    input_size = 1
     opt.lr = 2e-4
     opt.niter_decay = 0
     opt.lrgamma = 0.1
     opt.endless_train = False
-    opt.niter = 26
-    d = ADDING(opt)
-
-    # train and eval in every epoch 
-    if opt.eval_freq > 0 and opt.istrain:
-        opt.istrain = False
-        d_test = ADDING(opt)
-        opt.istrain = True
-    else:
-        d_test = None 
-    s = RNN(opt)
-    # m = VanillaRNN(opt)
-    m = IndRNN(opt)
-    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
-    p.run()
-
-
-if opt.taskid == 200:
-    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = "FGSM_Adam" 
-    opt.LSTM = True
-    opt.hidden_size = 128
-    opt.batch_size = 50 # 50
-    opt.lr = 1e-3
-    opt.niter_decay = 2
-    opt.lrgamma = 0.1
-    opt.endless_train = False
-    opt.niter = 18
-    opt.weight_decay = 1e-3
-
+    opt.niter = 100
     d = ADDING(opt)
 
     # train and eval in every epoch 
@@ -95,27 +65,159 @@ if opt.taskid == 200:
         d_test = None 
     s = RNN(opt)
     m = VanillaRNN(opt)
-    # m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
 
 
+if opt.taskid == 1:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+if opt.taskid == 2:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+if opt.taskid == 100:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+if opt.taskid == 101:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.seq_len = 200
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+if opt.taskid == 200:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
 
 
 if opt.taskid == 201:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.optimizer = "Adam" 
-    opt.LSTM = True
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
     opt.hidden_size = 128
-    opt.batch_size = 50 # 50
-    opt.lr = 1e-3
-    opt.niter_decay = 2
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
     opt.lrgamma = 0.1
     opt.endless_train = False
-    opt.niter = 18
-    opt.weight_decay = 1e-3
-
+    opt.niter = 100
     d = ADDING(opt)
 
     # train and eval in every epoch 
@@ -127,10 +229,205 @@ if opt.taskid == 201:
         d_test = None 
     s = RNN(opt)
     m = VanillaRNN(opt)
-    # m = TBPTT(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
+if opt.taskid == 202:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+if opt.taskid == 203:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.seq_len = 200
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+
+if opt.taskid == 300:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+if opt.taskid == 301:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+if opt.taskid == 302:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+if opt.taskid == 303:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.seq_len = 200
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+
+if opt.taskid == 400:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.seq_len = 200
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
 
 
 

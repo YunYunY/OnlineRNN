@@ -18,6 +18,7 @@ class HAR_2Dataset(Dataset):
         sigma = 0.4021651763839265
         # self.slice_interval = 8 
         # The first column is label
+    
         if istrain:
             datalabels = np.load(path + '/train.npy')
         else:

@@ -40,6 +40,7 @@ class ADDING(BaseDataset):
                 batch_size=self.batch_size,
                 shuffle=False,
                 num_workers=self.num_threads,
+                pin_memory=True
             )
      
 

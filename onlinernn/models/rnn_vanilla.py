@@ -6,7 +6,7 @@ import os
 import functools 
 import random
 import copy
-from onlinernn.models.networks import SimpleRNN, StepRNN, get_scheduler
+from onlinernn.models.networks import SimpleRNN, ODE_Vanilla, get_scheduler
 from onlinernn.models.base_model import BaseModel
 from onlinernn.models.indrnn_utils import clip_gradient
 
@@ -34,9 +34,8 @@ class VanillaRNN(BaseModel):
         """
         if self.model_method == "Vanilla":
             # self.rnn_model = SimpleRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
-            self.rnn_model = SimpleRNN(self.opt).to(self.device)
-        elif self.model_method == "StepRNN":
-            self.rnn_model = StepRNN(self.input_size, self.hidden_size, self.output_size).to(self.device)
+        #     self.rnn_model = SimpleRNN(self.opt).to(self.device)
+            self.rnn_model = ODE_Vanilla(self.opt).to(self.device)
 
         if self.opt.optimizer == 'SVRG':
             self.model_snapshot = copy.deepcopy(self.rnn_model)
@@ -88,7 +87,7 @@ class VanillaRNN(BaseModel):
             self.load_networks(load_prefix)
 
         self.print_networks(self.opt.verbose)
-    
+
     def update_learning_rate(self):
         """Update learning rates for all the networks; called at the end of every epoch"""
         if self.istrain and self.opt.niter_decay != 0:
@@ -123,6 +122,7 @@ class VanillaRNN(BaseModel):
                 if hasattr(state_dict, "_metadata"):
                     del state_dict._metadata
                 net.load_state_dict(state_dict)
+              
 
         for i, optimizer in enumerate(self.optimizers):
             load_filename = "%s_optimizer_T%s_optimizer_%s.pth" % (load_prefix, self.T, i)
@@ -135,16 +135,16 @@ class VanillaRNN(BaseModel):
             if hasattr(state_dict, "_metadata"):
                 del state_dict._metadata
             optimizer.load_state_dict(state_dict)
-        if self.opt.niter_decay != 0:
-            for i, scheduler in enumerate(self.schedulers):
-                load_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (load_prefix, self.T, i)
-                load_path = os.path.join(self.result_dir, load_filename)
-                print("loading the scheduler from %s" % load_path)
-                state_dict = torch.load(load_path, map_location=self.device)
+        # if self.opt.niter_decay != 0:
+        #     for i, scheduler in enumerate(self.schedulers):
+        #         load_filename = "%s_scheduler_T%s_scheduler_%s.pth" % (load_prefix, self.T, i)
+        #         load_path = os.path.join(self.result_dir, load_filename)
+        #         print("loading the scheduler from %s" % load_path)
+        #         state_dict = torch.load(load_path, map_location=self.device)
             
-                if hasattr(state_dict, "_metadata"):
-                    del state_dict._metadata
-                scheduler.load_state_dict(state_dict)
+        #         if hasattr(state_dict, "_metadata"):
+        #             del state_dict._metadata
+        #         scheduler.load_state_dict(state_dict)
     # ----------------------------------------------
     def set_test_input(self):
         self.set_input()
@@ -172,11 +172,14 @@ class VanillaRNN(BaseModel):
     def init_states(self):
       
 
-        if self.opt.predic_task in ['Logits']:
-            self.states = torch.FloatTensor(self.batch_size, self.num_layers, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
-        else:
-            self.states = torch.zeros((self.batch_size, self.num_layers, self.hidden_size)).to(self.device)
-    
+        # if self.opt.predic_task in ['Logits']:
+        #     self.states = torch.FloatTensor(self.batch_size, self.num_layers, self.seq_len, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
+        # else:
+        self.states = torch.zeros((self.batch_size, self.hidden_size)).to(self.device)
+
+        # self.states = torch.zeros((self.batch_size, self.seq_len, self.hidden_size)).to(self.device)
+        # self.states = torch.FloatTensor(self.batch_size, self.seq_len, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
+
     def track_grad_flow(self, named_parameters):
         # Reference: https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/7
   
@@ -220,10 +223,7 @@ class VanillaRNN(BaseModel):
         if self.model_method == "Vanilla":
             outputs, _ = self.rnn_model(self.inputs, self.states)
             self.outputs = outputs.to(self.device)
-        elif self.model_method == "StepRNN":
-            outputs, states, state_start, state_final  = self.rnn_model(self.inputs, self.states)
-            self.outputs, self.state_start, self.state_final = outputs.to(self.device), state_start.to(self.device), state_final.to(self.device)
-        
+
     def backward(self):
         """
         Backward path 
@@ -239,9 +239,11 @@ class VanillaRNN(BaseModel):
         self.forward()
         self.backward()
 
-        first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
-        last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
-        
+     
+        # first_iter = (self.total_batches-1)%self.T == 0 # if this is the first iter of inner loop
+        # last_iter = (self.total_batches-1)%self.T == (self.T-1) # if this is the last step of inner loop
+
+     
         '''
         if self.opt.global_u:
             #Backward
@@ -258,16 +260,17 @@ class VanillaRNN(BaseModel):
             # else:
             self.optimizer.step(self.total_batches)
         else:
+           
             if self.opt.clip_grad:
                 clip_gradient(self.rnn_model, self.gradientclip_value) 
         
             self.optimizer.step()
 
-        if last_iter:
+        # if last_iter:
             # After last iterT, track Delta w, loss and acc
             # self.track_grad_flow(self.rnn_model.named_parameters())
-            self.losses.append(self.loss.detach().item())
-            self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
+        self.losses.append(self.loss.detach().item())
+        self.train_acc.append(self.get_accuracy(self.outputs, self.labels, self.batch_size))
 
 
     def training_log(self, batch):
@@ -315,6 +318,12 @@ class VanillaRNN(BaseModel):
         return accuracy.item()
 
     def save_losses(self, epoch):
+        for name, param in self.rnn_model.named_parameters():
+            if param.requires_grad:
+                if 'alpha' in name or 'beta' in name or 'mu' in name or 'lr' in name:
+                    print(name)
+                    print(param.data)
+
         try:
             # calculate average loss for each batch and save
             self.losses = sum(self.losses) / len(self.losses)

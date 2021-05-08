@@ -1,5 +1,5 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=5
 
 # outfolder="stdoutHartune10"
 # task="HAR10"
@@ -7,15 +7,15 @@ export CUDA_VISIBLE_DEVICES=0
 # outfolder="Har"
 # task="HAR"
 
-outfolder="stdoutAdding1"
-task="Adding1"
+outfolder="stdoutAdding"
+task="Adding"
 # PixelTrain
 # outfolder="stdoutP1"
 # task="M"
 
 mkdir -p $outfolder
 
-for i in {910..910}
+for i in {400..400}
 
 do
     rm -f $outfolder/id${i}.txt

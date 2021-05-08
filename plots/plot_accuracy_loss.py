@@ -14,18 +14,24 @@ img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
-opt.taskid = 4
 d = "HAR_2"
-# dname = "HAR_2"
-dname = "NoisyHAR_2"
+dname = "HAR_2"
+# dname = "NoisyHAR_2"
 
 if dname == "HAR_2":
-    task_dic = {0: ["VanillaRNN", "Adam", 1],
-                1: ["TBPTT", "Adam", 1], 
-                2: ["VanillaRNN", "FGSM_Adam", 1], 
-                3: ["VanillaRNN", "FGSM_Adam", 5], 
-                4: ["VanillaRNN", "FGSM_Adam", 10],
-                5: ["TBPTT", "FGSM_Adam", 1]}
+    task_dic = {100: ["VanillaRNN", "Adam", 1],
+                102: ["VanillaRNN", "Adam", 2], 
+                103: ["VanillaRNN", "Adam", 1], 
+                104: ["VanillaRNN", "Adam", 1], 
+                110: ["VanillaRNN", "Adam", 1], 
+                203: ["VanillaRNN", "Adam", 1], 
+                205: ["VanillaRNN", "Adam", 2], 
+                206: ["VanillaRNN", "Adam", 2], 
+                214: ["VanillaRNN", "Adam", 2], 
+                304: ["VanillaRNN", "Adam", 1],
+                305: ["VanillaRNN", "Adam", 2],
+                306: ["VanillaRNN", "Adam", 1],
+                314: ["VanillaRNN", "Adam", 1],}
 else:
     task_dic = {20: ["VanillaRNN", "Adam", 1],
                 21: ["TBPTT", "Adam", 1], 
@@ -35,29 +41,33 @@ else:
                 25: ["TBPTT", "FGSM_Adam", 1],
                 26: ["TBPTT", "FGSM_Adam", 10]}
 
-plot_by = "batch"
+plot_by = "epoch"
 if plot_by == "batch":
     total_batches = 11430 #11600
     n_update_ = 1143-1
     scale = 10 # every scale update read one data 
     n_update = int(n_update_/scale)
 else:
-    total_epoch = 199
+    total_epoch = 90 # 199
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
 # -----------------------------------------------------------------------------------------------
 case_dir = {"losses": "Training Loss", 
-            "test_acc": "Test Accuracy"}
+            "test_acc": "Test Accuracy, \eta 1e-2", 
+            "train_acc": "Train Accuracy"}
 
 def plot_multi_epoch():
-    case = "losses" # "test_acc" # "losses"
+    case = "test_acc" # "test_acc" # "losses"
     if dname == "HAR_2":
-        taskids = [0, 1, 2, 3, 4, 5]
+        # taskids = [100, 102, 203, 205, 304, 305]
+        taskids = [110, 214, 314]
+        # taskids = [105, 207, 307]
+
     else:
         taskids = [20, 21, 22, 23, 24, 26]
 
-    labels = ['SGD', 'TBPTT', 'Ours K=1', 'Ours K=5', 'Ours K=10', 'TBPTT+Ours']
+    labels = ['GD', 'HB', 'NAG', 'HB K=S=1', 'HB K=S=2', 'NAG K=S=1', 'HB K=S=2']
     colors = ['black', 'deepskyblue', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
 
     # colors = ['black', 'c', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
@@ -66,7 +76,7 @@ def plot_multi_epoch():
         epochs = range(0, total_epoch, 1)
 
     str_ids = ''.join(map(str, taskids))
-    imgname = d + "_" + str_ids + "_"+ case +".pdf"
+    imgname = d + "_" + str_ids + "_"+ case +".png"
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
@@ -82,7 +92,7 @@ def plot_multi_epoch():
     plt.ylabel(case_dir[case], fontsize=SIZE4)
 
     if dname == "HAR_2":
-        plt.title("Vanilla RNN, HAR-2, L=128", fontsize=SIZE4)
+        plt.title("RNN, HAR-2, L=128", fontsize=SIZE4)
     else:
         plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 
@@ -102,7 +112,7 @@ def plot_multi_epoch():
     else:
         plt.ylim(ymin=0.05, ymax=0.4)
     # plt.ylim(ymin=50, ymax=90)
-    # plt.ylim(ymin=50, ymax=95)
+    plt.ylim(ymin=50, ymax=100)
 
   
 
@@ -129,8 +139,12 @@ def plot_multi_epoch():
                 else:
                     file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
                     one_data = np.load(file)[case]
+
             elif case == "test_acc":
                 file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_test_acc.npz"
+                one_data = np.load(file)[case]
+            elif case == "train_acc":
+                file = os.path.join(result_dir, m, d, "T"+str(T)) + "/" + optimizer + "/" + str(taskid) + "/loss_acc/epoch_" + str(epoch) + "_losses_train_acc.npz"
                 one_data = np.load(file)[case]
 
             data.append(one_data)
