@@ -143,7 +143,8 @@ class F_cell(nn.Module):
         # self.gamma = nn.Parameter(torch.Tensor([0.99]))
         # self.m = nn.Softmax(dim=0)
         # self.m_input = nn.Parameter(torch.randn(3))
-       
+
+        self.b = nn.Parameter(torch.Tensor(self.output_size))
         stdv = 1.0 / math.sqrt(output_size)
 
         self.weight_matrix_h = nn.Parameter(torch.Tensor(output_size,output_size))
@@ -154,11 +155,13 @@ class F_cell(nn.Module):
 
 
       
-    # def forward(self,xt,ht):
-    def forward(self, xt, ht, t, grad2):
+    def forward(self,xt,ht,hl=None):
+    # def forward(self, xt, ht, t, grad2):
         # m_out = self.m(self.m_input)
-     
-        phi = F.relu(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x))
+        if not hl:
+            hl = torch.zeros_like(ht)
+        ht = ht + hl
+        phi = F.relu(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
         ones = torch.ones_like(phi)
         zeros = torch.zeros_like(phi)
         phi_act = torch.where(phi>0, ones, zeros)
@@ -193,17 +196,16 @@ class F_cell(nn.Module):
 
         #NAG
         # grad = torch.squeeze(torch.matmul(torch.matmul(phi_p, self.weight_matrix_h), phi.view(phi.shape[0], phi.shape[1], 1)))
-        first_term = self.alpha * eye_phi - torch.matmul(phi_p, self.weight_matrix_h)
-        grad = torch.squeeze(torch.matmul(first_term, (self.alpha * ht - phi).view(phi.shape[0], phi.shape[1], 1)))
+        st = self.alpha * eye_phi - torch.matmul(phi_p, self.weight_matrix_h)
+        grad = torch.squeeze(torch.matmul(st, (self.alpha * ht - phi).view(phi.shape[0], phi.shape[1], 1)))
      
-        if t != 1:   
-            grad2 = grad2 * (t-1)/t + 1/t * torch.matmul(first_term.permute(0, 2, 1), first_term)    
-        else:
-            grad2 = 1/t * torch.matmul(first_term.permute(0, 2, 1), first_term)    
+        # if t != 1:   
+        #     grad2 = grad2 * (t-1)/t + 1/t * torch.matmul(first_term.permute(0, 2, 1), first_term)    
+        # else:
+        #     grad2 = 1/t * torch.matmul(first_term.permute(0, 2, 1), first_term)    
 
-            
-        return grad, grad2
-        # return grad
+        # return grad, grad2
+        return grad
 
 
 """
@@ -239,6 +241,10 @@ class F_cell(nn.Module):
         return F
 """
 
+
+            
+   
+
 class ODE_Vanilla(SimpleRNN):
     def __init__(self, opt):
         super(ODE_Vanilla, self).__init__(opt)
@@ -247,12 +253,12 @@ class ODE_Vanilla(SimpleRNN):
         self._betaInit = 3.0
         self.K = self.iterT
         self.S = self.iterT + 1
+        self.level = 2
         self.mu = nn.Parameter(torch.Tensor([0.99]))
         # self.mu = 0.99
 
         # self.gradient_cell = F_cell(self.S, self.input_size, self.hidden_size)
         self.gradient_cell = F_cell(self.input_size, self.hidden_size, self.device)
-
         # self.alpha = nn.Parameter(self._alphaInit * torch.ones([1, 1]))
         # self.alpha = 0.001
         # self.beta = nn.Parameter(self._betaInit * torch.ones([1, 1]))        
@@ -288,6 +294,7 @@ class ODE_Vanilla(SimpleRNN):
         #     self.out.append(hidden)
 
         #######GD#######
+
         '''
         for i in range(X.shape[0]):
             for k in range(self.K):
@@ -295,10 +302,15 @@ class ODE_Vanilla(SimpleRNN):
             self.out.append(hidden)
         
         '''
+        for l in range(self.level):
+            self.out = []
+            for i in range(X.shape[0]):
+                if l == 0:
+                    hidden = hidden - self.lr * self.gradient_cell(X[i], hidden, self.out[i])
+                else:
+                    hidden = hidden - self.lr * self.gradient_cell(X[i], hidden)
+                self.out.append(hidden)
         
-        # for i in range(X.shape[0]):
-        #     hidden = hidden - self.lr * self.gradient_cell(X[i], hidden)
-        #     self.out.append(hidden)
         
 
         
