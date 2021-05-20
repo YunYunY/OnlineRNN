@@ -175,8 +175,9 @@ class VanillaRNN(BaseModel):
         # if self.opt.predic_task in ['Logits']:
         #     self.states = torch.FloatTensor(self.batch_size, self.num_layers, self.seq_len, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
         # else:
-        self.states = torch.zeros((self.batch_size, self.hidden_size)).to(self.device)
-
+        # self.states = torch.zeros((self.batch_size, self.hidden_size)).to(self.device)
+        self.states = torch.zeros((self.T+1, self.batch_size, self.hidden_size)).to(self.device)
+       
         # self.states = torch.zeros((self.batch_size, self.seq_len, self.hidden_size)).to(self.device)
         # self.states = torch.FloatTensor(self.batch_size, self.seq_len, self.hidden_size).uniform_(-self.init_state_C, self.init_state_C).to(self.device)
 
