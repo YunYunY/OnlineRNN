@@ -1,7 +1,6 @@
 import math
 import torch
 from torch.optim.optimizer import Optimizer, required
-# I am testing
 
 class Adam(Optimizer):
     r"""Implements Adam algorithm.

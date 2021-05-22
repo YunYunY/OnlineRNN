@@ -64,8 +64,8 @@ class Setting:
         self.model = model
         # setup dataset
         self.dataset = dataset
-       
         self.dataset_test = dataset_test
+     
         # setup model
         self.model.dataname = self.dataset.name
         self.model.trainsize = len(self.dataset)

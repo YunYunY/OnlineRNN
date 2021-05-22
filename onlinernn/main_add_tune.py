@@ -16,11 +16,11 @@ from onlinernn.models.rnn_ind import IndRNN
 from onlinernn.models.setting import RNN
 
 torch.autograd.set_detect_anomaly(True)
-# torch.manual_seed(42)
-# np.random.seed(42)
+torch.manual_seed(42)
+np.random.seed(42)
 
-torch.manual_seed(1024)
-np.random.seed(1024)
+# torch.manual_seed(1024)
+# np.random.seed(1024)
 # torch.set_printoptions(precision=8)
 
 # -----------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ if not opt.istrain:
 opt.N_TRAIN  = 50000
 opt.N_TEST = 2000
 opt.seq_len = 200
-opt.iterT = 3
+opt.iterT = 1
 opt.predic_task = 'Logits'
 opt.test_batch = True
 
@@ -631,6 +631,62 @@ if opt.taskid == 400:
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
 
+
+
+if opt.taskid == 500:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.seq_len = 200
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
+
+if opt.taskid == 501:
+    print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+
+    opt.optimizer = "Adam" #"FGSM_Adam"
+    opt.seq_len = 1000
+    opt.num_layers = 1
+    opt.hidden_size = 128
+    opt.batch_size = 50
+    opt.lr = 2e-4
+    opt.niter_decay = 0
+    opt.lrgamma = 0.1
+    opt.endless_train = False
+    opt.niter = 100
+    d = ADDING(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = ADDING(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
 
 
 if opt.taskid == 1000:
