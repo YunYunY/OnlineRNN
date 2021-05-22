@@ -152,6 +152,7 @@ class F_cell(nn.Module):
         # self.alpha = nn.Parameter(self._alphaInit * torch.ones([1, 1]))
 
         # self.eta = nn.Parameter(torch.Tensor([0.99]))
+        # self.alpha = 1.
         self.alpha = nn.Parameter(torch.Tensor([0.]))
         # self.beta = nn.Parameter(torch.Tensor([0.99]))
         # self.gamma = nn.Parameter(torch.Tensor([0.99]))
@@ -192,23 +193,30 @@ class F_cell(nn.Module):
         #     hl = torch.zeros_like(ht)
         # ht = ht + hl
         
-        phi = F.relu(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
+        # phi = -1. * torch.matmul(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b, self.weight_matrix_h)
+
+        phi = F.tanh(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
+        # phi = F.relu(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
         # phi = F.relu(torch.matmul(ht+hl,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
 
         # phi = F.relu(torch.matmul(hidden1,self.weight_matrix_h)+torch.matmul(xt2,self.weight_matrix_x) + self.b)
         # Ft = self.alpha * hidden2 - phi
         # Ft = hidden2 - phi
 
-        ones = torch.ones_like(phi)
-        zeros = torch.zeros_like(phi)
-        phi_act = torch.where(phi>0, ones, zeros)
         # derivative of relu
+        # ones = torch.ones_like(phi)
+        # zeros = torch.zeros_like(phi)
+        # phi_act = torch.where(phi>0, ones, zeros)
+        
+        # derivative of tanh
+        phi_act = 1 - torch.square(phi) 
         phi_p = torch.diag_embed(phi_act)
        
         # create identity matrix in the same size of phi_p
         eye_phi = torch.eye(self.output_size, device = self.device)
         eye_phi = eye_phi.reshape((1, self.output_size, self.output_size))
         eye_phi = eye_phi.repeat(ht.shape[0], 1, 1)
+
         # eye_phi = eye_phi.repeat(ht.shape[1], 1, 1)
 
         '''
@@ -237,6 +245,7 @@ class F_cell(nn.Module):
 
         st = self.alpha * eye_phi - torch.matmul(phi_p, self.weight_matrix_h)
         grad = torch.squeeze(torch.matmul(st, (self.alpha * ht - phi).view(phi.shape[0], phi.shape[1], 1)))
+       
         # grad = torch.squeeze(torch.matmul(st, (self.alpha * ht[m_id].clone() - phi).view(phi.shape[0], phi.shape[1], 1)))
         
         # cycle
@@ -261,6 +270,10 @@ class F_cell(nn.Module):
 
         # return grad1, grad2
 
+        # phi[phi < 0] = 0
+        # phi = self.alpha * phi / torch.linalg.norm(phi)
+        # return phi 
+        
         return grad
 
 
@@ -349,6 +362,11 @@ class ODE_Vanilla(SimpleRNN):
 
         #     # hidden = (1- torch.sigmoid(self.alpha))*hidden +  torch.sigmoid(self.alpha)* self.gradient_cell(X[i], hidden)
         #     self.out.append(hidden)
+        
+        ######FW######
+        # for i in range(X.shape[0]):
+        #     hidden = (1-self.lr) * hidden + self.lr * self.gradient_cell(X[i], hidden)
+        #     self.out.append(hidden)
 
 
         ######Segements######
@@ -398,10 +416,9 @@ class ODE_Vanilla(SimpleRNN):
             self.out.append(hidden)
         
         '''
-        for i in range(X.shape[0]):
-       
-            hidden = hidden - self.lr * self.gradient_cell(X[i], hidden)
-            self.out.append(hidden)
+        # for i in range(X.shape[0]):
+        #     hidden = hidden - self.lr * self.gradient_cell(X[i], hidden)
+        #     self.out.append(hidden)
 
 
         # for l in range(self.level):
@@ -432,6 +449,12 @@ class ODE_Vanilla(SimpleRNN):
         #         hidden = hidden + hidden_t
         #         self.out_new.append(hidden)
         #     self.out = self.out_new
+
+        # hidden_t = torch.zeros((batch_size, self.hidden_size)).to(self.device)
+        # for i in range(X.shape[0]):
+        #     hidden_t = self.mu * hidden_t - self.lr * (hidden - self.gradient_cell(X[i], hidden))
+        #     hidden = hidden + hidden_t
+        #     self.out.append(hidden)
 
 
         # hidden_t = torch.zeros((batch_size, self.hidden_size)).to(self.device)
@@ -479,13 +502,20 @@ class ODE_Vanilla(SimpleRNN):
         #     self.out = self.out_new  
 
 
+        hidden_t = torch.zeros((batch_size, self.hidden_size)).to(self.device)
+        for i in range(X.shape[0]):
+            hidden_t_previous = hidden_t
+            hidden_t = hidden - self.lr * self.gradient_cell(X[i], hidden)
+            hidden = hidden_t + self.mu * (hidden_t - hidden_t_previous)
+            self.out.append(hidden)     
+        
+
         # hidden_t = torch.zeros((batch_size, self.hidden_size)).to(self.device)
         # for i in range(X.shape[0]):
         #     hidden_t_previous = hidden_t
-        #     hidden_t = hidden - self.lr * self.gradient_cell(X[i], hidden)
+        #     hidden_t = (1 - self.lr) * hidden + self.lr * self.gradient_cell(X[i], hidden)
         #     hidden = hidden_t + self.mu * (hidden_t - hidden_t_previous)
-        #     self.out.append(hidden)     
-        
+        #     self.out.append(hidden)      
 
         '''
         #######NAG eq.8#######

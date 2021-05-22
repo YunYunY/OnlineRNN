@@ -8,7 +8,7 @@ import random
 import copy
 from onlinernn.models.networks import SimpleRNN, ODE_Vanilla, get_scheduler
 from onlinernn.models.base_model import BaseModel
-from onlinernn.models.indrnn_utils import clip_gradient
+from onlinernn.models.indrnn_utils import clip_gradient, clip_weight
 
 class VanillaRNN(BaseModel):
     def __init__(self, opt):
@@ -265,6 +265,7 @@ class VanillaRNN(BaseModel):
             if self.opt.clip_grad:
                 clip_gradient(self.rnn_model, self.gradientclip_value) 
         
+            # clip_weight(self.rnn_model, 0, 1e-3, 'alpha')
             self.optimizer.step()
 
         # if last_iter:

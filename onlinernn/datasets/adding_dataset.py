@@ -15,10 +15,10 @@ class Adding_Dataset(Dataset):
         self.transform = transform
         X, Y = generate_add_task_data(N_SAMPLES, N_TIMESTEPS)
       
-        print(X.shape)
-        print(Y.shape)
-        np.savez("./Adding1000.npz", X=X, Y=Y)
-        exit(0)
+        # print(X.shape)
+        # print(Y.shape)
+        # np.savez("./Adding1000.npz", X=X, Y=Y)
+        # exit(0)
         if istrain:
             self.data, self.labels = X[:N_TRAIN], Y[:N_TRAIN]
         else:

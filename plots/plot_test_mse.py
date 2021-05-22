@@ -18,7 +18,7 @@ d = "ADDING"
 
 # taskids = [402, 906, 706]
 # taskids = [804, 809, 810, 811, 812, 813]
-taskids = [501]
+taskids = [500]
 
 task_dic = {500: ["Adam", 1, "VanillaRNN"],
             501: ["Adam", 1, "VanillaRNN"],
@@ -43,7 +43,7 @@ task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
 
 '''
 # total_batch = 100000
-total_batch = 2000
+total_batch = 5000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
