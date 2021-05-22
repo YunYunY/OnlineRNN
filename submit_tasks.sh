@@ -1,5 +1,5 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=6
+export CUDA_VISIBLE_DEVICES=5
 
 # outfolder="stdoutHartune10"
 # task="HAR10"
@@ -15,7 +15,7 @@ task="Adding"
 
 mkdir -p $outfolder
 
-for i in {701..701}
+for i in {1101..1101}
 
 do
     rm -f $outfolder/id${i}.txt

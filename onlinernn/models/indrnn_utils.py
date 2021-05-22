@@ -30,10 +30,13 @@ def clip_weight(RNNmodel, clip_l, clip_h, pname):
     for name, param in RNNmodel.named_parameters():
         # if 'weight_hh' in name:
         if pname in name:
+            w = param.data
+            w[w < clip_l] = clip_l
+            param.data = w
             # param.data.clamp_(-clip,clip)
-            param.data.clamp_(clip_l, clip_h)
+            # param.data.clamp_(clip_l, clip_h)
+   
 
-    
 def clip_gradient(model, clip):
     for p in model.parameters():   
         if p.grad is None:

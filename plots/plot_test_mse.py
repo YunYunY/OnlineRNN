@@ -18,14 +18,14 @@ d = "ADDING"
 
 # taskids = [402, 906, 706]
 # taskids = [804, 809, 810, 811, 812, 813]
-taskids = [500]
+taskids = [500, 600, 700]
 
 task_dic = {500: ["Adam", 1, "VanillaRNN"],
-            501: ["Adam", 1, "VanillaRNN"],
-            1002: ["Adam", 1, "VanillaRNN"],
-            215: ["Adam", 10, "VanillaRNN"],
-            316: ["Adam", 10, "VanillaRNN"],
-            301: ["Adam", 10, "VanillaRNN"],
+            801: ["Adam", 1, "VanillaRNN"],
+            600: ["Adam", 1, "VanillaRNN"],
+            601: ["Adam", 1, "VanillaRNN"],
+            700: ["Adam", 1, "VanillaRNN"],
+            701: ["Adam", 1, "VanillaRNN"],
             315: ["Adam", 10, "VanillaRNN"],
             3151: ["Adam", 10, "VanillaRNN"]}
 
@@ -43,7 +43,7 @@ task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
 
 '''
 # total_batch = 100000
-total_batch = 5000
+total_batch = 15000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -53,7 +53,11 @@ case_dir = {"losses": "Training Loss",
 
 
 def plot_multi_batch():
-    labels = ['SGD1', 'SGD2', 'HB1', 'HB2', 'NAG1', 'NAG2']
+    labels = ['SGDrelu', 'HBrelu', 'NAGrelu']
+
+    # labels = ['SGDtanh', 'HBtanh', 'NAGtanh']
+    # labels = ['FW', 'FW learned \alpha = max(1e-3, \alpha)']
+    # labels = ['HB', 'NAG']
     # labels = ['GD', 'HB \mu 0.5', 'NAG \mu 0.5', 'HB \mu 0.99', 'NAG \mu 0.99', 'HB \mu 0.048', 'NAG \mu 0.3']
     # labels = ['K=5', 'Decay K to 10 after 15000 batches', 'Decay K to 5 after 15000 batches', 'Decay K to 10 after 10000 batches']
     colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet',]

@@ -265,7 +265,8 @@ class VanillaRNN(BaseModel):
             if self.opt.clip_grad:
                 clip_gradient(self.rnn_model, self.gradientclip_value) 
         
-            # clip_weight(self.rnn_model, 0, 1e-3, 'alpha')
+            # clip_weight(self.rnn_model, 1e-3, 1e-3, 'alpha')
+
             self.optimizer.step()
 
         # if last_iter:
@@ -325,7 +326,6 @@ class VanillaRNN(BaseModel):
                 if 'alpha' in name or 'beta' in name or 'mu' in name or 'lr' in name:
                     print(name)
                     print(param.data)
-
         try:
             # calculate average loss for each batch and save
             self.losses = sum(self.losses) / len(self.losses)

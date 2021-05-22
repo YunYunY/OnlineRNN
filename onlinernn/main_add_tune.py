@@ -719,7 +719,7 @@ if opt.taskid == 600:
 
 
 
-if opt.taskid == 601:
+if opt.taskid == 602:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
 
     opt.optimizer = "Adam" #"FGSM_Adam"
@@ -745,6 +745,8 @@ if opt.taskid == 601:
     m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
 
 
 if opt.taskid == 700:
@@ -775,7 +777,7 @@ if opt.taskid == 700:
     p.run()
 
 
-if opt.taskid == 701:
+if opt.taskid == 702:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
 
     opt.optimizer = "Adam" #"FGSM_Adam"
@@ -862,7 +864,7 @@ if opt.taskid == 801:
 
 
 
-if opt.taskid == 900:
+if opt.taskid == 901:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
 
     opt.optimizer = "Adam" #"FGSM_Adam"
@@ -980,7 +982,7 @@ if opt.taskid == 1002:
 
 
 
-if opt.taskid == 1100:
+if opt.taskid == 1101:
     opt.iterT = 1
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
 
