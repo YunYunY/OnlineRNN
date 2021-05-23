@@ -662,9 +662,10 @@ if opt.taskid == 500:
 
 
 
-if opt.taskid == 501:
+if opt.taskid == 503:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-
+    opt.meta = 1
+    opt.task = 'GD'
     opt.optimizer = "Adam" #"FGSM_Adam"
     opt.seq_len = 200
     opt.num_layers = 1
@@ -719,9 +720,10 @@ if opt.taskid == 600:
 
 
 
-if opt.taskid == 602:
+if opt.taskid == 603:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-
+    opt.meta = 1
+    opt.task = 'HB'
     opt.optimizer = "Adam" #"FGSM_Adam"
     opt.seq_len = 200
     opt.num_layers = 1
@@ -777,9 +779,10 @@ if opt.taskid == 700:
     p.run()
 
 
-if opt.taskid == 702:
+if opt.taskid == 703:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-
+    opt.meta = 1
+    opt.task = 'NAG'
     opt.optimizer = "Adam" #"FGSM_Adam"
     opt.seq_len = 200
     opt.num_layers = 1
@@ -835,9 +838,10 @@ if opt.taskid == 800:
 
 
 
-if opt.taskid == 801:
+if opt.taskid == 803:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-
+    opt.meta = 2
+    opt.task = 'GD'
     opt.optimizer = "Adam" #"FGSM_Adam"
     opt.seq_len = 200
     opt.num_layers = 1
@@ -864,9 +868,10 @@ if opt.taskid == 801:
 
 
 
-if opt.taskid == 901:
+if opt.taskid == 903:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-
+    opt.meta = 2
+    opt.task = 'HB'
     opt.optimizer = "Adam" #"FGSM_Adam"
     opt.seq_len = 200
     opt.num_layers = 1
@@ -982,7 +987,9 @@ if opt.taskid == 1002:
 
 
 
-if opt.taskid == 1101:
+if opt.taskid == 1103:
+    opt.meta = 2
+    opt.task = 'NAG'
     opt.iterT = 1
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
 

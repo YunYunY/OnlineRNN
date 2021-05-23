@@ -18,14 +18,16 @@ d = "ADDING"
 
 # taskids = [402, 906, 706]
 # taskids = [804, 809, 810, 811, 812, 813]
-taskids = [500, 600, 700]
+# taskids = [500, 602, 702]
+taskids = [803, 903, 1103]
 
-task_dic = {500: ["Adam", 1, "VanillaRNN"],
-            801: ["Adam", 1, "VanillaRNN"],
-            600: ["Adam", 1, "VanillaRNN"],
-            601: ["Adam", 1, "VanillaRNN"],
-            700: ["Adam", 1, "VanillaRNN"],
-            701: ["Adam", 1, "VanillaRNN"],
+
+task_dic = {503: ["Adam", 1, "VanillaRNN"],
+            803: ["Adam", 1, "VanillaRNN"],
+            603: ["Adam", 1, "VanillaRNN"],
+            903: ["Adam", 1, "VanillaRNN"],
+            703: ["Adam", 1, "VanillaRNN"],
+            1103: ["Adam", 1, "VanillaRNN"],
             315: ["Adam", 10, "VanillaRNN"],
             3151: ["Adam", 10, "VanillaRNN"]}
 
@@ -43,7 +45,7 @@ task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
 
 '''
 # total_batch = 100000
-total_batch = 15000
+total_batch = 8000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -53,17 +55,17 @@ case_dir = {"losses": "Training Loss",
 
 
 def plot_multi_batch():
-    labels = ['SGDrelu', 'HBrelu', 'NAGrelu']
+    # labels = ['SGDrelu', 'HBrelu', 'NAGrelu']
 
     # labels = ['SGDtanh', 'HBtanh', 'NAGtanh']
-    # labels = ['FW', 'FW learned \alpha = max(1e-3, \alpha)']
+    labels = ['GD', 'HB', 'NAG']
     # labels = ['HB', 'NAG']
     # labels = ['GD', 'HB \mu 0.5', 'NAG \mu 0.5', 'HB \mu 0.99', 'NAG \mu 0.99', 'HB \mu 0.048', 'NAG \mu 0.3']
     # labels = ['K=5', 'Decay K to 10 after 15000 batches', 'Decay K to 5 after 15000 batches', 'Decay K to 10 after 10000 batches']
     colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet',]
 
 
-    batches = range(9, total_batch, 500)
+    batches = range(9, total_batch, 100)
     # batches = range(2, total_batch, 600)
 
     
@@ -78,11 +80,11 @@ def plot_multi_batch():
     SIZE3 = 18
     SIZE4 = 20
 
-    plt.xlabel(r"# Training Steps ($5\times{10^3}$)", fontsize=SIZE4)
+    plt.xlabel(r"# Training Steps ($1\times{10^3}$)", fontsize=SIZE4)
     plt.ylabel("Training MSE", fontsize=SIZE4)
     # plt.title("VanillaRNN, Adding Task, L=100", fontsize=SIZE4)
-    plt.title("Adding Task, L=200", fontsize=SIZE4)
-    plt.xticks(range(1, total_batch+1, 5000), range(0, int(total_batch/5000), 1), rotation="vertical", fontsize=SIZE3)
+    plt.title("meta-RNN-2, Adding Task, L=200", fontsize=SIZE4)
+    plt.xticks(range(1, total_batch+1, 1000), range(0, int(total_batch/1000), 1), rotation="vertical", fontsize=SIZE3)
 
     # plt.xticks(range(1, total_batch+1, 2000), range(0, total_batch, 2000), rotation="vertical", fontsize=SIZE3)
     plt.yticks(fontsize=SIZE3)

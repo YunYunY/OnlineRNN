@@ -32,6 +32,7 @@ class BaseModel(ABC):
         self.T = opt.iterT
         self.gradientclip_value = opt.gradclipvalue
         self.device = opt.device
+        self.meta = opt.meta
     # ----------------------------------------------
     @classmethod
     def class_name(cls):

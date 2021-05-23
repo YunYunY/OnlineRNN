@@ -26,16 +26,26 @@ def set_bn_train(m):
     if classname.find('BatchNorm') != -1:
       m.train()   
 
-def clip_weight(RNNmodel, clip_l, clip_h, pname):
+def clip_weight(RNNmodel, meta):
     for name, param in RNNmodel.named_parameters():
         # if 'weight_hh' in name:
-        if pname in name:
+        if 'mu' in name:
             w = param.data
-            w[w < clip_l] = clip_l
+            w[w < 0.5] = 0.5
             param.data = w
-            # param.data.clamp_(-clip,clip)
-            # param.data.clamp_(clip_l, clip_h)
-   
+
+        if 'lr' in name:
+            w = param.data
+            w[w < 1e-3] = 1e-3
+            param.data = w
+        
+        if meta == 2:
+            if 'alpha' in name: 
+                w = param.data
+                w[w < 1e-3] = 1e-3
+                param.data = w
+          
+
 
 def clip_gradient(model, clip):
     for p in model.parameters():   

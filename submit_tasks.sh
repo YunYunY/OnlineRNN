@@ -15,7 +15,7 @@ task="Adding"
 
 mkdir -p $outfolder
 
-for i in {1101..1101}
+for i in {1103..1103}
 
 do
     rm -f $outfolder/id${i}.txt
