@@ -130,24 +130,30 @@ class StepRNN(SimpleRNN):
 # -------------------------------------------------------
           
 
+
 class F_cell(nn.Module):     
-    def __init__(self, input_size, output_size, device, meta):
+    def __init__(self, input_size, output_size, device, meta, sparse):
         super(F_cell, self).__init__()
         self.output_size = output_size
         self.input_size = input_size
         self.device = device
         self.meta = meta
+        self.sparse = sparse
         # self._alphaInit = -3.0
         # self.alpha = nn.Parameter(self._alphaInit * torch.ones([1, 1]))
 
         # self.alpha = 1.
         self.alpha = nn.Parameter(torch.Tensor([0.]))
-        
+
         # self.m = nn.Softmax(dim=0)
         # self.m_input = nn.Parameter(torch.randn(3))
 
         self.b = nn.Parameter(torch.Tensor(self.output_size))
-        self.weight_matrix_h = nn.Parameter(torch.Tensor(output_size,output_size))
+        if self.sparse:
+            self.weight_matrix_h = nn.Parameter(torch.Tensor([0.]))
+        else:
+            self.weight_matrix_h = nn.Parameter(torch.Tensor(output_size,output_size))
+
         self.weight_matrix_x = nn.Parameter(torch.Tensor(input_size,output_size))
 
 
@@ -168,9 +174,11 @@ class F_cell(nn.Module):
    
 
         if self.meta == 1:
-          
-            phi = F.relu(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
-
+            if self.sparse:
+                phi = F.relu(ht*self.weight_matrix_h+torch.matmul(xt,self.weight_matrix_x) + self.b)
+            else:
+                phi = F.relu(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b)
+            
             # derivative of relu
             ones = torch.ones_like(phi)
             zeros = torch.zeros_like(phi)
@@ -185,15 +193,38 @@ class F_cell(nn.Module):
             eye_phi = eye_phi.reshape((1, self.output_size, self.output_size))
             eye_phi = eye_phi.repeat(ht.shape[0], 1, 1)
 
-            st = self.alpha * eye_phi - torch.matmul(phi_p, self.weight_matrix_h)
+            if self.sparse:
+                st = self.alpha * eye_phi - phi_p*self.weight_matrix_h
+            else:
+                st = self.alpha * eye_phi - torch.matmul(phi_p, self.weight_matrix_h)
+
             grad = torch.squeeze(torch.matmul(st, (self.alpha * ht - phi).view(phi.shape[0], phi.shape[1], 1)))
         
         if self.meta == 2:
             # FW
+            '''
             phi = -1. * torch.matmul(torch.matmul(ht,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b, self.weight_matrix_h)
             phi[phi < 0] = 0
             grad = ht - self.alpha * phi / (1e-6 + torch.linalg.norm(phi))
-        
+            '''
+            # h
+            # ht[ht > 80] = 80
+            # ht[ht < -10000] = -10000
+            print(ht.max())
+            print(ht.min())
+            phi = torch.exp(ht)
+            phi_p = phi 
+            '''
+            phi = F.relu(ht)
+            # derivative of relu
+            ones = torch.ones_like(phi)
+            zeros = torch.zeros_like(phi)
+            phi_p = torch.where(phi>0, ones, zeros)
+            '''
+
+            st = torch.matmul(torch.matmul(phi,self.weight_matrix_h)+torch.matmul(xt,self.weight_matrix_x) + self.b, self.weight_matrix_h)
+            grad = st * phi_p
+            # print(phi)
         return grad
 
         
@@ -214,7 +245,7 @@ class ODE_Vanilla(SimpleRNN):
         self.mu = nn.Parameter(torch.Tensor([0.5]))
         # self.mu = 0.99
 
-        self.gradient_cell = F_cell(self.input_size, self.hidden_size, self.device, opt.meta)
+        self.gradient_cell = F_cell(self.input_size, self.hidden_size, self.device, opt.meta, opt.sparse)
         # self.alpha = nn.Parameter(self._alphaInit * torch.ones([1, 1]))
   
         stdv = 1.0 / math.sqrt(self.hidden_size)

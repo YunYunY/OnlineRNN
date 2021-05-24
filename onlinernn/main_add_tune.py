@@ -662,7 +662,7 @@ if opt.taskid == 500:
 
 
 
-if opt.taskid == 503:
+if opt.taskid == 504:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.meta = 1
     opt.task = 'GD'
@@ -720,7 +720,7 @@ if opt.taskid == 600:
 
 
 
-if opt.taskid == 603:
+if opt.taskid == 604:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.meta = 1
     opt.task = 'HB'
@@ -779,7 +779,7 @@ if opt.taskid == 700:
     p.run()
 
 
-if opt.taskid == 703:
+if opt.taskid == 704:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.meta = 1
     opt.task = 'NAG'
@@ -838,7 +838,7 @@ if opt.taskid == 800:
 
 
 
-if opt.taskid == 803:
+if opt.taskid == 805:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.meta = 2
     opt.task = 'GD'
@@ -868,7 +868,7 @@ if opt.taskid == 803:
 
 
 
-if opt.taskid == 903:
+if opt.taskid == 905:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.meta = 2
     opt.task = 'HB'
@@ -987,7 +987,7 @@ if opt.taskid == 1002:
 
 
 
-if opt.taskid == 1103:
+if opt.taskid == 1105:
     opt.meta = 2
     opt.task = 'NAG'
     opt.iterT = 1

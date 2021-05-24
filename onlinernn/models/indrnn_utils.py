@@ -39,11 +39,11 @@ def clip_weight(RNNmodel, meta):
             w[w < 1e-3] = 1e-3
             param.data = w
         
-        if meta == 2:
-            if 'alpha' in name: 
-                w = param.data
-                w[w < 1e-3] = 1e-3
-                param.data = w
+        # if meta == 2:
+        #     if 'alpha' in name: 
+        #         w = param.data
+        #         w[w < 1e-3] = 1e-3
+        #         param.data = w
           
 
 

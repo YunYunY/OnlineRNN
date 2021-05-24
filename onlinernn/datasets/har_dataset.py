@@ -16,14 +16,18 @@ class HAR_2Dataset(Dataset):
         # Normalization to Zero Mean and Unit Standard Deviation
         mu = 0.10206605722975093
         sigma = 0.4021651763839265
+
+        # stat of test data
         # self.slice_interval = 8 
         # The first column is label
-    
+      
         if istrain:
             datalabels = np.load(path + '/train.npy')
+            # datalabels = datalabels[0:3000, :]
         else:
             datalabels = np.load(path + '/test.npy')
 
+      
         self.data = (datalabels[:, 1:] - mu) / sigma
         # print(self.data[0], sep='\n')
 
@@ -52,6 +56,7 @@ class HAR_2Dataset(Dataset):
         # else:
 
         data, target = torch.Tensor(self.data[index]).view(128, 9), torch.Tensor(self.labels[index]).long()
+
         if self.transform:
             data = self.transform(data)
         return data, target

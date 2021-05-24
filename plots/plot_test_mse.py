@@ -19,15 +19,15 @@ d = "ADDING"
 # taskids = [402, 906, 706]
 # taskids = [804, 809, 810, 811, 812, 813]
 # taskids = [500, 602, 702]
-taskids = [803, 903, 1103]
+taskids = [504, 604, 704]
 
 
-task_dic = {503: ["Adam", 1, "VanillaRNN"],
-            803: ["Adam", 1, "VanillaRNN"],
-            603: ["Adam", 1, "VanillaRNN"],
-            903: ["Adam", 1, "VanillaRNN"],
-            703: ["Adam", 1, "VanillaRNN"],
-            1103: ["Adam", 1, "VanillaRNN"],
+task_dic = {504: ["Adam", 1, "VanillaRNN"],
+            804: ["Adam", 1, "VanillaRNN"],
+            604: ["Adam", 1, "VanillaRNN"],
+            904: ["Adam", 1, "VanillaRNN"],
+            704: ["Adam", 1, "VanillaRNN"],
+            1104: ["Adam", 1, "VanillaRNN"],
             315: ["Adam", 10, "VanillaRNN"],
             3151: ["Adam", 10, "VanillaRNN"]}
 
@@ -45,7 +45,7 @@ task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
 
 '''
 # total_batch = 100000
-total_batch = 8000
+total_batch = 10000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -65,7 +65,7 @@ def plot_multi_batch():
     colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet',]
 
 
-    batches = range(9, total_batch, 100)
+    batches = range(9, total_batch, 500)
     # batches = range(2, total_batch, 600)
 
     
@@ -80,11 +80,11 @@ def plot_multi_batch():
     SIZE3 = 18
     SIZE4 = 20
 
-    plt.xlabel(r"# Training Steps ($1\times{10^3}$)", fontsize=SIZE4)
+    plt.xlabel(r"# Training Steps ($5\times{10^3}$)", fontsize=SIZE4)
     plt.ylabel("Training MSE", fontsize=SIZE4)
     # plt.title("VanillaRNN, Adding Task, L=100", fontsize=SIZE4)
-    plt.title("meta-RNN-2, Adding Task, L=200", fontsize=SIZE4)
-    plt.xticks(range(1, total_batch+1, 1000), range(0, int(total_batch/1000), 1), rotation="vertical", fontsize=SIZE3)
+    plt.title("meta-RNN-1, Adding Task, L=200", fontsize=SIZE4)
+    plt.xticks(range(1, total_batch+1, 5000), range(0, int(total_batch/5000), 1), rotation="vertical", fontsize=SIZE3)
 
     # plt.xticks(range(1, total_batch+1, 2000), range(0, total_batch, 2000), rotation="vertical", fontsize=SIZE3)
     plt.yticks(fontsize=SIZE3)
