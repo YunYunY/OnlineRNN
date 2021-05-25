@@ -19,13 +19,13 @@ dname = "HAR_2"
 # dname = "NoisyHAR_2"
 
 if dname == "HAR_2":
-    task_dic = {100: ["VanillaRNN", "Adam", 1],
-                102: ["VanillaRNN", "Adam", 2], 
-                103: ["VanillaRNN", "Adam", 1], 
+    task_dic = {1021: ["VanillaRNN", "Adam", 1],
+                102: ["VanillaRNN", "Adam", 1], 
+                101: ["VanillaRNN", "Adam", 1], 
                 104: ["VanillaRNN", "Adam", 1], 
                 110: ["VanillaRNN", "Adam", 1], 
-                203: ["VanillaRNN", "Adam", 1], 
-                205: ["VanillaRNN", "Adam", 2], 
+                2021: ["VanillaRNN", "Adam", 1], 
+                3021: ["VanillaRNN", "Adam", 1], 
                 206: ["VanillaRNN", "Adam", 2], 
                 214: ["VanillaRNN", "Adam", 2], 
                 304: ["VanillaRNN", "Adam", 1],
@@ -48,26 +48,26 @@ if plot_by == "batch":
     scale = 10 # every scale update read one data 
     n_update = int(n_update_/scale)
 else:
-    total_epoch = 90 # 199
+    total_epoch = 195 # 199
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
 # -----------------------------------------------------------------------------------------------
 case_dir = {"losses": "Training Loss", 
-            "test_acc": "Test Accuracy, \eta 1e-2", 
+            "test_acc": "Test Accuracy", 
             "train_acc": "Train Accuracy"}
 
 def plot_multi_epoch():
     case = "test_acc" # "test_acc" # "losses"
     if dname == "HAR_2":
         # taskids = [100, 102, 203, 205, 304, 305]
-        taskids = [110, 214, 314]
+        taskids = [1021, 2021, 3021]
         # taskids = [105, 207, 307]
 
     else:
         taskids = [20, 21, 22, 23, 24, 26]
 
-    labels = ['GD', 'HB', 'NAG', 'HB K=S=1', 'HB K=S=2', 'NAG K=S=1', 'HB K=S=2']
+    labels = ['SGD', 'SHB', 'SNAG', 'HB K=S=1', 'HB K=S=2', 'NAG K=S=1', 'HB K=S=2']
     colors = ['black', 'deepskyblue', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
 
     # colors = ['black', 'c', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
@@ -92,7 +92,7 @@ def plot_multi_epoch():
     plt.ylabel(case_dir[case], fontsize=SIZE4)
 
     if dname == "HAR_2":
-        plt.title("RNN, HAR-2, L=128", fontsize=SIZE4)
+        plt.title("RNN, HAR-2, L=128, 10%", fontsize=SIZE4)
     else:
         plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 
@@ -108,11 +108,14 @@ def plot_multi_epoch():
         plt.xlim(xmin=0, xmax=total_epoch)
 
     if dname == "HAR_2":
-        plt.ylim(ymin=0., ymax=0.4)
+        if case == "losses":
+            plt.ylim(ymin=0., ymax=0.4)
+        else:
+            plt.ylim(ymin=50, ymax=100)
+
     else:
         plt.ylim(ymin=0.05, ymax=0.4)
     # plt.ylim(ymin=50, ymax=90)
-    plt.ylim(ymin=50, ymax=100)
 
   
 

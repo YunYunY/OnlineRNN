@@ -26,24 +26,35 @@ def set_bn_train(m):
     if classname.find('BatchNorm') != -1:
       m.train()   
 
-def clip_weight(RNNmodel, meta):
+def clip_weight(RNNmodel, meta, device):
     for name, param in RNNmodel.named_parameters():
         # if 'weight_hh' in name:
         if 'mu' in name:
             w = param.data
             w[w < 0.5] = 0.5
+            w[w > 0.99] = 0.99
             param.data = w
+        # \eta = max( 1e-4, min( 1e-3, \eta ))
 
         if 'lr' in name:
             w = param.data
-            w[w < 1e-3] = 1e-3
+            w = max( 1e-4, min( 1e-3, w ))
+            # w[w < 1e-3] = 1e-3
+            # w[w > 1] = 1
+            w = torch.Tensor([w]).to(device)
             param.data = w
-        
+
+        # if 'lr' in name:
+        #     w = param.data
+        #     w[w < 1e-3] = 1e-3
+        #     w[w > 1] = 1
+        #     param.data = w
         # if meta == 2:
-        #     if 'alpha' in name: 
-        #         w = param.data
-        #         w[w < 1e-3] = 1e-3
-        #         param.data = w
+        # if 'alpha' in name: 
+        #     w = param.data
+        #     w[w < -1] = -1
+        #     w[w > 1] = 1
+        #     param.data = w
           
 
 

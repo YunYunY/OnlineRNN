@@ -265,7 +265,7 @@ class VanillaRNN(BaseModel):
             if self.opt.clip_grad:
                 clip_gradient(self.rnn_model, self.gradientclip_value) 
         
-            clip_weight(self.rnn_model, self.meta)
+            clip_weight(self.rnn_model, self.meta, self.device)
 
             self.optimizer.step()
 

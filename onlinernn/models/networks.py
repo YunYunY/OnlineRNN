@@ -243,7 +243,8 @@ class ODE_Vanilla(SimpleRNN):
         self._betaInit = 3.0
         self.task = opt.task
         self.mu = nn.Parameter(torch.Tensor([0.5]))
-        # self.mu = 0.99
+
+        # self.mu = 0.5
 
         self.gradient_cell = F_cell(self.input_size, self.hidden_size, self.device, opt.meta, opt.sparse)
         # self.alpha = nn.Parameter(self._alphaInit * torch.ones([1, 1]))

@@ -23,7 +23,11 @@ class HAR_2Dataset(Dataset):
       
         if istrain:
             datalabels = np.load(path + '/train.npy')
-            # datalabels = datalabels[0:3000, :]
+            ntotal = datalabels.shape[0]
+            ratio = 0.1 
+            nsample = int(ntotal*ratio)
+          
+            datalabels = datalabels[0:nsample, :]
         else:
             datalabels = np.load(path + '/test.npy')
 
@@ -32,6 +36,7 @@ class HAR_2Dataset(Dataset):
         # print(self.data[0], sep='\n')
 
         self.labels = datalabels[:, 0:1]
+        
         # print(np.unique(datalabels[:, 0]))
      
         

@@ -1,5 +1,5 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=2
 
 
 outfolder="Har"
@@ -13,7 +13,7 @@ task="HAR"
 
 mkdir -p $outfolder
 
-for i in {201..201}
+for i in {3021..3021}
 
 do
     rm -f $outfolder/id${i}.txt
