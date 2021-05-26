@@ -662,13 +662,13 @@ if opt.taskid == 500:
 
 
 
-if opt.taskid == 5043:
+if opt.taskid == 5044:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.sparse = True
     opt.meta = 1
     opt.task = 'GD'
     opt.optimizer = "Adam" #"FGSM_Adam"
-    opt.seq_len = 500
+    opt.seq_len = 1000
     opt.num_layers = 1
     opt.hidden_size = 128
     opt.batch_size = 50
@@ -721,13 +721,13 @@ if opt.taskid == 600:
 
 
 
-if opt.taskid == 6043:
+if opt.taskid == 6044:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.sparse = True
     opt.meta = 1
     opt.task = 'HB'
     opt.optimizer = "Adam" #"FGSM_Adam"
-    opt.seq_len = 500
+    opt.seq_len = 1000
     opt.num_layers = 1
     opt.hidden_size = 128
     opt.batch_size = 50
@@ -781,13 +781,13 @@ if opt.taskid == 700:
     p.run()
 
 
-if opt.taskid == 7043 :
+if opt.taskid == 7044 :
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
     opt.sparse = True
     opt.meta = 1
     opt.task = 'NAG'
     opt.optimizer = "Adam" #"FGSM_Adam"
-    opt.seq_len = 500
+    opt.seq_len = 1000
     opt.num_layers = 1
     opt.hidden_size = 128
     opt.batch_size = 50
