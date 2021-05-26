@@ -3,6 +3,7 @@ import numpy as np
 from onlinernn.options.train_options import TrainOptions
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
+import pickle
 
 opt = TrainOptions().parse()
 
@@ -13,20 +14,37 @@ epoch = "latest"
 img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
+
 # -----------------------------------------------------------------------------------------------
 d = "ADDING"
+seq = 100
+
+baseline = True
+if baseline:
+    baselines = ['fastrnn', 'lipchiz']
+    result_baseline = result_dir + "baseline/"
+
+    def load_baseline(dir):
+        with open(result_baseline + 'result_' + str(dir) + '_' + str(seq) +'.pkl', 'rb') as f:
+            Bdata = pickle.load(f)
+            Btrain_loss = Bdata['train_loss']
+            # Btest_loss = Bdata['test_loss']
+        return Btrain_loss
+
+  
+    
 
 # taskids = [402, 906, 706]
 # taskids = [804, 809, 810, 811, 812, 813]
 # taskids = [500, 602, 702]
-taskids = [503, 5032]
-
-
-task_dic = {503: ["Adam", 1, "VanillaRNN"],
+taskids = [5031, 6031, 7031]
+# taskids = []
+ 
+task_dic = {5031: ["Adam", 1, "VanillaRNN"],
             5032: ["Adam", 1, "VanillaRNN"],
-            604: ["Adam", 1, "VanillaRNN"],
+            6031: ["Adam", 1, "VanillaRNN"],
             904: ["Adam", 1, "VanillaRNN"],
-            704: ["Adam", 1, "VanillaRNN"],
+            7031: ["Adam", 1, "VanillaRNN"],
             1104: ["Adam", 1, "VanillaRNN"],
             315: ["Adam", 10, "VanillaRNN"],
             3151: ["Adam", 10, "VanillaRNN"]}
@@ -45,7 +63,7 @@ task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
 
 '''
 # total_batch = 100000
-total_batch = 1000
+total_batch = 10000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -57,16 +75,16 @@ case_dir = {"losses": "Training Loss",
 def plot_multi_batch():
     # labels = ['SGDrelu', 'HBrelu', 'NAGrelu']
 
-    # labels = ['SGDtanh', 'HBtanh', 'NAGtanh']
-    labels = ['GD', 'HB', 'NAG']
+    # labels = ['FastRNN', 'LipschitzRNN']
+    labels = ['SGD', 'SHB', 'SNAG', 'FastRNN', 'LipschitzRNN']
     # labels = ['HB', 'NAG']
     # labels = ['GD', 'HB \mu 0.5', 'NAG \mu 0.5', 'HB \mu 0.99', 'NAG \mu 0.99', 'HB \mu 0.048', 'NAG \mu 0.3']
     # labels = ['K=5', 'Decay K to 10 after 15000 batches', 'Decay K to 5 after 15000 batches', 'Decay K to 10 after 10000 batches']
     colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet',]
 
 
-    batches = range(9, total_batch, 10)
-    # batches = range(2, total_batch, 600)
+    # batches = range(9, total_batch, 10)
+    batches = range(9, total_batch, 100)
 
     
     str_ids = ''.join(map(str, taskids))
@@ -83,10 +101,10 @@ def plot_multi_batch():
     plt.xlabel(r"# Training Steps ($5\times{10^3}$)", fontsize=SIZE4)
     plt.ylabel("Training MSE", fontsize=SIZE4)
     # plt.title("VanillaRNN, Adding Task, L=100", fontsize=SIZE4)
-    plt.title("meta-RNN-1, Adding Task, L=200", fontsize=SIZE4)
+    plt.title("meta-RNN-dense, Adding Task, L=100", fontsize=SIZE4)
     plt.xticks(range(1, total_batch+1, 5000), range(0, int(total_batch/5000), 1), rotation="vertical", fontsize=SIZE3)
 
-    # plt.xticks(range(1, total_batch+1, 2000), range(0, total_batch, 2000), rotation="vertical", fontsize=SIZE3)
+    # plt.xticks(range(1, total_batch+1, 5000), range(0, total_batch, 5000), rotation="vertical", fontsize=SIZE3)
     plt.yticks(fontsize=SIZE3)
 
     plt.xlim(xmin=0, xmax=total_batch)
@@ -115,6 +133,20 @@ def plot_multi_batch():
             data.append(one_data)
         print(max(data))
         plt.plot(batches, data, color=colors[i], label=labels[i])
+
+    if baseline:
+        i = i + 1
+        for j, b in enumerate(baselines):
+       
+            # fast_loss = load_baseline('fastrnn')
+            # Lipschitz_loss = load_baseline('lipchiz')
+            b_loss = load_baseline(b)
+            data = []
+            for batch in batches:
+                print(batch)
+                data.append(b_loss[batch])
+            plt.plot(batches, data, color=colors[i], label=labels[i])
+            i += 1
     plt.legend(loc=1, prop={'size': SIZE3})
 
     plt.savefig(img_dir + "/" + imgname, bbox_inches='tight')
