@@ -117,6 +117,7 @@ class RNN(Setting):
             # Forward, backward, update network weights
             self.model.train() 
             # Save gradients
+            
             if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
                 self.model.training_log(self.model.total_batches)
             if self.opt.test_batch:

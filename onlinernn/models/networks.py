@@ -261,7 +261,7 @@ class ODE_Vanilla(SimpleRNN):
 
 
     def forward(self, X, hidden):
-       
+      
         batch_size = X.shape[0]
         seq_len = X.shape[1]
         # transforms X to dimensions: x: (seq_len, batch, input_size) 
