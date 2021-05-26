@@ -15,6 +15,7 @@ class BaseDataset(ABC):
         self._n_class = opt.n_class
         self.download = opt.download_data
         self.shuffle = opt.shuffle
+       
 
     # ----------------------------------------------
     @classmethod

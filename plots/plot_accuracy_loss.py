@@ -19,13 +19,13 @@ dname = "HAR_2"
 # dname = "NoisyHAR_2"
 
 if dname == "HAR_2":
-    task_dic = {1021: ["VanillaRNN", "Adam", 1],
+    task_dic = {1027: ["VanillaRNN", "Adam", 1],
                 102: ["VanillaRNN", "Adam", 1], 
                 101: ["VanillaRNN", "Adam", 1], 
                 104: ["VanillaRNN", "Adam", 1], 
                 110: ["VanillaRNN", "Adam", 1], 
-                2021: ["VanillaRNN", "Adam", 1], 
-                3021: ["VanillaRNN", "Adam", 1], 
+                2027: ["VanillaRNN", "Adam", 1], 
+                3027: ["VanillaRNN", "Adam", 1], 
                 206: ["VanillaRNN", "Adam", 2], 
                 214: ["VanillaRNN", "Adam", 2], 
                 304: ["VanillaRNN", "Adam", 1],
@@ -48,7 +48,7 @@ if plot_by == "batch":
     scale = 10 # every scale update read one data 
     n_update = int(n_update_/scale)
 else:
-    total_epoch = 195 # 199
+    total_epoch = 160 # 199
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -58,10 +58,10 @@ case_dir = {"losses": "Training Loss",
             "train_acc": "Train Accuracy"}
 
 def plot_multi_epoch():
-    case = "test_acc" # "test_acc" # "losses"
+    case = "losses" # "test_acc" # "losses"
     if dname == "HAR_2":
         # taskids = [100, 102, 203, 205, 304, 305]
-        taskids = [1021, 2021, 3021]
+        taskids = [1027, 2027, 3027]
         # taskids = [105, 207, 307]
 
     else:
@@ -92,7 +92,7 @@ def plot_multi_epoch():
     plt.ylabel(case_dir[case], fontsize=SIZE4)
 
     if dname == "HAR_2":
-        plt.title("RNN, HAR-2, L=128, 10%", fontsize=SIZE4)
+        plt.title("RNN, HAR-2, L=128, 1%", fontsize=SIZE4)
     else:
         plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 

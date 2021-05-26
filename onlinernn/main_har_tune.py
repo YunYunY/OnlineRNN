@@ -14,8 +14,8 @@ from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.models.rnn_ind import IndRNN
 from onlinernn.models.setting import RNN
 
-torch.manual_seed(42)
-np.random.seed(42)
+# torch.manual_seed(42)
+# np.random.seed(42)
 torch.set_printoptions(precision=8)
 """
 The script supports continue/resume training. Use '--continue_train' to resume your previous training.
@@ -107,9 +107,9 @@ if opt.taskid == 1017:
 
 
 
-if opt.taskid == 1021:
+if opt.taskid == 10333:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.sparse = False
+    opt.sparse = True
     opt.meta = 1
     opt.task = 'GD'
     opt.optimizer = "Adam"
@@ -118,8 +118,8 @@ if opt.taskid == 1021:
     # opt.lr = 1e-3
     opt.lr = 1e-2
     opt.endless_train = False
-    opt.niter = 99
-    opt.niter_decay = 200
+    opt.niter = 199
+    opt.niter_decay = 0
     opt.lrgamma = 0.1
     d = HAR_2(opt)
 
@@ -226,9 +226,9 @@ if opt.taskid == 200:
     p.run()
 
 
-if opt.taskid == 2021:
+if opt.taskid == 20333:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.sparse = False
+    opt.sparse = True
     opt.meta = 1
     opt.task = 'HB'
     opt.optimizer = "Adam"
@@ -237,8 +237,8 @@ if opt.taskid == 2021:
     # opt.lr = 1e-3
     opt.lr = 1e-2
     opt.endless_train = False
-    opt.niter = 99
-    opt.niter_decay = 200
+    opt.niter = 199
+    opt.niter_decay = 0
     opt.lrgamma = 0.1
     d = HAR_2(opt)
 
@@ -381,9 +381,9 @@ if opt.taskid == 3017:
 
 
 
-if opt.taskid == 3021:
+if opt.taskid == 30333:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
-    opt.sparse = False
+    opt.sparse = True
     opt.meta = 1
     opt.task = 'NAG'
     opt.optimizer = "Adam"
@@ -392,8 +392,8 @@ if opt.taskid == 3021:
     # opt.lr = 1e-3
     opt.lr = 1e-2
     opt.endless_train = False
-    opt.niter = 99
-    opt.niter_decay = 200
+    opt.niter = 199
+    opt.niter_decay = 0
     opt.lrgamma = 0.1
     d = HAR_2(opt)
 

@@ -8,7 +8,7 @@ class BaseOptions:
         self.initialized = False
 
     def initialize(self, parser):
-        torch.manual_seed(42)
+        # torch.manual_seed(42)
 
         # -------------------------------------------------------
         # basic parameters

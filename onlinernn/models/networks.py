@@ -243,8 +243,7 @@ class ODE_Vanilla(SimpleRNN):
         self._betaInit = 3.0
         self.task = opt.task
         self.mu = nn.Parameter(torch.Tensor([0.5]))
-
-        # self.mu = 0.5
+        # self.mu = 0.1
 
         self.gradient_cell = F_cell(self.input_size, self.hidden_size, self.device, opt.meta, opt.sparse)
         # self.alpha = nn.Parameter(self._alphaInit * torch.ones([1, 1]))
@@ -262,7 +261,7 @@ class ODE_Vanilla(SimpleRNN):
 
 
     def forward(self, X, hidden):
-
+       
         batch_size = X.shape[0]
         seq_len = X.shape[1]
         # transforms X to dimensions: x: (seq_len, batch, input_size) 

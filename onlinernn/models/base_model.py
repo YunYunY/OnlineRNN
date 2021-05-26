@@ -55,8 +55,8 @@ class BaseModel(ABC):
             self.optimizer_snapshot = SVRG_Snapshot(self.model_snapshot.parameters())
         elif self.opt.optimizer == 'Adam':
             # self.optimizer = Adam(self.rnn_model.parameters(), lr=self.lr)
-            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=1e-4)
-            # self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
+            # self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr, weight_decay=1e-4)
+            self.optimizer = torch.optim.Adam(self.rnn_model.parameters(), lr=self.lr)
         elif self.opt.optimizer == 'SGD':
             self.optimizer = torch.optim.SGD(self.rnn_model.parameters(), lr=self.lr)
         elif self.opt.optimizer == 'RMSprop':

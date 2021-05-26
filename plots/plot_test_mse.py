@@ -19,11 +19,11 @@ d = "ADDING"
 # taskids = [402, 906, 706]
 # taskids = [804, 809, 810, 811, 812, 813]
 # taskids = [500, 602, 702]
-taskids = [504, 604, 704]
+taskids = [503, 5032]
 
 
-task_dic = {504: ["Adam", 1, "VanillaRNN"],
-            804: ["Adam", 1, "VanillaRNN"],
+task_dic = {503: ["Adam", 1, "VanillaRNN"],
+            5032: ["Adam", 1, "VanillaRNN"],
             604: ["Adam", 1, "VanillaRNN"],
             904: ["Adam", 1, "VanillaRNN"],
             704: ["Adam", 1, "VanillaRNN"],
@@ -45,7 +45,7 @@ task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
 
 '''
 # total_batch = 100000
-total_batch = 10000
+total_batch = 1000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -65,7 +65,7 @@ def plot_multi_batch():
     colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet',]
 
 
-    batches = range(9, total_batch, 500)
+    batches = range(9, total_batch, 10)
     # batches = range(2, total_batch, 600)
 
     
