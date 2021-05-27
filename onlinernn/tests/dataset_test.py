@@ -116,15 +116,19 @@ def test_cifar():
 
     d = CIFARNoise(opt)
     batch = next(iter(d.dataloader))
+    print(batch[0].shape)
+ 
     # print(d.dataset.data.min())
-    print(batch[0][:][:, :, :, 0].mean())
-    # print(batch[0][:][:, :, :, 1].std())
     # print(batch[0][:][:, :, :, 2].std())
     # for i in range(3):
     #     print(d.dataset.data[:, :, :, i].mean()/255)
     #     print(d.dataset.data[:, :, :, i].std()/255)
 
-    data = batch[0][:64, :, 0:40, :]
+    data = batch[0][:64, :, :]
+    data = data.reshape(-1, 32, 3, 32)
+    data = data.permute(0, 2, 1, 3)
+    
+
     result_dir = "result/dataset_test/CIFARNoise"
     os.makedirs(result_dir, exist_ok=True)
     # visually check image after shifting
@@ -134,17 +138,17 @@ def test_cifar():
 
 
 
-def test_mnistpadnoise():
-    d = MNISTPadNoise(opt)
-    batch = next(iter(d.dataloader))
-    print(batch[0][:64].mean())
-    print(batch[0][:64].std())
-    data = batch[0][:64, :, 0:30, :]
-    print(data.shape)
-    result_dir = "result/dataset_test/MNISTNoise"
-    os.makedirs(result_dir, exist_ok=True)
-    # visually check image after shifting
-    show_shift(data, 8, result_dir, "MNISTNoise.png")
+# def test_mnistpadnoise():
+#     d = MNISTPadNoise(opt)
+#     batch = next(iter(d.dataloader))
+#     print(batch[0][:64].mean())
+#     print(batch[0][:64].std())
+#     data = batch[0][:64, :, 0:30, :]
+#     print(data.shape)
+#     result_dir = "result/dataset_test/MNISTNoise"
+#     os.makedirs(result_dir, exist_ok=True)
+#     # visually check image after shifting
+#     show_shift(data, 8, result_dir, "MNISTNoise.png")
 
 '''
 

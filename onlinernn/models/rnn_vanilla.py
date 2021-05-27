@@ -9,6 +9,7 @@ import copy
 from onlinernn.models.networks import SimpleRNN, ODE_Vanilla, get_scheduler
 from onlinernn.models.base_model import BaseModel
 from onlinernn.models.indrnn_utils import clip_gradient, clip_weight
+from onlinernn.tests.test_utils import show_shift
 
 class VanillaRNN(BaseModel):
     def __init__(self, opt):
@@ -151,6 +152,21 @@ class VanillaRNN(BaseModel):
 
     def set_input(self):
         self.inputs, self.labels = self.data
+        if self.add_noise:
+            
+            noise = torch.randn((self.inputs.shape[0], self.seq_len, self.inputs.shape[2])) * 1. + 0.
+            noise[:, 0: self.inputs.shape[1], :] =  self.inputs
+            self.inputs = noise
+        # data = noise
+        # data = data[:, 0:40, :]
+        # data = data.reshape(-1, 40, 3, 32)
+        # data = data.permute(0, 2, 1, 3)
+    
+        # result_dir = "result/dataset_test/CIFARNoise"
+        # os.makedirs(result_dir, exist_ok=True)
+        # # visually check image after shifting
+        # show_shift(data, 8, result_dir, "CIFARNoise.png")
+        # exit(0)
         self.inputs = self.inputs.view(-1, self.seq_len, self.input_size).to(self.device)
         self.batch_size = self.labels.shape[0]  # update batch 
         self.labels = self.labels.view(-1).to(self.device)

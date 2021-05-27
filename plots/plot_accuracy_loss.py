@@ -3,6 +3,9 @@ import numpy as np
 from onlinernn.options.train_options import TrainOptions
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
+import matplotlib
+import pickle
+matplotlib.rcParams['pdf.fonttype'] = 42
 
 opt = TrainOptions().parse()
 
@@ -14,6 +17,30 @@ img_dir = os.path.join(result_dir, "final_plots", epoch)
 os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
+baseline = True # plot with baseline models
+
+if baseline:
+
+    # baselines = ['fastrnn', 'lipchiz', 'irnn', 'momentumrnn', 'rnn']
+    baselines = ['fastrnn', 'irnn', 'lipchiz', 'rnn']
+
+    result_baseline = result_dir + "baseline/"
+
+    def load_baseline(dir, test_acc):
+        with open(result_baseline + 'har_result_' + str(dir) + '.pkl', 'rb') as f:
+            Bdata = pickle.load(f)
+            
+            Btrain_loss = Bdata['train_loss']
+            Btest_acc = Bdata['test_acc']
+            print(Btest_acc)
+            exit(0)
+        if test_acc:
+            return Btest_acc
+        else:
+            return Btrain_loss
+
+load_baseline('fastrnn', True)
+
 d = "HAR_2"
 dname = "HAR_2"
 # dname = "NoisyHAR_2"

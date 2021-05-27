@@ -4,6 +4,8 @@ from onlinernn.options.train_options import TrainOptions
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import pickle
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
 
 opt = TrainOptions().parse()
 
@@ -17,11 +19,13 @@ os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
 d = "ADDING"
-seq = 100
 
-baseline = True
+baseline = True # plot with baseline models
 if baseline:
-    baselines = ['fastrnn', 'lipchiz']
+
+    # baselines = ['fastrnn', 'lipchiz', 'irnn', 'momentumrnn', 'rnn']
+    baselines = ['fastrnn', 'lipchiz', 'rnn']
+
     result_baseline = result_dir + "baseline/"
 
     def load_baseline(dir):
@@ -32,38 +36,30 @@ if baseline:
         return Btrain_loss
 
   
-    
+seq = 100
 
-# taskids = [402, 906, 706]
-# taskids = [804, 809, 810, 811, 812, 813]
-# taskids = [500, 602, 702]
-taskids = [5031, 6031, 7031]
+# 100
+taskids = [5031, 5041, 6031, 6041, 7031, 7041]
+# 200
+# taskids = [5032, 5042, 6032, 6042, 7032, 7042]
+# 500
+# taskids = [5033, 5043, 6033, 6043, 7033, 7043]
+# 1000
+# taskids = []
+nexp = len(taskids)
+
 # taskids = []
  
 task_dic = {5031: ["Adam", 1, "VanillaRNN"],
-            5032: ["Adam", 1, "VanillaRNN"],
+            5041: ["Adam", 1, "VanillaRNN"],
             6031: ["Adam", 1, "VanillaRNN"],
-            904: ["Adam", 1, "VanillaRNN"],
+            6041: ["Adam", 1, "VanillaRNN"],
             7031: ["Adam", 1, "VanillaRNN"],
-            1104: ["Adam", 1, "VanillaRNN"],
-            315: ["Adam", 10, "VanillaRNN"],
-            3151: ["Adam", 10, "VanillaRNN"]}
+            7041: ["Adam", 1, "VanillaRNN"],
+            3151: ["Adam", 1, "VanillaRNN"]}
 
-'''
-task_dic = {200: ["FGSM_Adam", 1, "LSTM"],
-            201: ["Adam", 1, "LSTM"],
-            904: ["FGSM_Adam", 1, "TBPTT"],
-            905: ["FGSM_Adam", 1, "VanillaRNN"],
-            906: ["FGSM_Adam", 1, "TBPTT"],            
-            907: ["FGSM_Adam", 1, "TBPTT"],
-            908: ["FGSM_Adam", 1, "TBPTT"],
-            909: ["FGSM_Adam", 1, "TBPTT"],
-
-
-
-'''
 # total_batch = 100000
-total_batch = 10000
+total_batch = 25000
 
 # -----------------------------------------------------------------------------------------------
 # Plot multiple training loss by epoch in one
@@ -73,22 +69,28 @@ case_dir = {"losses": "Training Loss",
 
 
 def plot_multi_batch():
+    if baseline:
+        cindex = 0 
     # labels = ['SGDrelu', 'HBrelu', 'NAGrelu']
 
     # labels = ['FastRNN', 'LipschitzRNN']
-    labels = ['SGD', 'SHB', 'SNAG', 'FastRNN', 'LipschitzRNN']
+    # labels = ['dense SGD', 'sparse SGD', 'dense SHB', 'sparse SHB', 'dense SNAG', 'sparse SNAG',\
+    #      'FastRNN', 'LipschitzRNN', 'iRNN', 'MomentumRNN', 'VanillaRNN']
+    labels = ['dense SGD', 'sparse SGD', 'dense SHB', 'sparse SHB', 'dense SNAG', 'sparse SNAG',\
+         'FastRNN', 'LipschitzRNN', 'VanillaRNN']
     # labels = ['HB', 'NAG']
     # labels = ['GD', 'HB \mu 0.5', 'NAG \mu 0.5', 'HB \mu 0.99', 'NAG \mu 0.99', 'HB \mu 0.048', 'NAG \mu 0.3']
-    # labels = ['K=5', 'Decay K to 10 after 15000 batches', 'Decay K to 5 after 15000 batches', 'Decay K to 10 after 10000 batches']
-    colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet',]
+    # colors = ['black', 'crimson',  'darkorange', 'mediumblue', 'violet', 'c', 'violet', ]
+    colors = ['black', 'crimson', 'deepskyblue' , 'darkorange', 'violet', 'mediumblue', 'blueviolet', 'c', 'lightsteelblue', 'dimgray', 'silver', "red", 'slateblue']
 
 
     # batches = range(9, total_batch, 10)
-    batches = range(9, total_batch, 100)
+    batches = range(9, total_batch, 500)
 
     
     str_ids = ''.join(map(str, taskids))
-    imgname = 'Addingtest.png'
+    # imgname = 'Addingtest.png'
+    imgname = "Adding_" + str(seq) + ".pdf"
     # imgname = "Adding" + d + "_" + str_ids + "_.pdf"
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
@@ -100,8 +102,8 @@ def plot_multi_batch():
 
     plt.xlabel(r"# Training Steps ($5\times{10^3}$)", fontsize=SIZE4)
     plt.ylabel("Training MSE", fontsize=SIZE4)
-    # plt.title("VanillaRNN, Adding Task, L=100", fontsize=SIZE4)
-    plt.title("meta-RNN-dense, Adding Task, L=100", fontsize=SIZE4)
+    plt.title("Adding Task, T=" + str(seq), fontsize=SIZE4)
+    # plt.title("meta-RNN-dense, Adding Task, L=100", fontsize=SIZE4)
     plt.xticks(range(1, total_batch+1, 5000), range(0, int(total_batch/5000), 1), rotation="vertical", fontsize=SIZE3)
 
     # plt.xticks(range(1, total_batch+1, 5000), range(0, total_batch, 5000), rotation="vertical", fontsize=SIZE3)
@@ -132,11 +134,19 @@ def plot_multi_batch():
 
             data.append(one_data)
         print(max(data))
-        plt.plot(batches, data, color=colors[i], label=labels[i])
+     
+        if baseline:
+            if i < nexp and i%2 == 1:
+                plt.plot(batches, data, color=colors[cindex], label=labels[i], linestyle='dashed', linewidth=4)
+                cindex += 1
+            else: 
+                plt.plot(batches, data, color=colors[cindex], label=labels[i], linewidth=4)
+        else:
+            plt.plot(batches, data, color=colors[i], label=labels[i])
 
     if baseline:
         i = i + 1
-        for j, b in enumerate(baselines):
+        for _, b in enumerate(baselines):
        
             # fast_loss = load_baseline('fastrnn')
             # Lipschitz_loss = load_baseline('lipchiz')
@@ -145,8 +155,9 @@ def plot_multi_batch():
             for batch in batches:
                 print(batch)
                 data.append(b_loss[batch])
-            plt.plot(batches, data, color=colors[i], label=labels[i])
+            plt.plot(batches, data, color=colors[cindex], label=labels[i])
             i += 1
+            cindex += 1
     plt.legend(loc=1, prop={'size': SIZE3})
 
     plt.savefig(img_dir + "/" + imgname, bbox_inches='tight')

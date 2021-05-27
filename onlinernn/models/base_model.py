@@ -33,6 +33,7 @@ class BaseModel(ABC):
         self.gradientclip_value = opt.gradclipvalue
         self.device = opt.device
         self.meta = opt.meta
+        self.add_noise = opt.add_noise
     # ----------------------------------------------
     @classmethod
     def class_name(cls):

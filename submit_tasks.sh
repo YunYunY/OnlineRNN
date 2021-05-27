@@ -1,5 +1,5 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=7
 
 
 # outfolder="Har"
@@ -9,18 +9,23 @@ export CUDA_VISIBLE_DEVICES=0
 # task="Adding"
 
 # PixelTrain
-outfolder="stdoutPixel"
-task="Pixel"
+# outfolder="stdoutPixel"
+# task="Pixel"
+
+# CIFAR
+outfolder="stdoutCIFAR"
+task="CIFAR"
+
 
 mkdir -p $outfolder
 
-for i in {401..401}
+for i in {100..100}
 
 do
     rm -f $outfolder/id${i}.txt
 
     screen -L -Logfile $outfolder/id${i}.txt -dmS $task${i} \
-    python -u onlinernn/main_mnist_tune.py --istrain --taskid=$i 
+    python -u onlinernn/main_cifar_tune.py --istrain --taskid=$i 
 
    
     # nohup python -u onlinernn/main_har_tune.py --istrain --taskid=$i >stdoutHar/id${i}.txt & 
