@@ -6,9 +6,9 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="onlinernn",
     version="0.0.1",
-    author="Yun Yue",
-    author_email="yueylink@gmail.com",
-    description="Online RNN",
+    author="anonymous",
+    author_email="anonymous",
+    description="Bilevel RNN",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="",
