@@ -7,7 +7,9 @@
 - To run nosetest $./local_test.sh onlinernn/tests/model_test.py 
 
 - To train model $CUDA_VISIBLE_DEVICES=1 python onlinernn/main.py --istrain --taskid=103011
+
 or 
+
 - python submit_tasks.sh --istrain --taskid=103011
 
 - To test model $python onlinernn/main.py --taskid=1 --load_iter=299
