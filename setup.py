@@ -15,8 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     extras_require={
         "dev": [
-            "nose==1.3.7", "matplotlib==3.2.1", "torchsummary==1.6.0", "cupy-cuda101==9.0.0", 
-            "pynvrtc"
+            "nose==1.3.7", "matplotlib==3.2.1", "torchsummary==1.6.0", 
         ]
     },
     classifiers=[
