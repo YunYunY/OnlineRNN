@@ -44,13 +44,13 @@ opt.test_batch = False
 opt.add_noise = True
 
 # -----------------------------------------------------------------------------------------------
-if opt.taskid == 100:
+if opt.taskid == 101:
     opt.sparse = False
     opt.meta = 1
     opt.task = 'GD'
     opt.optimizer = "Adam"
     opt.hidden_size = 128
-    opt.batch_size = 32
+    opt.batch_size = 64
     opt.predic_task = "Softmax"
     opt.lr = 1e-2
     opt.mnist_standardize = "zeromean"
@@ -71,5 +71,37 @@ if opt.taskid == 100:
     m = VanillaRNN(opt)
     p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
     p.run()
+
+
+
+# -----------------------------------------------------------------------------------------------
+if opt.taskid == 201:
+    opt.sparse = True
+    opt.meta = 1
+    opt.task = 'GD'
+    opt.optimizer = "Adam"
+    opt.hidden_size = 128
+    opt.batch_size = 64
+    opt.predic_task = "Softmax"
+    opt.lr = 1e-2
+    opt.mnist_standardize = "zeromean"
+    opt.endless_train = False
+    opt.niter = 10000-1-200
+    opt.niter_decay = 200
+    opt.lrgamma = 0.5
+    d = CIFARNoise(opt)
+
+    # train and eval in every epoch 
+    if opt.eval_freq > 0 and opt.istrain:
+        opt.istrain = False
+        d_test = CIFARNoise(opt)
+        opt.istrain = True
+    else:
+        d_test = None 
+    s = RNN(opt)
+    m = VanillaRNN(opt)
+    p = ExpConfig(dataset=d, setting=s, model=m, dataset_test=d_test)
+    p.run()
+
 
 

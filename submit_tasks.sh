@@ -1,5 +1,5 @@
 #!/bin/bash
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=2
 
 
 # outfolder="Har"
@@ -19,7 +19,7 @@ task="CIFAR"
 
 mkdir -p $outfolder
 
-for i in {100..100}
+for i in {201..201}
 
 do
     rm -f $outfolder/id${i}.txt
