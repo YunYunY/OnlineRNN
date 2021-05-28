@@ -10,7 +10,6 @@ from onlinernn.models.adam import Adam
 from onlinernn.models.setting import Setting, RNN
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
-from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.rnn_irnn import IRNN
 from onlinernn.datasets.mnist import MNIST, MNISTShift
 from onlinernn.datasets.har import HAR_2

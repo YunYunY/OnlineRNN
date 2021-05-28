@@ -9,9 +9,7 @@ from onlinernn.datasets.dsa import DSA_19
 from onlinernn.models.setting import Setting
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
-from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.rnn_irnn import IRNN
-from onlinernn.models.rnn_ind import IndRNN
 from onlinernn.models.setting import RNN
 
 # torch.manual_seed(42)
@@ -40,6 +38,7 @@ if not opt.istrain:
 opt.iterT = 1
 opt.niter = 1
 opt.test_batch = False
+opt.verbose = False
 # -----------------------------------------------------------------------------------------------
 if opt.taskid == 101:
     opt.sparse = False
@@ -49,12 +48,12 @@ if opt.taskid == 101:
     opt.hidden_size = 128
     opt.batch_size = 64
     opt.predic_task = "Softmax"
-    opt.lr = 1e-2
+    opt.lr = 1e-3
     opt.mnist_standardize = "zeromean"
     opt.endless_train = False
-    opt.niter = 10000-1-200
-    opt.niter_decay = 200
-    opt.lrgamma = 0.5
+    opt.niter = 99
+    opt.niter_decay = 90
+    opt.lrgamma = 0.1
     d = MNISTPixel(opt)
 
     # train and eval in every epoch 

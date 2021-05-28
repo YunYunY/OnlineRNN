@@ -9,9 +9,7 @@ from onlinernn.datasets.dsa import DSA_19
 from onlinernn.models.setting import Setting
 from onlinernn.models.rnn_vanilla import VanillaRNN
 from onlinernn.models.rnn_stopbp import StopBPRNN
-from onlinernn.models.rnn_tbptt import TBPTT
 from onlinernn.models.rnn_irnn import IRNN
-from onlinernn.models.rnn_ind import IndRNN
 from onlinernn.models.setting import RNN
 
 # torch.manual_seed(42)

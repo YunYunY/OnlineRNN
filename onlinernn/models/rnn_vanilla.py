@@ -7,8 +7,7 @@ import functools
 import random
 import copy
 from onlinernn.models.networks import SimpleRNN, ODE_Vanilla, get_scheduler
-from onlinernn.models.base_model import BaseModel
-from onlinernn.models.indrnn_utils import clip_gradient, clip_weight
+from onlinernn.models.base_model import BaseModel, clip_gradient, clip_weight
 from onlinernn.tests.test_utils import show_shift
 
 class VanillaRNN(BaseModel):
