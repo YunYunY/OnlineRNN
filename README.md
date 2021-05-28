@@ -4,6 +4,8 @@
 
 - To install extra required packages, run $pip install -e .[dev]
 
+- Unzip the data HAR-2.zip into data/HAR_2/
+
 - To train model $CUDA_VISIBLE_DEVICES=1 python onlinernn/main_har_tune.py --istrain --taskid=103011
 
 or 
