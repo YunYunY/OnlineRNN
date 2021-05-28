@@ -43,7 +43,8 @@ opt.LSTM = False
 opt.add_noise = False
 opt.constrain_grad = False
 opt.constrain_U = False
-# opt.num_layers = 6
+opt.verbose = True
+opt.test_batch = True
 
 
 if opt.taskid == 100:
@@ -76,11 +77,12 @@ if opt.taskid == 100:
     p.run()
 
 
-if opt.taskid == 1017:
+if opt.taskid == 103011:
     print(f"----------------- Inside iteration T is {opt.iterT} -----------------")
+    opt.ratio = 0.01
     opt.sparse = False
     opt.meta = 1
-    opt.task = 'GD'
+    opt.task = 'HB'
     opt.optimizer = "Adam"
     opt.hidden_size = 80
     opt.batch_size = 64

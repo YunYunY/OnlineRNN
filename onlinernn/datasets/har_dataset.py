@@ -11,7 +11,7 @@ from onlinernn.datasets.base_dataset import BaseDataset
 # -------------------------------------------------------
 
 class HAR_2Dataset(Dataset):
-    def __init__(self, path, istrain, transform=None):
+    def __init__(self, path, istrain, ratio, transform=None):
         self.transform = transform
         # Normalization to Zero Mean and Unit Standard Deviation
         mu = 0.10206605722975093
@@ -23,17 +23,15 @@ class HAR_2Dataset(Dataset):
       
         if istrain:
             datalabels = np.load(path + '/train.npy')
-            # ntotal = datalabels.shape[0]
-            # ratio = 0.01
-            # nsample = int(ntotal*ratio)
+            ntotal = datalabels.shape[0]
+            nsample = int(ntotal*ratio)
           
-            # datalabels = datalabels[0:nsample, :]
+            datalabels = datalabels[0:nsample, :]
         else:
             datalabels = np.load(path + '/test.npy')
 
-      
         self.data = (datalabels[:, 1:] - mu) / sigma
-        # print(self.data[0], sep='\n')
+            
 
         self.labels = datalabels[:, 0:1]
         

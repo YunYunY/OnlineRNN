@@ -17,6 +17,7 @@ class HAR_2(BaseDataset):
         opt.n_class = 2
         opt.feature_shape = 9
         opt.seq_len = 128
+        self.ratio = opt.ratio
         self.opt = opt
         super(HAR_2, self).__init__(opt)
         istrain = (opt.istrain or opt.continue_train)
@@ -43,7 +44,7 @@ class HAR_2(BaseDataset):
                 ])
         else:
             transform = None 
-        dataset = HAR_2Dataset(self.path, istrain, transform)
+        dataset = HAR_2Dataset(self.path, istrain, self.ratio, transform)
 
         dataloader = torch.utils.data.DataLoader(
                 dataset,

@@ -152,6 +152,7 @@ class VanillaRNN(BaseModel):
 
     def set_input(self):
         self.inputs, self.labels = self.data
+      
         if self.add_noise:
             
             noise = torch.randn((self.inputs.shape[0], self.seq_len, self.inputs.shape[2])) * 1. + 0.

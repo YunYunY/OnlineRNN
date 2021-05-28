@@ -4,6 +4,7 @@ from onlinernn.options.train_options import TrainOptions
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import matplotlib
+import csv
 import pickle
 matplotlib.rcParams['pdf.fonttype'] = 42
 
@@ -18,55 +19,57 @@ os.makedirs(img_dir, exist_ok=True)
 
 # -----------------------------------------------------------------------------------------------
 baseline = True # plot with baseline models
-
 if baseline:
 
-    # baselines = ['fastrnn', 'lipchiz', 'irnn', 'momentumrnn', 'rnn']
-    baselines = ['fastrnn', 'irnn', 'lipchiz', 'rnn']
+    # baselines = ['fastrnn', 'liprnn', 'irnn', 'rnn']
+    baselines = ['fastrnn', 'liprnn', 'irnn']
 
     result_baseline = result_dir + "baseline/"
 
-    def load_baseline(dir, test_acc):
-        with open(result_baseline + 'har_result_' + str(dir) + '.pkl', 'rb') as f:
-            Bdata = pickle.load(f)
+    # def load_baseline(dir, case):
+    #     with open(result_baseline + 'har_result_' + str(dir) + '.pkl', 'rb') as f:
+    #         Bdata = pickle.load(f)
             
-            Btrain_loss = Bdata['train_loss']
-            Btest_acc = Bdata['test_acc']
-            print(Btest_acc)
-            exit(0)
-        if test_acc:
-            return Btest_acc
-        else:
-            return Btrain_loss
+    #         Btrain_loss = Bdata['train_loss']
+    #         Btest_acc = Bdata['test_acc']
+     
+    #     if case == "losses":
+    #         return Btrain_loss
+    #     else:
+    #         Btest_acc = [x*100. for x in Btest_acc]
+    #         return Btest_acc
 
-load_baseline('fastrnn', True)
+    
+    def load_baseline(dir, case):
+        Btrain_loss = []
+        Btest_acc = []
+
+        with open(result_baseline + 'har_result_' + dir + '_' + str(ratio) + '.csv', 'r') as file:
+            
+            reader = csv.reader(file, delimiter = ',')
+            next(reader)
+            for row in reader:
+                Btrain_loss.append(float(row[1]))
+                Btest_acc.append(float(row[2]))
+        if ratio == 0.01:
+            Btrain_loss = [x/2. for x in Btrain_loss]
+        elif ratio == 0.1:
+            Btrain_loss = [x/12. for x in Btrain_loss]
+        
+        else:
+            Btrain_loss = [x/115. for x in Btrain_loss]
+        if case == "losses":
+            return Btrain_loss
+        else:
+            return Btest_acc
+    
 
 d = "HAR_2"
 dname = "HAR_2"
 # dname = "NoisyHAR_2"
 
-if dname == "HAR_2":
-    task_dic = {1027: ["VanillaRNN", "Adam", 1],
-                102: ["VanillaRNN", "Adam", 1], 
-                101: ["VanillaRNN", "Adam", 1], 
-                104: ["VanillaRNN", "Adam", 1], 
-                110: ["VanillaRNN", "Adam", 1], 
-                2027: ["VanillaRNN", "Adam", 1], 
-                3027: ["VanillaRNN", "Adam", 1], 
-                206: ["VanillaRNN", "Adam", 2], 
-                214: ["VanillaRNN", "Adam", 2], 
-                304: ["VanillaRNN", "Adam", 1],
-                305: ["VanillaRNN", "Adam", 2],
-                306: ["VanillaRNN", "Adam", 1],
-                314: ["VanillaRNN", "Adam", 1],}
-else:
-    task_dic = {20: ["VanillaRNN", "Adam", 1],
-                21: ["TBPTT", "Adam", 1], 
-                22: ["VanillaRNN", "FGSM_Adam", 1], 
-                23: ["VanillaRNN", "FGSM_Adam", 5], 
-                24: ["VanillaRNN", "FGSM_Adam", 10],
-                25: ["TBPTT", "FGSM_Adam", 1],
-                26: ["TBPTT", "FGSM_Adam", 10]}
+
+
 
 plot_by = "epoch"
 if plot_by == "batch":
@@ -84,18 +87,44 @@ case_dir = {"losses": "Training Loss",
             "test_acc": "Test Accuracy", 
             "train_acc": "Train Accuracy"}
 
+task_dic = {10292: ["VanillaRNN", "Adam", 1],
+            10323: ["VanillaRNN", "Adam", 1], 
+            20292: ["VanillaRNN", "Adam", 1], 
+            20322: ["VanillaRNN", "Adam", 1], 
+            30293: ["VanillaRNN", "Adam", 1], 
+            30321: ["VanillaRNN", "Adam", 1], 
+            10301: ["VanillaRNN", "Adam", 1],
+            10331: ["VanillaRNN", "Adam", 1], 
+            20301: ["VanillaRNN", "Adam", 1], 
+            20333: ["VanillaRNN", "Adam", 1], 
+            30331: ["VanillaRNN", "Adam", 1], 
+            30303: ["VanillaRNN", "Adam", 1],
+            10282: ["VanillaRNN", "Adam", 1],
+            10313: ["VanillaRNN", "Adam", 1], 
+            20283: ["VanillaRNN", "Adam", 1], 
+            20312: ["VanillaRNN", "Adam", 1], 
+            30281: ["VanillaRNN", "Adam", 1], 
+            30311: ["VanillaRNN", "Adam", 1],
+            }
+ratio = 1
+
 def plot_multi_epoch():
-    case = "losses" # "test_acc" # "losses"
+    if baseline:
+        cindex = 0 
+    case = "test_acc" # "test_acc" # "losses"
     if dname == "HAR_2":
-        # taskids = [100, 102, 203, 205, 304, 305]
-        taskids = [1027, 2027, 3027]
-        # taskids = [105, 207, 307]
+        # ratio = 0.1
+        # taskids = [10292, 10323, 20292, 20322, 30293, 30321]
+        # ratio = 0.01
+        # taskids = [10301, 10331, 20301, 20333, 30303, 30331]
+        # ratio = 1
+        taskids = [10282, 10313, 20283, 20312, 30281, 30311]
+    nexp = len(taskids)
 
-    else:
-        taskids = [20, 21, 22, 23, 24, 26]
-
-    labels = ['SGD', 'SHB', 'SNAG', 'HB K=S=1', 'HB K=S=2', 'NAG K=S=1', 'HB K=S=2']
-    colors = ['black', 'deepskyblue', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
+    labels = ['dense SGD', 'sparse SGD', 'dense SHB', 'sparse SHB', 'dense SNAG', 'sparse SNAG',\
+         'FastRNN', 'LipschitzRNN', 'irnn', 'VanillaRNN']
+    # labels = ['SGD', 'SHB', 'SNAG', 'HB K=S=1', 'HB K=S=2', 'NAG K=S=1', 'HB K=S=2']
+    colors = ['black', 'crimson', 'deepskyblue' , 'darkorange', 'violet', 'mediumblue', 'blueviolet', 'c', 'lightsteelblue', 'dimgray', 'silver', "red", 'slateblue']
 
     # colors = ['black', 'c', 'lightsteelblue', 'violet', 'crimson', 'darkorange']
 
@@ -103,7 +132,9 @@ def plot_multi_epoch():
         epochs = range(0, total_epoch, 1)
 
     str_ids = ''.join(map(str, taskids))
-    imgname = d + "_" + str_ids + "_"+ case +".png"
+    # imgname = d + "_" + str_ids + "_"+ case +".png"
+    imgname = "HAR_" + str(ratio) + str(case) + ".pdf"
+
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
@@ -119,7 +150,7 @@ def plot_multi_epoch():
     plt.ylabel(case_dir[case], fontsize=SIZE4)
 
     if dname == "HAR_2":
-        plt.title("RNN, HAR-2, L=128, 1%", fontsize=SIZE4)
+        plt.title("HAR-2, T=128, 100% training data", fontsize=SIZE4)
     else:
         plt.title("Vanilla RNN, Noisy HAR-2, L=128", fontsize=SIZE4)
 
@@ -136,9 +167,9 @@ def plot_multi_epoch():
 
     if dname == "HAR_2":
         if case == "losses":
-            plt.ylim(ymin=0., ymax=0.4)
+            plt.ylim(ymin=0., ymax=0.9)
         else:
-            plt.ylim(ymin=50, ymax=100)
+            plt.ylim(ymin=30, ymax=100)
 
     else:
         plt.ylim(ymin=0.05, ymax=0.4)
@@ -183,16 +214,42 @@ def plot_multi_epoch():
             xrange = [x for x in range(0, n_update, 1)]
             plt.plot(xrange, data[0:n_update], color=colors[i], label=labels[i], linewidth=2)
         else:
-            plt.plot(epochs, data, color=colors[i], label=labels[i], linewidth=2)
+
+            if baseline:
+                if i < nexp and i%2 == 1:
+                    plt.plot(epochs, data, color=colors[cindex], label=labels[i], linestyle='dashed', linewidth=4)
+                    cindex += 1
+                else: 
+                    plt.plot(epochs, data, color=colors[cindex], label=labels[i], linewidth=4)
+            else:
+            # plt.plot(batches, data, color=colors[i], label=labels[i])
+
+                plt.plot(epochs, data, color=colors[i], label=labels[i], linewidth=2)
+
+  
+
+    if baseline:
+        i = i + 1
+        for _, b in enumerate(baselines):
+    
+    
+            b_loss = load_baseline(b, case)
+            data = []
+            for epoch in epochs:
+                # print(epoch)
+                data.append(b_loss[epoch])
+            print(max(data))
+            plt.plot(epochs, data, color=colors[cindex], label=labels[i])
+            i += 1
+            cindex += 1
 
     if case == "losses":
         if plot_by == "batch":
             plt.legend(loc=1, prop={'size': SIZE3})
         else:
-            plt.legend(loc=2, prop={'size': SIZE3})
+            plt.legend(loc=1, ncol=2, prop={'size': SIZE3})
     else:
-        plt.legend(loc=4, prop={'size': SIZE3})
-
+        plt.legend(loc=4, ncol=2, prop={'size': SIZE3})
 
     plt.savefig(img_dir + "/" + imgname, bbox_inches='tight')
     print(img_dir)
@@ -243,7 +300,10 @@ def plot_training_loss_epoch():
         train_loss = np.load(loss_file)["losses"]
         train_losses.append(train_loss)
     print(max(train_losses))
-    imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + str(opt.taskid)+ "_trainloss.png"
+    # imgname = d + "_" + m + "_T" + str(T) + "_" + optimizer + str(opt.taskid)+ "_trainloss.png"
+    # imgname = "HAR_" + str(ratio) + str(case) + ".pdf"
+    imgname = "HAR_" + str(ratio) + str(case) + ".png"
+
 
     plt.figure(figsize=(8, 8))
     plt.xlabel("# Epochs")

@@ -107,6 +107,8 @@ class RNN(Setting):
 
     def train_sgd(self):
         for i, data in enumerate(self.dataset.dataloader):
+            batch_start_time = time.time()  # timer for entire epoch
+
             self.total_iters += self.opt.batch_size
             self.model.total_batches += 1
             self.model.data = data 
@@ -117,20 +119,27 @@ class RNN(Setting):
             # Forward, backward, update network weights
             self.model.train() 
             # Save gradients
-            
+            if self.opt.verbose:
+                print(f'Total training time/batch is {time.time() - batch_start_time}')
+
             if self.log and (self.model.total_batches-1)%self.model.T == (self.model.T-1):
                 self.model.training_log(self.model.total_batches)
+
             if self.opt.test_batch:
-                print("Epoch %d | End of batch %d | Time Taken: %d sec | Loss: %.4f"
-                % (self.epoch, self.model.total_batches, time.time() - self.epoch_start_time, self.model.loss))
-                # self.model.set_test_output()
-                # for i, data in enumerate(self.dataset_test.dataloader):
-                #     self.model.data = data 
-                #     self.model.set_test_input()  # unpack data from data loader
-                #     self.model.test()  # run inference
-                # self.model.get_test_acc() # calculate and save global acc
-                
-                # self.model.save_test_acc(self.model.total_batches)
+                self.model.set_test_output()
+                test_start_time = time.time()  # timer for entire epoch
+
+                for j, test_data in enumerate(self.dataset_test.dataloader):
+                    self.model.data = test_data 
+                    self.model.set_test_input()  # unpack data from data loader
+                    self.model.test()  # run inference
+                    if self.opt.verbose:
+                        print(f'Total testing time/batch is {time.time() - test_start_time}')
+                        exit(0)
+                        # self.opt.verbose = False
+                        # self.opt.test_batch = False
+                        # continue
+          
 
 
     def run(self):
@@ -158,8 +167,8 @@ class RNN(Setting):
             self.opt.epoch_count, self.opt.n_epochs + 1):
 
             self.epoch = epoch
-            self.epoch_start_time = time.time()  # timer for entire epoch
             self.model.set_output()
+            self.epoch_start_time = time.time()  # timer for entire epoch
 
             if self.opt.optimizer == "SVRG":
                 self.train_svrg()
@@ -182,10 +191,13 @@ class RNN(Setting):
             # ----------------------------------------------
             if not self.opt.test_batch and self.opt.eval_freq != 0: # evaluate 
                 self.model.set_test_output()
+                test_start_time = time.time()  # timer for entire epoch
+
                 for i, data in enumerate(self.dataset_test.dataloader):
                     self.model.data = data 
                     self.model.set_test_input()  # unpack data from data loader
                     self.model.test()  # run inference
+                
                 self.model.get_test_acc() # calculate and save global acc
                 self.model.save_test_acc(epoch)
             print(f'Total training time is {time.time() - global_start_time}')
